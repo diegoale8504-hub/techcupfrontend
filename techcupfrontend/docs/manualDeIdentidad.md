@@ -3,7 +3,6 @@
 ## 1. Nombre oficial y slogan
 
 **Nombre:** TechCup Fútbol  
-**Slogan:** *“El torneo donde el código se convierte en fútbol.”*
 
 ---
 
@@ -212,8 +211,8 @@ Los roles se representan mediante **badges tipo pill** para mantener consistenci
 | Mockups Figma | https://www.figma.com/design/jhj4eMbBLkSZvuz9xRVqxw |
 | DM Sans | https://fonts.google.com/specimen/DM+Sans |
 | DM Mono | https://fonts.google.com/specimen/DM+Mono |
-| Repositorio Frontend | `techcupfrontend` |
-| Repositorio Backend | `techcup-backend` |
+| Repositorio Frontend | techcupfrontend |
+| Repositorio Backend | techcup-backend |
 
 ---
 
