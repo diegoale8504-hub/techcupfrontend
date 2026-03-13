@@ -41,8 +41,8 @@ En este Sprint 1 el objetivo principal es establecer la estructura inicial del f
 
 ## Logotipo
 
+![alt text](docs/images/imagen_2026-03-13_103136781-removebg-preview.png)
 
-![alt text](imagen_2026-03-13_103136781-removebg-preview.png)
 ---
 
 ## Manual de identidad visual

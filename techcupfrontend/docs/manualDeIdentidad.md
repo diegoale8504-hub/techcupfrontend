@@ -3,10 +3,9 @@
 ## 1. Nombre oficial y slogan
 
 **Nombre:** TechCup Fútbol  
-<<<<<<< HEAD
 =======
 **Slogan:** *"Tu próximo sprint empieza en la cancha."*
->>>>>>> e139820 (Se actualizo el manual de identidad)
+
 
 ---
 
@@ -155,7 +154,7 @@ El **verde actúa como hilo conductor de la experiencia visual**.
 
 ## 6. Componentes
 
-<<<<<<< HEAD
+
 | Recurso | Link |
 |------|------|
 | Mockups Figma | https://www.figma.com/design/jhj4eMbBLkSZvuz9xRVqxw |
@@ -163,7 +162,7 @@ El **verde actúa como hilo conductor de la experiencia visual**.
 | DM Mono | https://fonts.google.com/specimen/DM+Mono |
 | Repositorio Frontend | techcupfrontend |
 | Repositorio Backend | techcup-backend |
-=======
+
 ### Botones
 
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
@@ -183,7 +182,7 @@ El **verde actúa como hilo conductor de la experiencia visual**.
 <span style="background:#1E3024;color:#7f8f88;padding:8px 16px;border-radius:6px;font-family:DM Sans;">Deshabilitado</span>
 
 </div>
->>>>>>> e139820 (Se actualizo el manual de identidad)
+
 
 ---
 
@@ -255,15 +254,15 @@ La experiencia visual transmite un nivel competitivo y tecnológico acorde a un 
 
 ## 8. Elementos Visuales de Diseño
 
-![Elementos visuales](img_1.png)
-
+![alt text](image-1.png)
+![alt text](image.png)
 ---
 
 ## 9. Imágenes Utilizadas
 
-![img_5.png](img_5.png)
-![img_6.png](img_6.png)
-![img_7.png](img_7.png)
-![img_8.png](img_8.png)
-![img_9.png](img_9.png)
+![alt text]({08B90B68-33C4-4404-939C-E096BF0FF7FB}.png)!
+![alt text]({44C4501B-6D4F-4062-A7E8-50EA1109D8EE}.png)
+![alt text]({976359FC-1AC2-4174-881E-3CAF85657F08}.png)
+![alt text]({D888311F-AE18-4BFD-913C-98A9896E489F}.png)
+![alt text]({EF5B9E96-DB47-45CD-92A2-BC58CB37ECB7}.png)
 
