@@ -254,15 +254,12 @@ La experiencia visual transmite un nivel competitivo y tecnológico acorde a un 
 
 ## 8. Elementos Visuales de Diseño
 
-![alt text](image-1.png)
 ![alt text](image.png)
 ---
 
 ## 9. Imágenes Utilizadas
-
-![alt text]({08B90B68-33C4-4404-939C-E096BF0FF7FB}.png)!
-![alt text]({44C4501B-6D4F-4062-A7E8-50EA1109D8EE}.png)
-![alt text]({976359FC-1AC2-4174-881E-3CAF85657F08}.png)
-![alt text]({D888311F-AE18-4BFD-913C-98A9896E489F}.png)
-![alt text]({EF5B9E96-DB47-45CD-92A2-BC58CB37ECB7}.png)
-
+![alt text](images/{08B90B68-33C4-4404-939C-E096BF0FF7FB}.png)
+![alt text](images/{44C4501B-6D4F-4062-A7E8-50EA1109D8EE}.png)
+![alt text](images/{976359FC-1AC2-4174-881E-3CAF85657F08}.png)
+![alt text](images/{D888311F-AE18-4BFD-913C-98A9896E489F}.png)
+![alt text](images/{EF5B9E96-DB47-45CD-92A2-BC58CB37ECB7}.png)

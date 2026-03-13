@@ -64,27 +64,28 @@ Revisar: [Manual de identidad](docs/manualDeIdentidad.md)
 
 ### 1) Módulo: Autenticación
 **Descripción:** Inicio de sesión/registro y control de acceso a funcionalidades del sistema.
-![alt text](image-1.png)
+![alt text](docs/images/image-1.png)
 
 
 ### 2) Módulo: Dashboard / Inicio
 **Descripción:** Vista principal con resumen de información relevante del usuario y accesos rápidos.
 
-![alt text](image-2.png)
+![alt text](docs/images/image-2.png)
 
 ---
 
 ### 3) Módulo: Gestión principal (ej. Torneos / Equipos / Usuarios) 
-**Descripción:** CRUD o flujo principal del sistema (crear, listar, editar, eliminar).
 
-![alt text](image-3.png)
-![alt text](image-4.png)
+
+![alt text](docs/images/image-3.png)
+![alt text](docs/images/image-4.png)
 ---
 
 ### 4) Módulo: Perfil y configuración
 
 
-![alt text](image-5.png)
+
+![alt text](image.png)
 ---
 
 
