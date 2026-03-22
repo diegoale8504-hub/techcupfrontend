@@ -60,28 +60,29 @@ Revisar: [Manual de identidad](docs/manualDeIdentidad.md)
 
 ### 1) Módulo: Autenticación
 **Descripción:** Inicio de sesión/registro y control de acceso a funcionalidades del sistema.
-![img_2.png](../img_2.png)
+
+![img_2.png](docs/images/img_2.png)
 ### 2) Módulo: Dashboard / Inicio
 **Descripción:** Vista principal con resumen de información relevante del usuario y accesos rápidos.
+![inicio.png](docs/images/inicio.png)
 
-![img_1.png](../inicio.png)
-![img_3.png](../img_3.png)
+![img_3.png](docs/images/img_3.png)
 ---
 
 ### 3) Módulo: Gestión principal (ej. Tablas / Equipos / )
 
 
-![img_4.png](../img_4.png)
-![img_5.png](../img_5.png)
+![img_4.png](docs/images/img_4.png)
+![img_5.png](docs/images/img_5.png)
 
 ---
 
 ### 4) Módulo: Perfil y configuración
 
 
-![img_7.png](../img_7.png)
-![img_6.png](../img_6.png)
-![img_8.png](../img_8.png)
+![img_7.png](docs/images/img_7.png)
+![img_6.png](docs/images/img_6.png)
+![img_8.png](docs/images/img_8.png)
 ---
 
 
