@@ -1,265 +1,514 @@
-# Manual de Identidad — TechCup Fútbol
+# Manual de Identidad Visual — TechCupFútbol
 
-## 1. Nombre oficial y slogan
-
-**Nombre:** TechCup Fútbol  
-=======
-**Slogan:** *"Tu próximo sprint empieza en la cancha."*
-
+> Documento oficial de identidad visual de la plataforma TechCupFútbol.  
+> Versión 1.0 — Sprint 3 — Los cuervos de Odin — Escuela Colombiana de Ingeniería Julio Garavito
 
 ---
 
-## 2. Público Objetivo
+## Tabla de Contenido
 
-### Público Objetivo Primario
-
-**Personas objetivo:**
-
-- Estudiantes de los programas de Ingeniería de Sistemas.
-- Estudiantes de Ingeniería de Inteligencia Artificial.
-- Estudiantes de Ingeniería de Ciberseguridad.
-- Estudiantes de Ingeniería Estadística.
-
-**¿Por qué?:**  
-Son los principales participantes del torneo semestral de fútbol y quienes utilizarán con mayor frecuencia la plataforma para registrarse como jugadores, unirse o crear equipos, organizar alineaciones y consultar la información del torneo.
-
-**Características:**
-
-- **Edad:** 18 – 28 años
-- **Perfil:** Estudiantes universitarios activos de los programas de ingeniería.
-- **Nivel tecnológico:** Medio – alto.
-- **Intereses:** Fútbol, competencias deportivas universitarias, actividades del campus.
-- **Rol en la plataforma:** Jugador o capitán de equipo.
+1. [Introducción y contexto de marca](#1-introducción-y-contexto-de-marca)
+2. [Nombre oficial y slogan](#2-nombre-oficial-y-slogan)
+3. [Público objetivo](#3-público-objetivo)
+4. [Logo y variantes](#4-logo-y-variantes)
+5. [Paleta de colores](#5-paleta-de-colores)
+6. [Tipografía](#6-tipografía)
+7. [Imágenes de fondo y estilo visual](#7-imágenes-de-fondo-y-estilo-visual)
+8. [Componentes UI](#8-componentes-ui)
+9. [Usos incorrectos](#9-usos-incorrectos)
 
 ---
 
-### Público Objetivo Secundario
+## 1. Introducción y contexto de marca
 
-**Personas objetivo:**
+**TechCupFútbol** es la plataforma digital oficial del torneo interno de fútbol de la Escuela Colombiana de Ingeniería Julio Garavito. Nació como proyecto académico dentro de la materia *Desarrollo de Software* (DOSW), con el objetivo de digitalizar y modernizar la gestión del torneo semestral que históricamente se ha organizado de forma manual.
 
-- Graduados de los programas de ingeniería de la Escuela Colombiana de Ingeniería.
-- Profesores de los programas académicos que participan en el torneo.
-- Personal administrativo de la institución.
-- Familiares o acompañantes de estudiantes que participan como jugadores.
-- Árbitros encargados de dirigir los partidos.
-- Organizadores del torneo responsables de su gestión.
+La plataforma permite a estudiantes, graduados, profesores, administrativos, familiares y árbitros registrarse, formar equipos, enviar y recibir invitaciones, consultar resultados y seguir el torneo en tiempo real.
 
-**¿Por qué?:**  
-Estas personas interactúan con la plataforma para participar en el torneo, consultar información de los partidos o apoyar la organización y desarrollo de la competencia.
-
-**Características:**
-
-- **Edad:** 22 – 50 años
-- **Nivel tecnológico:** Medio
-- **Rol en la plataforma:** Jugador ocasional, árbitro, organizador o administrador.
+**¿Por qué necesitamos una identidad visual sólida?**  
+Porque TechCupFútbol no es solo una herramienta funcional — es la cara digital de una tradición deportiva universitaria. Su identidad debe transmitir energía, competencia y pertenencia institucional, sin perder el espíritu técnico y juvenil de sus usuarios.
 
 ---
 
-## 3. Paleta de Colores
+## 2. Nombre oficial y slogan
 
-La identidad visual de **TechCup Fútbol** utiliza una paleta inspirada en la unión entre **fútbol y tecnología**, con un fondo oscuro que evoca un estadio nocturno y colores brillantes similares a **pantallas LED de marcadores deportivos**.
+| Campo | Valor |
+|---|---|
+| **Nombre oficial** | TechCupFútbol |
+| **Escritura correcta** | `TechCupFútbol` (sin espacio, con tilde en la ú) |
+| **Abreviación permitida** | TechCup |
+| **Slogan** | *"Tu próximo sprint empieza en la cancha."* |
+| **Institución** | Escuela Colombiana de Ingeniería Julio Garavito |
 
-| Muestra | Nombre | Hex | Uso |
-|-------|-------|------|------|
-| <div style="width:40px;height:20px;background:#008542;border-radius:4px;"></div> | Verde Sistemas | `#008542` | Primario — navegación, estados activos |
-| <div style="width:40px;height:20px;background:#6459C4;border-radius:4px;"></div> | Violeta IA | `#6459C4` | Acento — roles especiales, highlights |
-| <div style="width:40px;height:20px;background:#BED600;border-radius:4px;"></div> | Lima Ciberseguridad | `#BED600` | CTA — botones de acción principal |
-| <div style="width:40px;height:20px;background:#00D900;border-radius:4px;"></div> | Verde Estadística | `#00D900` | Éxito — estados positivos |
-| <div style="width:40px;height:20px;background:#0A0F0D;border-radius:4px;"></div> | Fondo principal | `#0A0F0D` | Fondo principal de la interfaz |
-| <div style="width:40px;height:20px;background:#111A14;border-radius:4px;"></div> | Fondo tarjeta | `#111A14` | Fondo de tarjetas |
-| <div style="width:40px;height:20px;background:#1E3024;border-radius:4px;"></div> | Borde | `#1E3024` | Bordes y separadores |
-| <div style="width:40px;height:20px;background:#E8F5EE;border-radius:4px;border:1px solid #ccc;"></div> | Texto | `#E8F5EE` | Texto sobre fondo oscuro |
+### Justificación del nombre
 
----
+- **Tech** → hace referencia directa al perfil tecnológico de sus participantes (estudiantes de ingeniería).
+- **Cup** → evoca el concepto de copa o trofeo, símbolo universal de competencia deportiva.
+- **Fútbol** → define el deporte, escrito en español para reforzar la identidad latinoamericana e institucional.
 
-## 4. Tipografía
-
-La identidad tipográfica de TechCup combina una fuente **impactante para títulos** con una fuente **limpia para interfaz**, permitiendo una comunicación clara entre **deporte y tecnología**.
-
-### Tipografía Display
-
-**Bebas Neue**
-
-Fuente utilizada para **títulos principales, marcadores y elementos de alto impacto visual**.
-
-**Usos:**
-
-- Títulos principales
-- Marcadores de partidos
-- Encabezados de secciones
-- Nombres destacados de equipos
+La unión de las tres palabras en una sola crea un nombre memorable, corto y fácil de pronunciar, que funciona tanto en contextos digitales como visuales.
 
 ---
 
-### Tipografía de Interfaz
+## 3. Público objetivo
 
-**DM Sans**
+### Primario
 
-Fuente principal utilizada en la **interfaz, textos y componentes del sistema**.
+| Campo | Descripción |
+|---|---|
+| **Quiénes son** | Estudiantes activos de los programas de ingeniería |
+| **Programas** | Ingeniería de Sistemas, Inteligencia Artificial, Ciberseguridad, Estadística, Maestría en Gestión de Información |
+| **Edad** | 18 – 28 años |
+| **Nivel tecnológico** | Medio – alto |
+| **Rol en la plataforma** | Jugador o Capitán de equipo |
+| **Motivación** | Participar en el torneo, unirse a un equipo, competir |
 
-| Peso | Uso |
-|-----|-----|
-| **Bold** | Etiquetas y botones |
-| **SemiBold** | Subtítulos |
-| **Regular** | Texto principal |
-| **Light** | Texto auxiliar |
+### Secundario
 
----
-
-## 5. Principios de Diseño
-
-### Equilibrio
-
-Uso de **grids de 2 a 4 columnas** que organizan el contenido de manera clara.  
-Un **sidebar fijo** permite equilibrar la navegación con el contenido principal.  
-Las tarjetas mantienen un peso visual uniforme para distribuir la información de forma ordenada.
-
----
-
-### Contraste
-
-El fondo oscuro `#0A0F0D` combinado con el color lima `#BED600` genera una relación de contraste **superior a 7:1**, cumpliendo con los estándares de accesibilidad **WCAG AAA**.
-
-Esto permite que los **botones CTA destaquen sobre cualquier superficie** dentro del sistema.
+| Campo | Descripción |
+|---|---|
+| **Quiénes son** | Graduados, profesores, administrativos, familiares, árbitros, organizadores |
+| **Edad** | 22 – 50 años |
+| **Nivel tecnológico** | Medio |
+| **Rol en la plataforma** | Jugador ocasional, árbitro, organizador o administrador |
+| **Motivación** | Apoyar, gestionar o arbitrar el torneo |
 
 ---
 
-### Jerarquía
+## 4. Logo y variantes
 
-El sistema tipográfico establece **5 niveles de lectura**:
+### Descripción del logo
 
-- **Bebas Neue 40px** — Títulos principales
-- **DM Sans 18px** — Subtítulos
-- **DM Sans 14px** — Texto principal
-- **DM Sans 12px** — Labels
-- **DM Sans 11px** — Metadatos
+El logo de TechCupFútbol fue diseñado con inteligencia artificial (ChatGPT / DALL-E) y representa visualmente la fusión entre el deporte universitario y la ingeniería tecnológica. Cada elemento fue elegido con una intención clara.
 
-Estos tamaños guían la atención del usuario de forma natural dentro de la interfaz.
+![Logo TechCupFútbol](images/logoo.png)
+
+### Anatomía y justificación de cada elemento
+
+| Elemento | Descripción | Significado |
+|---|---|---|
+| **Copa plateada con base dorada** | Copa clásica de trofeo con asas curvas, base dorada y estrellas | Representa la competencia, el logro y el espíritu de torneo. Es el elemento central que da nombre a la marca: la *Cup*. |
+|  **Balón de fútbol** | Balón clásico blanco y negro en el centro del chip | Identifica directamente el deporte del torneo. Su posición central dentro del chip refuerza que el fútbol es el núcleo de la plataforma. |
+|  **Chip tecnológico verde** | Placa de circuito integrado que rodea el balón | Simboliza la tecnología e ingeniería que rodea y hace posible el torneo. Representa a los estudiantes de ingeniería como protagonistas. |
+|  **Estrella dorada en la cima** | Estrella brillante en la parte superior de la copa | Representa la excelencia, la meta y el primer lugar — el objetivo de todo equipo que participa en el torneo. |
+|  **Laureles dorados en la base** | Ramas de laurel a ambos lados de la base de la copa | Símbolo clásico de victoria y reconocimiento académico-deportivo. Conecta la tradición universitaria con el logro competitivo. |
+|  **Candado de seguridad** | Ícono de candado verde en la esquina superior derecha | Hace referencia a la **Ingeniería de Ciberseguridad** y al pilar de seguridad de la plataforma (autenticación, JWT, OAuth2). |
+|  **Laptop verde** | Computador portátil en la esquina inferior derecha | Representa los **programas de ingeniería de sistemas e inteligencia artificial** y el entorno digital en el que vive la plataforma. |
+|  **Engranaje** | Engranaje mecánico en la parte derecha | Simboliza la **ingeniería** en su sentido más amplio — la construcción, el proceso y la arquitectura técnica del sistema. |
+|  **Gráfica de barras** | Barras de crecimiento en la parte izquierda | Representa las **estadísticas del torneo** — tabla de posiciones, goles, asistencias — y el análisis de datos como parte del perfil ingenieril. |
+|  **Birrete universitario** | Birrete negro en la esquina superior izquierda | Referencia directa a la **Escuela Colombiana de Ingeniería Julio Garavito** y al contexto académico del torneo. |
+|  **Ondas verdes dinámicas** | Trazos curvos verdes de fondo | Transmiten **energía, dinamismo y movimiento** — el espíritu deportivo activo que define a los participantes del torneo. |
+
+### Síntesis del concepto
+
+El logo de TechCupFútbol no es solo un trofeo — es un manifiesto visual de lo que somos: **ingenieros que juegan fútbol**. Cada ícono cuenta una parte de la historia: la academia, la tecnología, la seguridad, los datos y el deporte, unidos alrededor de un balón dentro de un chip, coronados por una estrella de excelencia.
+
+
+
+El logo siempre aparece acompañado del nombre de la marca en tipografía **Inter ExtraBold**, en color **verde principal `#16A34A`** sobre fondos claros.
+
+### Variantes de uso
+
+| Variante | Uso recomendado | Fondo |
+|---|---|---|
+| Logo completo (ícono + texto) | Header principal, pantalla de inicio de sesión | Blanco o transparente |
+| Solo ícono | Sidebar colapsado, favicon, notificaciones | Verde oscuro `#09431E` |
+| Solo texto | Títulos secundarios, navegación lateral | Verde claro o blanco |
+
+### Tamaños mínimos
+
+| Contexto | Tamaño mínimo |
+|---|---|
+| Web desktop | 120px de ancho |
+| Web móvil | 80px de ancho |
+| Favicon | 32x32px |
+
+### Espaciado
+
+El logo debe tener siempre un margen de protección equivalente a la altura de la letra "T" del nombre alrededor de todos sus bordes. No se debe colocar ningún elemento dentro de esa zona de exclusión.
 
 ---
 
-### Armonía
+## 5. Paleta de colores
 
-Los **cuatro colores institucionales** se integran sobre un fondo oscuro para mantener coherencia visual.
+La paleta de TechCupFútbol está inspirada en los colores institucionales de la Escuela Colombiana de Ingeniería y en la estética visual de los campos de fútbol. Se compone de **5 colores principales** y **2 colores de estado**.
 
-Todos los colores tienen variantes con **22% de opacidad** que permiten crear:
+### Colores principales
 
-- fondos de badges
-- tarjetas
-- indicadores visuales
+| Rol | Nombre | Hex | RGB | Uso |
+|---|---|---|---|---|
+| 🟢 Primario | Verde principal | `#16A34A` | `22, 163, 74` | Botones primarios, nav activo, acentos |
+| 🟩 Primario oscuro | Verde oscuro | `#09431E` | `9, 67, 30` | Ítem seleccionado en navegación, hover |
+| 🟡  Énfasis  | Verde lima | `#C8F135` | `200, 241, 53` | Botón "Invitar", badges "Disponible" |
+| 🟨 Destacado | Amarillo dorado | `#FACC15` | `250, 204, 21` | Posición 1 en tabla, destacados, trofeos |
+| ⬛ Texto oscuro | Negro verdoso | `#1A2E1F` | `26, 46, 31` | Texto sobre fondos claros, labels |
 
-El **verde actúa como hilo conductor de la experiencia visual**.
+### Colores de estado
+
+| Estado | Nombre | Hex | Uso |
+|---|---|---|---|
+| 🔴 Error | Rojo error | `#FF0000` | Mensajes de error, campos obligatorios no llenados, validaciones fallidas |
+| ⬜ Neutro | Blanco | `#FFFFFF` | Fondos de formularios, texto sobre verde oscuro |
+
+
+
+## 6. Tipografía
+
+TechCupFútbol usa un sistema tipográfico de **dos familias**: **Inter** para contenido general y navegación, y **DM Sans** para etiquetas, errores y elementos de interfaz de menor jerarquía.
+
+### Familia principal: Inter
+
+Inter es una tipografía de código abierto diseñada específicamente para pantallas digitales. Su alta legibilidad en tamaños pequeños y su carácter neutro pero moderno la hacen ideal para interfaces de datos y formularios extensos.
+
+| Uso | Peso | Tamaño | Ejemplo |
+|---|---|---|---|
+| Título de página (`Registro Estudiante`) | ExtraBold | 64px | `Inter ExtraBold 64` |
+| Subtítulo / descripción | Medium | 14px | `Inter Medium 14` |
+| Navegación lateral (ítems) | Bold | 24px | `Inter Bold 24` |
+| Texto de tabla | Bold | 14-16px | `Inter Bold 14` |
+| Labels de formulario | Medium | 14px | `Inter Medium 14` |
+
+### Familia secundaria: DM Sans
+
+DM Sans es una tipografía geométrica de bajo contraste, diseñada para interfaces digitales modernas. Se usa en TechCupFútbol para elementos de menor jerarquía visual pero que requieren claridad y distinción del texto principal.
+
+| Uso | Peso | Tamaño | Ejemplo |
+|---|---|---|---|
+| Labels de campos de formulario | SemiBold | 13px | `DM Sans SemiBold 13` |
+| Mensajes de error (`*Campo Obligatorio*`) | SemiBold | 13px | `DM Sans SemiBold 13` |
+| Badges de estado (`Disponible`, `En equipo`) | Bold | 11-13px | `DM Sans Bold 13` |
+| Texto en botón "Invitar" | Bold | 13px | `DM Sans Bold 13` |
+
+### Jerarquía tipográfica visual
+
+```
+H1 — Inter ExtraBold 64px      → Títulos principales de pantalla
+H2 — Inter Bold 24px           → Títulos de sección o módulo
+H3 — Inter Medium 16px         → Subtítulos y descripciones
+Body — Inter Medium 14px       → Texto general, labels de formulario
+Small — DM Sans SemiBold 13px  → Errores, badges, estados
+```
+
+### Reglas de uso tipográfico
+
+- **Nunca** mezclar más de dos familias tipográficas en una misma pantalla.
+- Los títulos de pantalla siempre van en **verde primario `#16A34A`** sobre fondo blanco.
+- Los mensajes de error siempre van en **rojo `#FF0000`** en **DM Sans SemiBold**.
+- No se permite el uso de cursivas en la interfaz excepto en el slogan de la marca.
 
 ---
 
-## 6. Componentes
+## 7. Imágenes de fondo y estilo visual
 
+### Estilo general
 
-| Recurso | Link |
-|------|------|
-| Mockups Figma | https://www.figma.com/design/jhj4eMbBLkSZvuz9xRVqxw |
-| DM Sans | https://fonts.google.com/specimen/DM+Sans |
-| DM Mono | https://fonts.google.com/specimen/DM+Mono |
-| Repositorio Frontend | techcupfrontend |
-| Repositorio Backend | techcup-backend |
+TechCupFútbol usa un estilo visual inspirado en el **anime deportivo japonés**, particularmente en franquicias como *Captain Tsubasa*. Este estilo fue elegido deliberadamente para:
+
+1. **Conectar con el público joven** (18–28 años) que es el usuario principal de la plataforma.
+2. **Diferenciar visualmente** la plataforma de herramientas genéricas de gestión deportiva.
+3. **Crear identidad emocional** — los usuarios recuerdan y se identifican con el estilo visual.
+4. **Evocar el espíritu competitivo** del fútbol universitario de una forma dinámica y enérgica.
+
+### Origen de las ilustraciones
+
+Todas las ilustraciones de personajes y fondos fueron generadas con inteligencia artificial usando **ChatGPT (DALL-E)**, con prompts específicos que describen:
+- Escenarios de campo de fútbol con estética anime
+- Personajes con uniformes blancos con rayas rojas (inspirados en los colores de la ECI)
+- Fondos con cielos azules, árboles y tribunas que evocan los campos deportivos de la Escuela
+
+Las imágenes son originales generadas para este proyecto y no están sujetas a derechos de terceros.
+
+### Características del estilo visual
+
+| Elemento | Descripción |
+|---|---|
+| **Estilo artístico** | Anime deportivo — líneas limpias, colores vibrantes, expresiones dinámicas |
+| **Paleta de fondo** | Verdes naturales, cielos azules claros, blancos luminosos |
+| **Personajes** | Estudiantes jugadores en uniforme blanco con detalles rojos (ECI) |
+| **Perspectiva** | Encuadres de campo desde ángulos dinámicos, abiertos y luminosos |
+| **Mood** | Energético, optimista, competitivo, universitario |
+
+### Uso de imágenes por pantalla
+
+| Pantalla | Tipo de fondo | Descripción |
+|---|---|---|
+| Inicio de sesión | Campo de fútbol con personajes a los lados | Dos personajes flanquean el formulario de login |
+| Selección de tipo de usuario | Campo abierto con cielo | Fondo limpio que no compite con las opciones de registro |
+| Registro (formularios) | Campo con árboles y cielo | Fondo difuminado detrás de los formularios |
+| Dashboard jugador | Campo con personaje de pie | Personaje jugador de pie con balón a la derecha del dashboard |
+| Dashboard organizador | Campo con vista aérea | Vista más amplia del campo para el perfil de gestión |
+
+### Reglas de uso de imágenes
+
+- Las imágenes de fondo **nunca** deben competir visualmente con el contenido de formularios.
+- Los formularios y paneles siempre van sobre **fondos blancos semitransparentes** para garantizar legibilidad.
+- Los personajes deben ubicarse en zonas que **no interfieran con los elementos interactivos**.
+- No usar imágenes de fondo en pantallas de error o modales de confirmación — usar fondo blanco limpio.
+
+---
+
+## 8. Componentes UI
 
 ### Botones
 
-<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+#### Botón primario (Continuar, Ingresar, Finalizar)
 
-<span style="background:#BED600;color:#0A0F0D;padding:8px 16px;border-radius:6px;font-weight:600;font-family:DM Sans;">Primario (CTA)</span>
+```
+Fondo:      #16A34A (Verde primario)
+Texto:      #FFFFFF (Blanco) — Inter Medium 14px
+Border:     Sin borde
+Radius:     8px
+Padding:    12px 24px
+Hover:      #09431E (Verde oscuro)
+```
 
-<span style="border:2px solid #BED600;color:#BED600;padding:6px 16px;border-radius:6px;font-weight:600;font-family:DM Sans;">Secundario</span>
+#### Botón deshabilitado (con errores activos)
 
-<span style="color:#E8F5EE;padding:8px 16px;border-radius:6px;border:1px solid #1E3024;font-family:DM Sans;">Ghost</span>
+```
+Fondo:      #9CA3AF (Gris)
+Texto:      #FFFFFF (Blanco) — Inter Medium 14px
+Border:     Sin borde
+Radius:     8px
+Padding:    12px 24px
+Cursor:     not-allowed
+Opacidad:   0.7
+```
 
-<span style="background:#8B1E1E;color:white;padding:8px 16px;border-radius:6px;font-family:DM Sans;">Peligro</span>
+**Uso:** Cuando el formulario tiene campos vacíos o con errores de validación, el botón "Continuar" cambia a gris para indicar visualmente que **no es posible avanzar**. Esto evita que el usuario intente enviar datos incompletos y evita peticiones innecesarias al servidor.
 
-<span style="background:#00D900;color:#0A0F0D;padding:8px 16px;border-radius:6px;font-family:DM Sans;">Éxito</span>
+El botón vuelve al verde primario `#16A34A` automáticamente cuando todos los campos del paso están correctamente llenados.
 
-<span style="background:#6459C4;color:white;padding:8px 16px;border-radius:6px;font-family:DM Sans;">Acento</span>
+```
+Estado con errores:   Fondo #9CA3AF → no se puede continuar
+Estado sin errores:   Fondo #16A34A → listo para continuar
+```
 
-<span style="background:#1E3024;color:#7f8f88;padding:8px 16px;border-radius:6px;font-family:DM Sans;">Deshabilitado</span>
+![Error con botón gris](images/error.png)
 
-</div>
+#### Botón de acción destacada (Invitar)
 
+```
+Fondo:      #C8F135 (Verde lima)
+Texto:      #1A2E1F (Negro verdoso) — DM Sans Bold 13px
+Border:     Sin borde
+Radius:     8px
+Padding:    8px 16px
+```
 
----
+**Uso:** Acciones que requieren atención inmediata como invitar jugadores o confirmar disponibilidad.
 
-### Estados / Badges
+#### Botón secundario (Ver perfil, Ver →)
 
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+```
+Fondo:      Transparente
+Texto:      #16A34A (Verde primario) — Inter Medium 14px
+Border:     1px solid #16A34A
+Radius:     8px
+```
 
-<span style="background:rgba(0,217,0,0.2);color:#00D900;padding:6px 12px;border-radius:20px;font-size:12px;font-family:DM Sans;">APROBADO</span>
-
-<span style="background:rgba(255,200,0,0.2);color:#FFC800;padding:6px 12px;border-radius:20px;font-size:12px;font-family:DM Sans;">PENDIENTE</span>
-
-<span style="background:rgba(100,89,196,0.2);color:#6459C4;padding:6px 12px;border-radius:20px;font-size:12px;font-family:DM Sans;">EN REVISIÓN</span>
-
-<span style="background:rgba(255,60,60,0.2);color:#FF3C3C;padding:6px 12px;border-radius:20px;font-size:12px;font-family:DM Sans;">RECHAZADO</span>
-
-<span style="background:rgba(0,133,66,0.2);color:#008542;padding:6px 12px;border-radius:20px;font-size:12px;font-family:DM Sans;">ACTIVO</span>
-
-<span style="background:rgba(120,120,120,0.2);color:#8c9b94;padding:6px 12px;border-radius:20px;font-size:12px;font-family:DM Sans;">INACTIVO</span>
-
-</div>
-
----
-
-### Alertas
-
-<div style="margin-top:20px;display:flex;flex-direction:column;gap:12px">
-
-<div style="background:rgba(0,217,0,0.15);border:1px solid #00D900;padding:12px 16px;border-radius:8px;font-family:DM Sans;">
-<strong style="color:#00D900;">✔ ÉXITO</strong><br>
-Operación completada correctamente.
-</div>
-
-<div style="background:rgba(255,60,60,0.15);border:1px solid #FF3C3C;padding:12px 16px;border-radius:8px;font-family:DM Sans;">
-<strong style="color:#FF3C3C;">✖ ERROR</strong><br>
-No se pudo completar la operación.
-</div>
-
-<div style="background:rgba(255,200,0,0.15);border:1px solid #FFC800;padding:12px 16px;border-radius:8px;font-family:DM Sans;">
-<strong style="color:#FFC800;">⚠ ADVERTENCIA</strong><br>
-Acción con consecuencias importantes.
-</div>
-
-<div style="background:rgba(100,89,196,0.15);border:1px solid #6459C4;padding:12px 16px;border-radius:8px;font-family:DM Sans;">
-<strong style="color:#6459C4;">ℹ INFORMACIÓN</strong><br>
-Dato relevante para el usuario.
-</div>
-
-</div>
----
-
-## 7. Concepto Creativo
-
-### “Estadio Nocturno de Alta Tecnología”
-
-El concepto visual de TechCup se inspira en la atmósfera de **un estadio de fútbol durante la noche**, donde el fondo oscuro representa el entorno del estadio y los colores brillantes evocan **pantallas LED y marcadores electrónicos**.
-
-### Pilares del concepto
-
-**Fútbol + Tecnología**  
-El deporte y el software se integran como un mismo lenguaje visual.
-
-**Inclusivo**  
-La plataforma está pensada para toda la comunidad de la Escuela Colombiana de Ingeniería.
-
-**Profesional**  
-La experiencia visual transmite un nivel competitivo y tecnológico acorde a un torneo universitario moderno.
+**Uso:** Acciones secundarias o de navegación que no son el paso principal del flujo.
 
 ---
 
-## 8. Elementos Visuales de Diseño
+### Campos de formulario
 
-![alt text](image.png)
+#### Estado normal
+
+```
+Fondo:       #F3F4F6 (Gris muy claro)
+Borde:       1px solid #D1D5DB (Gris)
+Placeholder: #9CA3AF — Inter Medium 14px
+Texto:       #1A2E1F — Inter Medium 14px
+Radius:      6px
+Padding:     10px 14px
+```
+
+#### Estado de error
+
+```
+Borde:       1px solid #FF0000
+Fondo:       #FFF (sin cambio)
+Mensaje:     "*Campo Obligatorio*" — DM Sans SemiBold 13px — #FF0000
+```
+
+![Estado de error en formulario](images/error.png)
+
+#### Estado completado / activo
+
+```
+Borde:       1px solid #16A34A
+Fondo:       #F0FDF4 (Verde muy claro)
+```
+
 ---
 
-## 9. Imágenes Utilizadas
-![alt text](images/{08B90B68-33C4-4404-939C-E096BF0FF7FB}.png)
-![alt text](images/{44C4501B-6D4F-4062-A7E8-50EA1109D8EE}.png)
-![alt text](images/{976359FC-1AC2-4174-881E-3CAF85657F08}.png)
-![alt text](images/{D888311F-AE18-4BFD-913C-98A9896E489F}.png)
-![alt text](images/{EF5B9E96-DB47-45CD-92A2-BC58CB37ECB7}.png)
+### Navegación lateral (Sidebar)
+
+```
+Fondo sidebar:        #FFFFFF
+Ícono + texto logo:   #16A34A — Inter ExtraBold
+Ítem normal:          Fondo #16A34A, Texto #FFFFFF — Inter Bold 14px, Radius 8px
+Ítem activo:          Fondo #09431E, Texto #FFFFFF — Inter Bold 14px, Radius 8px
+Separación entre ítems: 8px
+```
+
+---
+
+
+
+### Stepper de registro (Pasos 1 → 2 → 3)
+
+```
+Paso completado:   Círculo verde #16A34A con check ✓
+Paso actual:       Círculo con borde verde #16A34A, número en negro
+Paso pendiente:    Círculo gris #9CA3AF, número gris
+Línea conectora:   Gris #D1D5DB entre pasos, Verde #16A34A en pasos completados
+```
+
+---
+
+### Tabla de posiciones
+
+```
+Encabezado:         Fondo #16A34A, Texto #FFFFFF — Inter Bold
+Posición 1:         Fondo #FACC15 (Amarillo dorado)
+Posiciones 2-4:     Fondo #D1FAE5 (Verde muy claro)
+Resto de filas:     Fondo #FFFFFF alternado con #F9FAFB
+Borde entre filas:  1px solid #E5E7EB
+```
+
+![Tabla de posiciones](images/Tablaposiciones.png)
+
+---
+
+## 9. Usos incorrectos
+
+Los siguientes usos están **prohibidos** para mantener la coherencia de la identidad:
+
+### Del logo
+
+- Cambiar los colores del logo a colores fuera de la paleta oficial.
+- Deformar o escalar el logo de forma no proporcional.
+- Usar el logo sobre fondos que no contrasten suficientemente.
+- Agregar sombras, contornos o efectos al logo.
+- Separar el ícono del texto en contextos donde cabe el logo completo.
+
+![Logo TechCupFútbol](images/logoo.png)
+
+&nbsp;
+
+---
+
+### De los colores
+
+- Usar el rojo `#FF0000` fuera de contextos de error o alerta.
+- Usar el amarillo dorado `#FACC15` como color principal de botones.
+- Usar el verde lima `#C8F135` en textos largos o párrafos.
+- Combinar verde lima con verde primario en el mismo componente.
+
+&nbsp;
+
+---
+
+### De la tipografía
+
+- Usar fuentes distintas a Inter y DM Sans en la interfaz.
+- Usar cursivas en botones, labels o navegación.
+- Usar pesos menores a Medium (400) para texto de interfaz.
+- Usar tamaños menores a 11px en cualquier texto visible.
+
+&nbsp;
+
+---
+
+### De las imágenes
+
+- Usar imágenes de fondo sin el panel blanco semitransparente sobre formularios.
+- Colocar texto directamente sobre las ilustraciones de fondo sin contraste.
+- Usar imágenes de personas reales mezcladas con las ilustraciones anime.
+- Comprimir imágenes de fondo a calidades menores al 80%.
+
+&nbsp;
+
+---
+
+## Galería de pantallas
+
+### Pantalla de inicio de sesión
+
+![Inicio de sesión](images/iniciodesesion.png)
+
+&nbsp;
+
+---
+
+### Selección de tipo de usuario
+
+![Selección tipo de usuario](images/tipoUsuario.png)
+
+&nbsp;
+
+---
+
+### Registro — Paso 1 (Datos personales)
+
+![Registro paso 1](images/Datospersonales1.png)
+
+&nbsp;
+
+---
+
+### Registro — Paso 2 (Datos institucionales)
+
+![Registro paso 2](images/Datospersonales2.png)
+
+&nbsp;
+
+---
+
+### Registro — Paso 3 (Perfil deportivo)
+
+![Registro paso 3](images/Datospersonales3.png)
+
+&nbsp;
+
+---
+
+### Dashboard jugador
+
+![Dashboard jugador](images/Dashboardjugador.png)
+
+&nbsp;
+
+---
+
+### Tabla de posiciones
+
+![Tabla de posiciones](images/Tablaposiciones.png)
+
+&nbsp;
+
+---
+
+### Estados de error en formularios  
+
+Los errores en TechCupFútbol se manejan directamente en el frontend, **antes de enviar la petición al backend**, con el objetivo de reducir llamadas innecesarias al servidor y mejorar la experiencia del usuario.
+
+![Estados de error](images/error.png)
+
+### Especificación visual del error
+```
+Color texto:   #FF0000 (Rojo)
+Tipografía:    DM Sans SemiBold 13px
+Posición:      Debajo del campo afectado
+Prefijo:       *Campo Obligatorio* o mensaje específico entre asteriscos
+Borde campo:   1px solid #FF0000
+```
+
+&nbsp;
+
+---
+
+*Manual de Identidad Visual — TechCupFútbol v1.0*  
+*Elaborado por el equipo Los cuervos de Odin — Escuela Colombiana de Ingeniería Julio Garavito*  
+*DOSW — Sprint 3 — 2026*
