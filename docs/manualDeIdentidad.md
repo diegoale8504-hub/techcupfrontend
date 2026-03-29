@@ -16,6 +16,7 @@
 7. [Imágenes de fondo y estilo visual](#7-imágenes-de-fondo-y-estilo-visual)
 8. [Componentes UI](#8-componentes-ui)
 9. [Usos incorrectos](#9-usos-incorrectos)
+10. [Galería de pantallas](#10-galería-de-pantallas)
 
 ---
 
@@ -103,8 +104,6 @@ El logo de TechCupFútbol fue diseñado con inteligencia artificial (ChatGPT / D
 
 El logo de TechCupFútbol no es solo un trofeo — es un manifiesto visual de lo que somos: **ingenieros que juegan fútbol**. Cada ícono cuenta una parte de la historia: la academia, la tecnología, la seguridad, los datos y el deporte, unidos alrededor de un balón dentro de un chip, coronados por una estrella de excelencia.
 
-
-
 El logo siempre aparece acompañado del nombre de la marca en tipografía **Inter ExtraBold**, en color **verde principal `#16A34A`** sobre fondos claros.
 
 ### Variantes de uso
@@ -147,10 +146,10 @@ La paleta de TechCupFútbol está inspirada en los colores institucionales de la
 
 | Estado | Nombre | Hex | Uso |
 |---|---|---|---|
-| 🔴 Error | Rojo error | `#FF0000` | Mensajes de error, campos obligatorios no llenados, validaciones fallidas |
+| 🔴 Error | Rojo error | `#FF0000` | Mensajes de error, validaciones fallidas, estado Rechazado |
 | ⬜ Neutro | Blanco | `#FFFFFF` | Fondos de formularios, texto sobre verde oscuro |
 
-
+---
 
 ## 6. Tipografía
 
@@ -179,15 +178,7 @@ DM Sans es una tipografía geométrica de bajo contraste, diseñada para interfa
 | Badges de estado (`Disponible`, `En equipo`) | Bold | 11-13px | `DM Sans Bold 13` |
 | Texto en botón "Invitar" | Bold | 13px | `DM Sans Bold 13` |
 
-### Jerarquía tipográfica visual
 
-```
-H1 — Inter ExtraBold 64px      → Títulos principales de pantalla
-H2 — Inter Bold 24px           → Títulos de sección o módulo
-H3 — Inter Medium 16px         → Subtítulos y descripciones
-Body — Inter Medium 14px       → Texto general, labels de formulario
-Small — DM Sans SemiBold 13px  → Errores, badges, estados
-```
 
 ### Reglas de uso tipográfico
 
@@ -237,6 +228,7 @@ Las imágenes son originales generadas para este proyecto y no están sujetas a 
 | Registro (formularios) | Campo con árboles y cielo | Fondo difuminado detrás de los formularios |
 | Dashboard jugador | Campo con personaje de pie | Personaje jugador de pie con balón a la derecha del dashboard |
 | Dashboard organizador | Campo con vista aérea | Vista más amplia del campo para el perfil de gestión |
+| Pago capitán | Campo con personaje decorativo | Personaje en pose de celebración, enfoque en panel de carga |
 
 ### Reglas de uso de imágenes
 
@@ -283,8 +275,6 @@ Estado con errores:   Fondo #9CA3AF → no se puede continuar
 Estado sin errores:   Fondo #16A34A → listo para continuar
 ```
 
-![Error con botón gris](images/error.png)
-
 #### Botón de acción destacada (Invitar)
 
 ```
@@ -293,20 +283,30 @@ Texto:      #1A2E1F (Negro verdoso) — DM Sans Bold 13px
 Border:     Sin borde
 Radius:     8px
 Padding:    8px 16px
+Hover:      #B8E126 (Verde lima oscuro)
 ```
 
 **Uso:** Acciones que requieren atención inmediata como invitar jugadores o confirmar disponibilidad.
 
-#### Botón secundario (Ver perfil, Ver →)
+#### Botón secundario (Ver perfil, Ver )
 
 ```
 Fondo:      Transparente
 Texto:      #16A34A (Verde primario) — Inter Medium 14px
 Border:     1px solid #16A34A
 Radius:     8px
+Hover:      Fondo #F0FDF4 (Verde muy claro)
 ```
 
 **Uso:** Acciones secundarias o de navegación que no son el paso principal del flujo.
+
+#### Botón de navegación (← Anterior, Siguiente →)
+
+```
+Estado deshabilitado:   Fondo #9CA3AF, Cursor not-allowed
+Estado activo:          Fondo #16A34A, Texto #FFFFFF
+Estado hover:           Fondo #09431E
+```
 
 ---
 
@@ -326,12 +326,10 @@ Padding:     10px 14px
 #### Estado de error
 
 ```
-Borde:       1px solid #FF0000
+Borde:       2px solid #FF0000
 Fondo:       #FFF (sin cambio)
 Mensaje:     "*Campo Obligatorio*" — DM Sans SemiBold 13px — #FF0000
 ```
-
-![Estado de error en formulario](images/error.png)
 
 #### Estado completado / activo
 
@@ -340,21 +338,10 @@ Borde:       1px solid #16A34A
 Fondo:       #F0FDF4 (Verde muy claro)
 ```
 
----
 
-### Navegación lateral (Sidebar)
 
-```
-Fondo sidebar:        #FFFFFF
-Ícono + texto logo:   #16A34A — Inter ExtraBold
-Ítem normal:          Fondo #16A34A, Texto #FFFFFF — Inter Bold 14px, Radius 8px
-Ítem activo:          Fondo #09431E, Texto #FFFFFF — Inter Bold 14px, Radius 8px
-Separación entre ítems: 8px
-```
 
 ---
-
-
 
 ### Stepper de registro (Pasos 1 → 2 → 3)
 
@@ -377,7 +364,65 @@ Resto de filas:     Fondo #FFFFFF alternado con #F9FAFB
 Borde entre filas:  1px solid #E5E7EB
 ```
 
-![Tabla de posiciones](images/Tablaposiciones.png)
+---
+
+### Badges de estado
+
+Los badges indican el estado actual de un jugador, equipo o comprobante en el sistema.
+
+#### Tipos de badge
+
+| Badge | Color fondo | Color texto | Uso |
+|---|---|---|---|
+| **Aprobado** | `#16A34A` | `#FFFFFF` | Comprobante validado, perfil verificado |
+| **Rechazado** | `#FF0000` | `#FFFFFF` | Comprobante no cumple, validación fallida |
+| **En espera** | `#9CA3AF` | `#FFFFFF` | Pendiente de revisión u validación |
+| **Disponible** | `#C8F135` | `#1A2E1F` | Jugador sin equipo, listo para invitar |
+| **En equipo** | `#9CA3AF` | `#FFFFFF` | Jugador ya asignado a un equipo |
+
+#### Especificación visual
+
+```
+Tipografía:     DM Sans Bold 13px
+Border:         Sin borde
+Radius:         20px (píldora)
+Padding:        6px 12px
+Alineación:     Centro
+```
+
+**Ejemplo de uso en tabla:**
+
+```
+Nombre        | Posición | Equipo        | Estado        | Acción
+Carlos M.     | Del.     | Ratoneros FC  | En equipo     | Ver perfil
+Laura J.      | Port.    | Sin equipo    | Disponible    | Invitar
+Juan P.       | Def.     | Los cuervos   | En equipo     | Ver perfil
+```
+
+---
+
+### Panel de carga de archivos
+
+Se usa en pantallas donde el usuario debe subir un comprobante (pago, documento, foto).
+
+```
+Borde:      2px dashed #16A34A
+Fondo:      #F0FDF4 (Verde muy claro)
+Icono:      Cámara o documento — #16A34A
+Texto:      "Subir foto del comprobante" — Inter Medium 14px — #1A2E1F
+Radius:     12px
+Padding:    20px
+Hover:      Fondo #E0FDF0 (Verde más oscuro)
+```
+
+**Reglas:**
+- Mostrar estado de carga si es necesario
+- Cambiar icono a check verde cuando se sube correctamente
+- Mostrar badge de estado debajo del panel (Aprobado / Rechazado / En espera)
+
+---
+
+
 
 ---
 
@@ -393,20 +438,15 @@ Los siguientes usos están **prohibidos** para mantener la coherencia de la iden
 - Agregar sombras, contornos o efectos al logo.
 - Separar el ícono del texto en contextos donde cabe el logo completo.
 
-![Logo TechCupFútbol](images/logoo.png)
-
-&nbsp;
-
 ---
 
 ### De los colores
 
-- Usar el rojo `#FF0000` fuera de contextos de error o alerta.
+- Usar el rojo `#FF0000` fuera de contextos de error o estado rechazado.
 - Usar el amarillo dorado `#FACC15` como color principal de botones.
 - Usar el verde lima `#C8F135` en textos largos o párrafos.
-- Combinar verde lima con verde primario en el mismo componente.
-
-&nbsp;
+- Combinar verde lima con verde primario en el mismo componente sin propósito claro.
+- Usar más de 3 colores en un mismo componente.
 
 ---
 
@@ -416,8 +456,7 @@ Los siguientes usos están **prohibidos** para mantener la coherencia de la iden
 - Usar cursivas en botones, labels o navegación.
 - Usar pesos menores a Medium (400) para texto de interfaz.
 - Usar tamaños menores a 11px en cualquier texto visible.
-
-&nbsp;
+- Mezclar más de dos familias tipográficas en la misma pantalla.
 
 ---
 
@@ -427,18 +466,17 @@ Los siguientes usos están **prohibidos** para mantener la coherencia de la iden
 - Colocar texto directamente sobre las ilustraciones de fondo sin contraste.
 - Usar imágenes de personas reales mezcladas con las ilustraciones anime.
 - Comprimir imágenes de fondo a calidades menores al 80%.
-
-&nbsp;
+- Escalar personajes desproporcionadamente.
 
 ---
 
-## Galería de pantallas
+## 10. Galería de pantallas
 
 ### Pantalla de inicio de sesión
 
 ![Inicio de sesión](images/iniciodesesion.png)
 
-&nbsp;
+Pantalla principal de acceso a la plataforma. Muestra el logo, formulario de ingreso y personajes decorativos del lado izquierdo.
 
 ---
 
@@ -446,7 +484,7 @@ Los siguientes usos están **prohibidos** para mantener la coherencia de la iden
 
 ![Selección tipo de usuario](images/tipoUsuario.png)
 
-&nbsp;
+Permite al usuario elegir qué tipo de perfil desea crear (Estudiante, Graduado, Profesor, etc.). Fondo de campo limpio sin competencia visual.
 
 ---
 
@@ -454,7 +492,7 @@ Los siguientes usos están **prohibidos** para mantener la coherencia de la iden
 
 ![Registro paso 1](images/Datospersonales1.png)
 
-&nbsp;
+Primer paso del flujo de registro multi-paso. Recopila nombre, email y datos básicos. Stepper visible en la parte superior.
 
 ---
 
@@ -462,7 +500,7 @@ Los siguientes usos están **prohibidos** para mantener la coherencia de la iden
 
 ![Registro paso 2](images/Datospersonales2.png)
 
-&nbsp;
+Segundo paso que valida datos institucionales, programa y semestre. Muestra validación de email institucional requerida.
 
 ---
 
@@ -470,7 +508,7 @@ Los siguientes usos están **prohibidos** para mantener la coherencia de la iden
 
 ![Registro paso 3](images/Datospersonales3.png)
 
-&nbsp;
+Tercer paso donde el usuario completa su perfil deportivo: posición, nivel de juego y disponibilidad para equipos.
 
 ---
 
@@ -478,7 +516,7 @@ Los siguientes usos están **prohibidos** para mantener la coherencia de la iden
 
 ![Dashboard jugador](images/Dashboardjugador.png)
 
-&nbsp;
+Panel principal del jugador. Muestra navegación lateral con opciones de Inicio, Torneo, Pagos, Calendario, Tabla, Equipo y Mi perfil. Personaje decorativo en la izquierda.
 
 ---
 
@@ -486,26 +524,111 @@ Los siguientes usos están **prohibidos** para mantener la coherencia de la iden
 
 ![Tabla de posiciones](images/Tablaposiciones.png)
 
-&nbsp;
+Tabla ranking general del torneo. Posición 1 destacada con fondo amarillo dorado. Filas alternadas. Permite ordenar por diferentes criterios.
 
 ---
 
-### Estados de error en formularios  
+### Pago Capitán
+![Pago Capitán](images/pagocapitan.png)
+![Pago Aprovado](images/pagoap.png)
+![Pago Aprovado](images/pagorc.png)
+
+Panel específico para que el capitán del equipo suba el comprobante de pago de inscripción. Incluye:
+- Nombre del capitán con avatar
+- Panel de carga con borde dashed
+- Icono de cámara y texto "Subir foto del comprobante"
+- Badge de estado (En espera, Rechazado, Aprobado)
+
+**Estados del comprobante:**
+- **En espera** (`#9CA3AF`) — Ícono de reloj — El organizador aún no lo revisa
+- **Rechazado** (`#FF0000`) — Ícono X rojo — No cumple requisitos, subir uno nuevo
+- **Aprobado** (`#16A34A`) — Ícono check — Validado, inscripción completada
+
+---
+
+### Búsqueda de Jugadores — Capitán
+
+![Buscar Jugadores Capitán](images/buscajugadorescapitan.png)
+
+Pantalla que permite al capitán buscar e invitar jugadores disponibles.
+
+**Componentes principales:**
+
+1. **Barra de navegación interna:**
+   - Tres fichas blancas: "Buscar Jugadores" (activa), "Crear equipo", "Plantel"
+   - Colores: #FFFFFF fondo, #1A2E1F texto
+
+2. **Tarjetas de resumen (Cards):**
+   - **68 Total** — Jugadores registrados en el sistema
+   - **11 Disponibles** — Jugadores sin equipo
+   - **57 En equipo** — Jugadores ya asignados
+
+3. **Búsqueda y filtros:**
+   - Campo de búsqueda: "Buscar por nombre o correo..."
+   - Botones de filtro: "Todas las posiciones •", "Disponibles", "Todos los equipos •"
+
+4. **Tabla de jugadores:**
+   - Columnas: Nombre, Posición, Equipo actual, Estado, Acción
+   - Encabezado: Fondo `#16A34A`, texto blanco
+   - Filas: Alternadas #FFFFFF y #F9FAFB
+   - Badge Estado: Verde lima para "Disponible", gris para "En equipo"
+   - Botón de acción: "Invitar" para disponibles, "Ver perfil" para en equipo
+
+5. **Paginación (Pie de tabla):**
+   - "Mostrando 7 de 68 jugadores"
+   - Botones: ← Anterior | 1 (activo en verde) | 2 | 3 | Siguiente →
+
+6. **Personaje decorativo:**
+   - Jugador en pose ofensiva en la izquierda
+   - Uniforme blanco con rayas rojas
+
+---
+
+### Estados de comprobante
+
+
+Muestra los tres posibles estados del comprobante de pago:
+
+| Estado | Apariencia | Significado |
+|---|---|---|
+| **En espera** | Badge gris `#9CA3AF` con ícono de reloj | Pendiente de revisión |
+| **Rechazado** | Badge rojo `#FF0000` con X | No válido, resubir |
+| **Aprobado** | Badge verde `#16A34A` con check ✓ | Aceptado |
+
+Estos badges también aparecen en:
+- Panel de perfil del jugador
+- Tabla de búsqueda de jugadores
+- Dashboard del organizador
+- Historial de inscripciones
+
+---
+
+### Estados de error en formularios
 
 Los errores en TechCupFútbol se manejan directamente en el frontend, **antes de enviar la petición al backend**, con el objetivo de reducir llamadas innecesarias al servidor y mejorar la experiencia del usuario.
 
 ![Estados de error](images/error.png)
 
 ### Especificación visual del error
+
 ```
-Color texto:   #FF0000 (Rojo)
-Tipografía:    DM Sans SemiBold 13px
-Posición:      Debajo del campo afectado
-Prefijo:       *Campo Obligatorio* o mensaje específico entre asteriscos
-Borde campo:   1px solid #FF0000
+Color borde:    #FF0000 (Rojo)
+Color fondo:    #FFFFFF (sin cambio)
+Color mensaje:  #FF0000
+Tipografía:     DM Sans SemiBold 13px
+Posición:       Debajo del campo afectado
+Prefijo:        *Campo Obligatorio* o mensaje específico
+Ícono:          Opcional, en la izquierda del mensaje
 ```
 
-&nbsp;
+**Ejemplos de mensajes:**
+- `*Campo Obligatorio*` — El campo está vacío
+- `*Formato de email inválido*` — El email no cumple el patrón
+- `*Las contraseñas no coinciden*` — Campos de contraseña no son iguales
+- `*Este email ya está registrado*` — Validación contra servidor
+
+---
+
 
 ---
 
