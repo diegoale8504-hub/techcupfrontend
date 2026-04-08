@@ -1,0 +1,169 @@
+.root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/images/bg-campo.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  padding: var(--space-lg);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+  padding: var(--space-xl);
+  width: 100%;
+  max-width: 420px;
+  backdrop-filter: blur(4px);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.logoImg {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  margin-bottom: var(--space-sm);
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+}
+
+.title {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--color-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--color-gray);
+}
+
+.successBanner {
+  background: var(--color-bg-valid);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+.tabs {
+  display: flex;
+  border: 1px solid var(--color-gray-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-lg);
+}
+
+.tab,
+.tabActive {
+  flex: 1;
+  padding: 10px;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tab {
+  background: transparent;
+  color: var(--color-gray);
+}
+
+.tabActive {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.apiError {
+  background: #fff0f0;
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-error);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.forgotLink {
+  display: block;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: var(--space-md);
+  text-align: center;
+  width: 100%;
+  padding: 0;
+}
+
+.forgotLink:hover {
+  text-decoration: underline;
+}
+
+.gmailSection {
+  text-align: center;
+}
+
+.gmailText {
+  color: var(--color-gray);
+  font-size: 14px;
+  margin-bottom: var(--space-lg);
+}
+
+.registerText {
+  text-align: center;
+  margin-top: var(--space-lg);
+  font-size: 14px;
+  color: var(--color-gray);
+}
+
+.registerLink {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.forgotTitle {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.forgotDesc {
+  font-size: 14px;
+  color: var(--color-gray);
+  margin-bottom: var(--space-lg);
+}
+
+.sentMsg {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  color: var(--color-text);
+  font-size: 15px;
+}

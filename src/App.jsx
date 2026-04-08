@@ -1,97 +1,56 @@
-import { useState } from "react";
-import "./App.css";
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import ProtectedRoute from './components/auth/ProtectedRoute'
+import RoleGuard from './components/auth/RoleGuard'
+import { RegistrationProvider } from './context/RegistrationContext'
 
-function App() {
+import LoginPage from './pages/Login/LoginPage'
+import OAuthCallbackPage from './pages/OAuthCallback/OAuthCallbackPage'
+import UserTypeSelectionPage from './pages/Registration/UserTypeSelection/UserTypeSelectionPage'
+import RegistrationStep1Page from './pages/Registration/Step1/RegistrationStep1Page'
+import RegistrationStep2Page from './pages/Registration/Step2/RegistrationStep2Page'
+import RegistrationStep3Page from './pages/Registration/Step3/RegistrationStep3Page'
+import DashboardPage from './pages/Dashboard/DashboardPage'
+import StandingsPage from './pages/Standings/StandingsPage'
+import PlayerSearchPage from './pages/PlayerSearch/PlayerSearchPage'
+import PaymentPage from './pages/Payment/PaymentPage'
+import ProfilePage from './pages/Profile/ProfilePage'
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("Estudiante");
-  const [type, setType] = useState("institucional");
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    console.log({ email, password, role, type });
-  };
-
+function RegistrationLayout() {
   return (
-    <>
-      <div className="container">
-
-        <div className="title">
-          <h1>TECHCUP</h1>
-          <h3>FÚTBOL</h3>
-          <p>ESCUELA COLOMBIANA DE INGENIERÍA</p>
-        </div>
-
-        <div className="card">
-
-          <div className="tabs">
-            <button
-              className={type === "institucional" ? "active" : ""}
-              onClick={() => setType("institucional")}
-            >
-              🏫 Institucional
-            </button>
-
-            <button
-              className={type === "gmail" ? "active" : ""}
-              onClick={() => setType("gmail")}
-            >
-              📧 Gmail (Familiar)
-            </button>
-          </div>
-
-          <form onSubmit={handleLogin}>
-
-            <label>Correo electrónico</label>
-            <input
-              type="email"
-              placeholder="usuario@mail.escuelaing.edu.co"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-
-            <label>Contraseña</label>
-            <input
-              type="password"
-              placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-
-           
-
-            <label>Demo: ingresar como</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option>Estudiante</option>
-              <option>Administrador</option>
-              <option>Organizador</option>
-            </select>
-
-            <button className="loginBtn">
-              Ingresar al sistema
-            </button>
-
-          </form>
-
-          <p className="register">
-            ¿No tienes cuenta? <span>Registrate aquí</span>
-          </p>
-
-          <a className="link" href="#">
-            Ver todas las excepciones de sesión →
-          </a>
-
-        </div>
-
-        <button className="navBtn">☰ Navegar</button>
-
-      </div>
-    </>
-  );
+    <RegistrationProvider>
+      <Outlet />
+    </RegistrationProvider>
+  )
 }
 
-export default App;
+export default function App() {
+  return (
+    <Routes>
+      {/* Rutas públicas */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/auth/callback" element={<OAuthCallbackPage />} />
+      <Route path="/register" element={<RegistrationLayout />}>
+        <Route index element={<UserTypeSelectionPage />} />
+        <Route path="step1" element={<RegistrationStep1Page />} />
+        <Route path="step2" element={<RegistrationStep2Page />} />
+        <Route path="step3" element={<RegistrationStep3Page />} />
+      </Route>
+
+      {/* Rutas protegidas */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/standings" element={<StandingsPage />} />
+        <Route path="/players" element={<PlayerSearchPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+
+        {/* Solo CAPTAIN */}
+        <Route element={<RoleGuard allowedRoles={['CAPTAIN']} />}>
+          <Route path="/payment" element={<PaymentPage />} />
+        </Route>
+      </Route>
+
+      {/* Catch-all */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  )
+}

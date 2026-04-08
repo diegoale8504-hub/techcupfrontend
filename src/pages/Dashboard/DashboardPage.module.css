@@ -1,0 +1,90 @@
+.welcome {
+  margin-bottom: var(--space-xl);
+}
+
+.heading {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 32px;
+  color: var(--color-white);
+  margin-bottom: var(--space-xs);
+}
+
+.sub {
+  color: rgba(255,255,255,0.7);
+  font-size: 15px;
+}
+
+.loading, .error {
+  color: var(--color-white);
+  font-size: 15px;
+}
+
+.error {
+  color: #ffaaaa;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-lg);
+}
+
+.cardBox {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.cardTitle {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-primary);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-gray-light);
+  font-size: 14px;
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoLabel {
+  color: var(--color-gray);
+  font-size: 13px;
+}
+
+.tournamentMsg {
+  font-size: 14px;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.quickLinks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.quickLink {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-gray-light);
+}
+
+.quickLink:last-child {
+  border-bottom: none;
+}

@@ -1,0 +1,73 @@
+.stepper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: var(--space-xl);
+}
+
+.stepWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.stepRow {
+  display: flex;
+  align-items: center;
+}
+
+.circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 14px;
+  border: 2px solid var(--color-gray-light);
+  color: var(--color-gray);
+  background: var(--color-white);
+  flex-shrink: 0;
+}
+
+.circle.active {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.circle.done {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.line {
+  width: 60px;
+  height: 2px;
+  background: var(--color-gray-light);
+}
+
+.line.lineDone {
+  background: var(--color-primary);
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--color-gray);
+  text-align: center;
+  max-width: 80px;
+}
+
+.label.labelActive {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.label.labelDone {
+  color: var(--color-primary);
+}

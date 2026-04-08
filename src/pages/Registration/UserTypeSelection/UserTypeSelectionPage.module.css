@@ -1,0 +1,123 @@
+.root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/images/bg-campo.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  padding: var(--space-lg);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+  padding: var(--space-xl);
+  width: 100%;
+  max-width: 700px;
+  backdrop-filter: blur(4px);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.logoImg {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  margin-bottom: var(--space-sm);
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+}
+
+.title {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 26px;
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.desc {
+  color: var(--color-gray);
+  font-size: 14px;
+}
+
+.error {
+  color: var(--color-error);
+  font-weight: 600;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: var(--space-md);
+  background: #fff0f0;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.typeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-md);
+  background: var(--color-white);
+  border: 2px solid var(--color-gray-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  text-align: center;
+}
+
+.typeCard:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-bg-valid);
+  transform: translateY(-2px);
+}
+
+.typeCard:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.icon {
+  font-size: 32px;
+}
+
+.typeLabel {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+.typeDesc {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--color-gray);
+}
+
+.footer {
+  text-align: center;
+}
+
+.backLink {
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+}

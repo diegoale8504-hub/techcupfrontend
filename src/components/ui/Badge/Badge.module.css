@@ -1,0 +1,36 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 12px;
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  white-space: nowrap;
+}
+
+.pending {
+  background: var(--color-gray);
+  color: var(--color-white);
+}
+
+.approved {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.rejected {
+  background: var(--color-error);
+  color: var(--color-white);
+}
+
+.available {
+  background: var(--color-accent);
+  color: var(--color-text);
+}
+
+.inTeam {
+  background: var(--color-gray-light);
+  color: var(--color-text);
+}

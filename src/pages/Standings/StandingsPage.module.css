@@ -1,0 +1,97 @@
+.header {
+  margin-bottom: var(--space-xl);
+}
+
+.heading {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 32px;
+  color: var(--color-white);
+  margin-bottom: var(--space-xs);
+}
+
+.sub {
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+}
+
+.tableWrapper {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tableHead th {
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-family: var(--font-title);
+  font-weight: 700;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.tableHead .teamCol {
+  text-align: left;
+  padding-left: var(--space-md);
+}
+
+.table td {
+  padding: 12px 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--color-gray-light);
+}
+
+.teamName {
+  text-align: left !important;
+  padding-left: var(--space-md) !important;
+  font-weight: 700;
+  font-family: var(--font-title);
+}
+
+.pos {
+  font-weight: 700;
+  font-family: var(--font-title);
+}
+
+.pts {
+  font-weight: 800 !important;
+  font-family: var(--font-title);
+  font-size: 15px !important;
+}
+
+.rowGold {
+  background: var(--color-gold);
+}
+
+.rowTop {
+  background: var(--color-standings-top2);
+}
+
+.rowNormal {
+  background: var(--color-white);
+}
+
+.rowAlt {
+  background: var(--color-row-alt);
+}
+
+.legend {
+  margin-top: var(--space-md);
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+}
+
+.legendGold {
+  color: var(--color-gold);
+}
+
+.legendTop {
+  color: #86efac;
+}
