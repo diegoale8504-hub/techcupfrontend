@@ -1,0 +1,85 @@
+.root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 30%, #0a2e14 0%, #051a0a 100%);
+  padding: var(--space-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Soft green radial haze */
+.glow {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 40%,
+    rgba(22, 163, 74, 0.22) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(22,163,74,0.15);
+  padding: var(--space-2xl) var(--space-xl);
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  backdrop-filter: blur(6px);
+}
+
+/* ---- Check ---- */
+
+.checkWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+}
+
+.checkCircle {
+  width: 100px;
+  height: 100px;
+}
+
+.checkSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---- Text ---- */
+
+.title {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 30px;
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--color-text);
+  line-height: 1.6;
+  margin-bottom: var(--space-lg);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-gray-light);
+  margin: var(--space-lg) 0;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--color-gray);
+  margin-bottom: var(--space-lg);
+}

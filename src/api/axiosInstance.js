@@ -21,8 +21,12 @@ axiosInstance.interceptors.response.use(
       error.userMessage =
         'No se pudo conectar al servidor. Verifique su conexión e intente de nuevo.'
     } else if (error.response.status === 401) {
-      localStorage.removeItem('techcup_token')
-      window.dispatchEvent(new Event('auth:unauthorized'))
+      if (error.response.data?.message) {
+        error.userMessage = error.response.data.message
+      } else {
+        localStorage.removeItem('techcup_token')
+        window.dispatchEvent(new Event('auth:unauthorized'))
+      }
     } else if (error.response.status === 403) {
       error.userMessage = 'No tiene permisos para realizar esta acción.'
     } else if (error.response.data?.message) {

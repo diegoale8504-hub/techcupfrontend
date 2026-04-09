@@ -9,6 +9,7 @@ import UserTypeSelectionPage from './pages/Registration/UserTypeSelection/UserTy
 import RegistrationStep1Page from './pages/Registration/Step1/RegistrationStep1Page'
 import RegistrationStep2Page from './pages/Registration/Step2/RegistrationStep2Page'
 import RegistrationStep3Page from './pages/Registration/Step3/RegistrationStep3Page'
+import RegistrationSuccessPage from './pages/Registration/Success/RegistrationSuccessPage'
 import DashboardPage from './pages/Dashboard/DashboardPage'
 import StandingsPage from './pages/Standings/StandingsPage'
 import PlayerSearchPage from './pages/PlayerSearch/PlayerSearchPage'
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="step1" element={<RegistrationStep1Page />} />
         <Route path="step2" element={<RegistrationStep2Page />} />
         <Route path="step3" element={<RegistrationStep3Page />} />
+        <Route path="success" element={<RegistrationSuccessPage />} />
       </Route>
 
       {/* Rutas protegidas */}

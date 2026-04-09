@@ -58,7 +58,7 @@ export default function RegistrationStep1Page() {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} page-enter`}>
       <div className={styles.card}>
         <h1 className={styles.title}>Registro</h1>
         <Stepper steps={STEPS} currentStep={0} />

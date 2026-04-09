@@ -83,10 +83,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} page-enter`}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <img src="../images/logo-techcup.png" alt="TechCupFútbol" className={styles.logoImg} />
+          <img src="/images/logofinal.png" alt="TechCupFútbol" className={styles.logoImg} />
           <h1 className={styles.title}>TechCupFútbol</h1>
           <p className={styles.subtitle}>Ingresa tus credenciales para continuar</p>
         </div>

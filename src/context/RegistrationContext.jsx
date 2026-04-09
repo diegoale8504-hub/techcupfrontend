@@ -101,7 +101,7 @@ export function RegistrationProvider({ children }) {
         await submitStep3({ sessionId, ...data })
         await completeRegistration(sessionId)
         clearStorage()
-        navigate('/login?registered=1')
+        navigate('/register/success')
       } catch (err) {
         setError(err.userMessage ?? 'Error al completar el registro. Intente de nuevo.')
         throw err

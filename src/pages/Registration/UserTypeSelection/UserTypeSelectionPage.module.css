@@ -80,8 +80,11 @@
   border: 2px solid var(--color-gray-light);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  transition: border-color 0.22s ease, background 0.22s ease,
+              transform 0.22s ease, box-shadow 0.22s ease;
   text-align: center;
+  transform-style: preserve-3d;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .typeCard:hover:not(:disabled) {
@@ -95,8 +98,10 @@
   cursor: not-allowed;
 }
 
-.icon {
-  font-size: 32px;
+.typeImg {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
 }
 
 .typeLabel {

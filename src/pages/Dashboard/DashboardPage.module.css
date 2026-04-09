@@ -1,59 +1,120 @@
-.welcome {
-  margin-bottom: var(--space-xl);
+/* ── Animations ───────────────────────────────────────────────── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.heading {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+.header {
+  background: linear-gradient(135deg, #1b7d4d 0%, #2d9e63 100%);
+  border-radius: var(--radius-lg);
+  padding: 30px 36px;
+  margin-bottom: var(--space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 24px rgba(27,125,77,0.25);
+  animation: fadeIn 0.5s ease both;
+}
+
+.welcome {
   font-family: var(--font-title);
   font-weight: 800;
-  font-size: 32px;
-  color: var(--color-white);
-  margin-bottom: var(--space-xs);
+  font-size: 28px;
+  color: #ffffff;
+  margin-bottom: 6px;
 }
 
-.sub {
-  color: rgba(255,255,255,0.7);
-  font-size: 15px;
+.season {
+  font-size: 14px;
+  color: rgba(255,255,255,0.75);
+  font-weight: 500;
 }
 
-.loading, .error {
-  color: var(--color-white);
-  font-size: 15px;
-}
-
-.error {
-  color: #ffaaaa;
-}
-
+/* ── Grid ─────────────────────────────────────────────────────── */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-lg);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
 }
 
-.cardBox {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
+/* ── Cards ────────────────────────────────────────────────────── */
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
   padding: var(--space-lg);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: slideUp 0.45s ease both;
 }
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.18);
+}
+
+.card1 { animation-delay: 0.1s; }
+.card2 { animation-delay: 0.2s; }
+.card3 { animation-delay: 0.3s; }
 
 .cardTitle {
   font-family: var(--font-title);
   font-weight: 700;
-  font-size: 16px;
-  color: var(--color-primary);
+  font-size: 15px;
+  color: #1b7d4d;
   margin-bottom: var(--space-md);
   padding-bottom: var(--space-sm);
-  border-bottom: 2px solid var(--color-primary);
+  border-bottom: 2px solid #e8f5e9;
+}
+
+/* ── Card 1: Profile ──────────────────────────────────────────── */
+.avatarRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1b7d4d, #2d9e63);
+  color: #ffffff;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.playerName {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 15px;
+  color: #333;
+}
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .infoRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-sm) 0;
-  border-bottom: 1px solid var(--color-gray-light);
-  font-size: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
 }
 
 .infoRow:last-child {
@@ -61,30 +122,198 @@
 }
 
 .infoLabel {
-  color: var(--color-gray);
+  color: #999;
   font-size: 13px;
 }
 
-.tournamentMsg {
+.infoValue {
+  font-weight: 600;
+  color: #333;
+}
+
+.jerseyBadge {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 15px;
+  color: #1b7d4d;
+}
+
+.badgeAvailable {
+  background: #e8f5e9;
+  color: #1b7d4d;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.badgeUnavailable {
+  background: #fbe9e7;
+  color: #d32f2f;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ── Card 2: Tournament ───────────────────────────────────────── */
+.tournamentStatus {
   font-size: 14px;
-  color: var(--color-text);
-  line-height: 1.6;
+  color: #555;
+  margin-bottom: var(--space-lg);
+}
+
+.positionBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.positionNumber {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 56px;
+  line-height: 1;
+  color: #1b7d4d;
+}
+
+.positionLabel {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cardLink {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1b7d4d;
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.cardLink::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: #1b7d4d;
+  transition: width 0.25s ease;
+}
+
+.cardLink:hover::after {
+  width: 100%;
+}
+
+.cardLink:hover {
+  text-decoration: none;
+  color: #1b7d4d;
+}
+
+/* ── Card 3: Actions ──────────────────────────────────────────── */
+.statsRow {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.statBox {
+  flex: 1;
+  background: #f5f5f5;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.statNumber {
+  display: block;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 32px;
+  color: #1b7d4d;
+  line-height: 1;
+}
+
+.statLabel {
+  display: block;
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .quickLinks {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
 }
 
 .quickLink {
-  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--color-primary);
-  padding: var(--space-sm) 0;
-  border-bottom: 1px solid var(--color-gray-light);
+  color: #333;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  text-decoration: none;
+  transition: color 0.2s ease, padding-left 0.2s ease;
 }
 
 .quickLink:last-child {
   border-bottom: none;
+}
+
+.quickLink:hover {
+  color: #1b7d4d;
+  padding-left: 6px;
+  text-decoration: none;
+}
+
+.arrow {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.quickLink:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* ── States ───────────────────────────────────────────────────── */
+.loading {
+  color: rgba(255,255,255,0.8);
+  font-size: 15px;
+  padding: var(--space-lg) 0;
+}
+
+.errorMsg {
+  color: #ffaaaa;
+  font-size: 15px;
+  padding: var(--space-lg) 0;
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .header {
+    padding: 20px;
+  }
+  .welcome {
+    font-size: 22px;
+  }
 }

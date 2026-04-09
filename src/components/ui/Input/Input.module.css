@@ -26,7 +26,8 @@
   color: var(--color-text);
   width: 100%;
   outline: none;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color 0.2s ease, background 0.2s ease,
+    box-shadow 0.2s ease;
   appearance: auto;
 }
 
@@ -37,16 +38,45 @@
 .field:focus {
   border-color: var(--color-primary);
   background: var(--color-bg-valid);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.20);
+  outline: none;
 }
 
 .field.hasValue {
   border-color: var(--color-primary);
   background: var(--color-bg-valid);
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.10);
 }
 
 .field.hasError {
   border: 2px solid var(--color-error);
-  background: var(--color-white);
+  background: #fff8f8;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12);
+  animation: inputShake 0.38s ease-in-out;
+}
+
+@keyframes inputShake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-7px);
+  }
+
+  40% {
+    transform: translateX(7px);
+  }
+
+  60% {
+    transform: translateX(-4px);
+  }
+
+  80% {
+    transform: translateX(4px);
+  }
 }
 
 .error {
