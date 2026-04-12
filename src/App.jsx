@@ -3,6 +3,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import RoleGuard from './components/auth/RoleGuard'
 import { RegistrationProvider } from './context/RegistrationContext'
 
+import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/Login/LoginPage'
 import OAuthCallbackPage from './pages/OAuthCallback/OAuthCallbackPage'
 import UserTypeSelectionPage from './pages/Registration/UserTypeSelection/UserTypeSelectionPage'
@@ -28,6 +29,7 @@ export default function App() {
   return (
     <Routes>
       {/* Rutas públicas */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/auth/callback" element={<OAuthCallbackPage />} />
       <Route path="/register" element={<RegistrationLayout />}>

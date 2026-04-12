@@ -159,6 +159,23 @@
   margin-bottom: var(--space-lg);
 }
 
+.backToHome {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-gray);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: var(--space-lg);
+  transition: color 0.15s ease;
+}
+
+.backToHome:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
 .sentMsg {
   text-align: center;
   display: flex;

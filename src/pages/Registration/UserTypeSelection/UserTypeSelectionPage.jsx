@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useRegistration } from '../../../hooks/useRegistration'
 import styles from './UserTypeSelectionPage.module.css'
 
@@ -52,6 +53,7 @@ export default function UserTypeSelectionPage() {
 
         <div className={styles.footer}>
           <a href="/login" className={styles.backLink}>← Ya tengo cuenta</a>
+          <Link to="/" className={styles.backLinkMuted}>← Volver al inicio</Link>
         </div>
       </div>
     </div>
