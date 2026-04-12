@@ -82,7 +82,9 @@ La unión de las tres palabras en una sola crea un nombre memorable, corto y fá
 
 El logo de TechCupFútbol fue diseñado con inteligencia artificial (ChatGPT / DALL-E) y representa visualmente la fusión entre el deporte universitario y la ingeniería tecnológica. Cada elemento fue elegido con una intención clara.
 
-![Logo TechCupFútbol](images/logoo.png)
+
+![img.png](img.png)
+
 
 ### Anatomía y justificación de cada elemento
 
