@@ -22,7 +22,7 @@ export default function LoginPage() {
   const { login, token } = useAuth()
 
   const [tab, setTab] = useState('institucional')
-  const [view, setView] = useState('login') // 'login' | 'forgot' | 'forgotSent'
+  const [view, setView] = useState('login') 
   const [form, setForm] = useState({ email: '', password: '' })
   const [errors, setErrors] = useState({})
   const [apiError, setApiError] = useState(null)
@@ -86,7 +86,7 @@ export default function LoginPage() {
     <div className={`${styles.root} page-enter`}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <img src="/images/logofinal.png" alt="TechCupFútbol" className={styles.logoImg} />
+          <img src="../images/logo-techcup.png" alt="TechCupFútbol" className={styles.logoImg} />
           <h1 className={styles.title}>TechCupFútbol</h1>
           <p className={styles.subtitle}>Ingresa tus credenciales para continuar</p>
         </div>
