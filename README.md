@@ -39,7 +39,7 @@ En este Sprint 2 el objetivo principal es establecer la estructura inicial del f
 
 ## Logotipo
 
-![img.png](../img.png)
+![Logo.png](docs/images/Logo.png)
 ---
 
 ## Manual de identidad visual
@@ -60,29 +60,29 @@ Revisar: [Manual de identidad](docs/manualDeIdentidad.md)
 
 ### 1) Módulo: Autenticación
 **Descripción:** Inicio de sesión/registro y control de acceso a funcionalidades del sistema.
+![inicio sesion.png](docs/images/inicio%20sesion.png)
 
-![img_2.png](docs/images/img_2.png)
 ### 2) Módulo: Dashboard / Inicio
 **Descripción:** Vista principal con resumen de información relevante del usuario y accesos rápidos.
 ![inicio.png](docs/images/inicio.png)
-
-![img_3.png](docs/images/img_3.png)
----
-
-### 3) Módulo: Gestión principal (ej. Tablas / Equipos / )
-
-
-![img_4.png](docs/images/img_4.png)
-![img_5.png](docs/images/img_5.png)
+![inicio1.png](docs/images/inicio1.png)
 
 ---
 
-### 4) Módulo: Perfil y configuración
+### 3) Módulo: Gestión principal (Tablas / Equipos / Llaves )
 
+![tabla posiciones.png](docs/images/tabla%20posiciones.png)
+![equipos.png](docs/images/equipos.png)
+![Llaves.png](docs/images/Llaves.png)
+---
 
-![img_7.png](docs/images/img_7.png)
-![img_6.png](docs/images/img_6.png)
-![img_8.png](docs/images/img_8.png)
+### 4) Módulo: Perfil 
+![perfil1.png](docs/images/perfil1.png)
+![perfil2.png](docs/images/perfil2.png)
+![perfil4.png](docs/images/perfil4.png)
+![perrfil3.png](docs/images/perrfil3.png)
+![perfil5.png](docs/images/perfil5.png)
+
 ---
 
 
