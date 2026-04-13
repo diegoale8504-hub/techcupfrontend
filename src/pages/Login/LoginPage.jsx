@@ -87,7 +87,7 @@ export default function LoginPage() {
       <div className={styles.card}>
         <Link to="/" className={styles.backToHome}>← Volver al inicio</Link>
         <div className={styles.header}>
-          <img src="../images/logo-techcup.png" alt="TechCupFútbol" className={styles.logoImg} />
+          <img src="/images/logofinal.png" alt="TechCupFútbol" className={styles.logoImg} />
           <h1 className={styles.title}>TechCupFútbol</h1>
           <p className={styles.subtitle}>Ingresa tus credenciales para continuar</p>
         </div>

@@ -84,6 +84,12 @@
   font-weight: 700;
 }
 
+.link.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* ── Footer ───────────────────────────────────────────────────── */
 .footer {
   padding: var(--space-lg) var(--space-md) 0;

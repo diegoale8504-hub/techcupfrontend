@@ -4,12 +4,12 @@ import Button from '../../../components/ui/Button/Button'
 import styles from './UserTypeSelectionPage.module.css'
 
 const USER_TYPES = [
-  { value: 'STUDENT',        label: 'Estudiante',      icon: '', desc: 'Estudiante activo de la Escuela' },
-  { value: 'GRADUATE',       label: 'Graduado',        icon: '', desc: 'Egresado de la institución' },
-  { value: 'PROFESSOR',      label: 'Profesor',        icon: '', desc: 'Docente de la Escuela' },
-  { value: 'ADMINISTRATIVE', label: 'Administrativo',  icon: '', desc: 'Personal administrativo' },
-  { value: 'FAMILY_MEMBER',  label: 'Familiar',        icon: '', desc: 'Familiar de un miembro de la comunidad' },
-  { value: 'REFEREE',        label: 'Árbitro',         icon: '', desc: 'Árbitro del torneo' },
+  { value: 'STUDENT',        label: 'Estudiante',      icon: '/images/registro_Estudiante.png', desc: 'Estudiante activo de la Escuela' },
+  { value: 'GRADUATE',       label: 'Graduado',        icon: '/images/registro_Graduado.png', desc: 'Egresado de la institución' },
+  { value: 'PROFESSOR',      label: 'Profesor',        icon: '/images/registro_Profesor.png', desc: 'Docente de la Escuela' },
+  { value: 'ADMINISTRATIVE', label: 'Administrativo',  icon: '/images/registro_Administrativo.png', desc: 'Personal administrativo' },
+  { value: 'FAMILY_MEMBER',  label: 'Familiar',        icon: '/images/registro_Familiar.png', desc: 'Familiar de un miembro de la comunidad' },
+  { value: 'REFEREE',        label: 'Árbitro',         icon: '/images/registro_Arbitro.png', desc: 'Árbitro del torneo' },
 ]
 
 export default function UserTypeSelectionPage() {
@@ -19,7 +19,7 @@ export default function UserTypeSelectionPage() {
     <div className={styles.root}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <img src="/images/logo-copa.png" alt="TechCupFútbol" className={styles.logoImg} />
+          <img src="/images/logofinal.png" alt="TechCupFútbol" className={styles.logoImg} />
           <h1 className={styles.title}>Registro TechCupFútbol</h1>
           <p className={styles.desc}>Selecciona tu tipo de perfil para comenzar el registro.</p>
         </div>
@@ -34,7 +34,9 @@ export default function UserTypeSelectionPage() {
               onClick={() => startRegistration(type.value)}
               disabled={isSubmitting}
             >
-              <span className={styles.icon}>{type.icon}</span>
+              <span className={styles.icon}>
+                <img src={type.icon} alt={type.label} className={styles.typeImg} />
+              </span>
               <span className={styles.typeLabel}>{type.label}</span>
               <span className={styles.typeDesc}>{type.desc}</span>
             </button>
