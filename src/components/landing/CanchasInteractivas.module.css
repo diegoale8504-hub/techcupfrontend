@@ -1,0 +1,191 @@
+/* ============================================================
+   CanchasInteractivas.module.css
+
+   Layer stack inside each .zone (bottom → top):
+     1. .courtImage  — the court-specific photo (hidden → fade-in on hover)
+     2. .overlay     — gradient + info text (hidden → fade-in on hover)
+   The base SegmentacionCanchas image is always visible beneath all zones.
+   ============================================================ */
+
+/* ---- Outer container -------------------------------------- */
+.outer {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ---- Image wrapper (establishes % coordinate system) ------ */
+.wrapper {
+  position: relative;
+  width: 100%;
+  line-height: 0;           /* removes gap below inline <img> */
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* ---- Base aerial image (never changes) -------------------- */
+.baseImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ---- Interactive zone ------------------------------------- */
+.zone {
+  position: absolute;
+  border-radius: 6px;
+  overflow: hidden;           /* clips courtImage and overlay to the zone */
+  cursor: pointer;
+  outline: none;
+
+  /* Subtle border so court boundaries are visible at rest */
+  border: 2px solid rgba(255, 255, 255, 0.18);
+
+  transition: border-color 0.28s ease,
+              box-shadow   0.28s ease,
+              transform    0.32s cubic-bezier(0.34, 1.46, 0.64, 1);
+
+  z-index: 1;
+  transform-origin: center center;
+}
+
+.zone:focus-visible {
+  border-color: var(--color-accent, #c8f135);
+  box-shadow: 0 0 0 3px rgba(200, 241, 53, 0.40);
+}
+
+/* Active state — slightly scale up the whole zone */
+.zoneActive {
+  transform: scale(1.06);
+  z-index: 20;
+  border-color: rgba(255, 255, 255, 0.60);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+}
+
+/* ---- Court-specific photo (Layer 1) ----------------------- */
+.courtImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+
+  /* Hidden by default */
+  opacity: 0;
+  transform: scale(1.08);   /* start slightly zoomed — pulls back as it fades in */
+
+  transition: opacity   0.40s ease,
+              transform 0.40s ease;
+}
+
+/* On hover: fade in + reset zoom to create a "zoom-out reveal" */
+.zoneActive .courtImage {
+  opacity: 1;
+  transform: scale(1.0);
+}
+
+/* ---- Info overlay (Layer 2) ------------------------------- */
+.overlay {
+  position: absolute;
+  inset: 0;
+
+  /* Dark gradient from bottom for text legibility */
+  background: linear-gradient(
+    to top,
+    rgba(5, 38, 14, 0.92)  0%,
+    rgba(5, 38, 14, 0.55)  45%,
+    rgba(5, 38, 14, 0.10)  75%,
+    transparent            100%
+  );
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px 12px 10px;
+  gap: 4px;
+
+  opacity: 0;
+  transition: opacity 0.32s ease;
+  pointer-events: none;
+}
+
+.zoneActive .overlay {
+  opacity: 1;
+}
+
+/* ---- Info text -------------------------------------------- */
+.name {
+  font-family: var(--font-title, sans-serif);
+  font-size: clamp(0.70rem, 1.8vw, 0.95rem);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.dimensions {
+  font-family: var(--font-body, sans-serif);
+  font-size: clamp(0.56rem, 1.3vw, 0.72rem);
+  font-weight: 600;
+  color: var(--color-accent, #c8f135);
+  letter-spacing: 0.05em;
+}
+
+.description {
+  font-family: var(--font-body, sans-serif);
+  font-size: clamp(0.50rem, 1.1vw, 0.63rem);
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.45;
+  margin: 0;
+
+  /* Max 3 lines so it never overflows small zones */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---- Hint ------------------------------------------------- */
+.hint {
+  font-family: var(--font-body, sans-serif);
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.40);
+  text-align: center;
+  margin-top: 10px;
+  letter-spacing: 0.01em;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 767px) {
+  .wrapper  { border-radius: 10px; }
+  .zone     { border-width: 1.5px; }
+
+  /* Smaller scale on mobile — avoids clipping at edges */
+  .zoneActive { transform: scale(1.03); }
+
+  /* Always show a faint overlay on mobile as tappable hint */
+  .overlay {
+    opacity: 0.28;
+    background: linear-gradient(
+      to top,
+      rgba(5, 38, 14, 0.75) 0%,
+      transparent           55%
+    );
+  }
+  .zoneActive .overlay { opacity: 1; }
+
+  .hint { display: none; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .zoneActive { transform: scale(1.05); }
+}
