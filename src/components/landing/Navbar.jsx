@@ -19,7 +19,7 @@ export default function Navbar() {
       <div className="landing-nav__inner">
         <Link to="/" className="landing-nav__brand" onClick={close}>
           <img
-            src="/images/LogoBanner.png"
+            src="/images/logofinal.png"
             alt="TechCupFútbol"
             className="landing-nav__logo"
           />

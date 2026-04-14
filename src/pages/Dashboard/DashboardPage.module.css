@@ -22,6 +22,19 @@
   animation: fadeIn 0.5s ease both;
 }
 
+.roleBadge {
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
 .welcome {
   font-family: var(--font-title);
   font-weight: 800;
@@ -297,6 +310,146 @@
   color: #ffaaaa;
   font-size: 15px;
   padding: var(--space-lg) 0;
+}
+
+/* ── Tournament status card ───────────────────────────────────── */
+.tournamentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.statusBadge {
+  display: inline-block;
+  background: #e8f5e9;
+  color: #1b7d4d;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: var(--space-sm);
+}
+
+.winner {
+  color: #1b7d4d;
+  font-weight: 800;
+}
+
+/* ── Novedades card ───────────────────────────────────────────── */
+.novedadesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: var(--space-md);
+}
+
+.novedadItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.novedadItem:last-child { border-bottom: none; }
+
+.novedadTeams {
+  color: #333;
+  font-weight: 600;
+}
+
+.novedadScore {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 15px;
+  color: #1b7d4d;
+}
+
+/* ── Best player card ─────────────────────────────────────────── */
+.teamName {
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.goalsBlock {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
+}
+
+.goalsNumber {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 52px;
+  line-height: 1;
+  color: #1b7d4d;
+}
+
+.goalsLabel {
+  font-size: 13px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.miniScorer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px 0;
+  border-top: 1px solid #f0f0f0;
+  font-size: 12px;
+}
+
+.miniRank  { color: #999; font-weight: 700; width: 16px; }
+.miniName  { flex: 1; color: #333; font-weight: 600; }
+.miniGoals { color: #1b7d4d; font-weight: 700; }
+
+/* ── Referee next match card ──────────────────────────────────── */
+.matchBlock {
+  margin-bottom: var(--space-md);
+}
+
+.matchTeams {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.matchTeam {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+}
+
+.matchVs {
+  font-size: 12px;
+  color: #999;
+  font-weight: 600;
+}
+
+.matchMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+/* ── Empty state ──────────────────────────────────────────────── */
+.emptyMsg {
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: var(--space-md);
 }
 
 /* ── Responsive ───────────────────────────────────────────────── */
