@@ -22,7 +22,7 @@ export default function LoginPage() {
   const { login, token } = useAuth()
 
   const [tab, setTab] = useState('institucional')
-  const [view, setView] = useState('login') // 'login' | 'forgot' | 'forgotSent'
+  const [view, setView] = useState('login') 
   const [form, setForm] = useState({ email: '', password: '' })
   const [errors, setErrors] = useState({})
   const [apiError, setApiError] = useState(null)

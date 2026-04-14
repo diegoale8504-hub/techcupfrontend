@@ -27,30 +27,39 @@ const FIELD_CONFIGS = {
     { name: 'graduationYear',     label: 'Año de graduación',    type: 'number',   placeholder: 'Ej: 2020', rules: [required()] },
   ],
   PROFESSOR: [
-    { name: 'institutionalEmail', label: 'Correo institucional', type: 'email', placeholder: 'usuario@mail.escuelaing.edu.co', rules: [required(), email()] },
+    { name: 'institutionalEmail', label: 'Correo institucional', type: 'email',   placeholder: 'usuario@escuelaing.edu.co', rules: [required(), email()] },
     { name: 'password',           label: 'Contraseña',           type: 'password', placeholder: '••••••••', rules: [required()] },
     { name: 'confirmPassword',    label: 'Confirmar contraseña', type: 'password', placeholder: '••••••••', rules: [required()] },
+    { name: 'academicProgram',    label: 'Programa que dicta',   type: 'text',     placeholder: 'Ej: Ingeniería de Sistemas', rules: [required()] },
     { name: 'teachingArea',       label: 'Área de docencia',     type: 'text',     placeholder: 'Ej: Ingeniería de Software', rules: [required()] },
-    { name: 'department',         label: 'Departamento',         type: 'text',     placeholder: 'Ej: Depto. de Sistemas', rules: [required()] },
   ],
   ADMINISTRATIVE: [
-    { name: 'institutionalEmail', label: 'Correo institucional', type: 'email', placeholder: 'usuario@mail.escuelaing.edu.co', rules: [required(), email()] },
+    { name: 'institutionalEmail', label: 'Correo institucional', type: 'email',   placeholder: 'usuario@escuelaing.edu.co', rules: [required(), email()] },
     { name: 'password',           label: 'Contraseña',           type: 'password', placeholder: '••••••••', rules: [required()] },
     { name: 'confirmPassword',    label: 'Confirmar contraseña', type: 'password', placeholder: '••••••••', rules: [required()] },
     { name: 'department',         label: 'Dependencia',          type: 'text',     placeholder: 'Ej: Registro y Control', rules: [required()] },
-    { name: 'position',           label: 'Cargo',                type: 'text',     placeholder: 'Ej: Coordinador', rules: [required()] },
+    { name: 'jobPosition',        label: 'Cargo',                type: 'text',     placeholder: 'Ej: Coordinador', rules: [required()] },
   ],
   FAMILY_MEMBER: [
-    { name: 'institutionalEmail',  label: 'Correo Gmail',                         type: 'email', placeholder: 'familiar@gmail.com', rules: [required(), email()] },
-    { name: 'password',            label: 'Contraseña',                            type: 'password', placeholder: '••••••••', rules: [required()] },
-    { name: 'confirmPassword',     label: 'Confirmar contraseña',                 type: 'password', placeholder: '••••••••', rules: [required()] },
-    { name: 'relatedPersonName',   label: 'Nombre del familiar en la Escuela',    type: 'text',     placeholder: 'Ej: Juan Rodríguez', rules: [required()] },
-    { name: 'relatedStudentEmail', label: 'Correo institucional del familiar',    type: 'email',    placeholder: 'familiar@mail.escuelaing.edu.co', rules: [required(), email()] },
+    { name: 'gmailEmail',          label: 'Correo Gmail',                       type: 'email',  placeholder: 'familiar@gmail.com', rules: [required(), email()] },
+    { name: 'password',            label: 'Contraseña',                          type: 'password', placeholder: '••••••••', rules: [required()] },
+    { name: 'confirmPassword',     label: 'Confirmar contraseña',               type: 'password', placeholder: '••••••••', rules: [required()] },
+    { name: 'familyRelationType',  label: 'Relación con el miembro',            type: 'select', rules: [required('*Selecciona el tipo de relación')],
+      options: [
+        { value: '',        label: 'Selecciona relación' },
+        { value: 'FATHER',  label: 'Padre' },
+        { value: 'MOTHER',  label: 'Madre' },
+        { value: 'SIBLING', label: 'Hermano/a' },
+        { value: 'OTHER',   label: 'Otro' },
+      ]
+    },
+    { name: 'relatedPersonName',   label: 'Nombre del familiar en la Escuela', type: 'text',  placeholder: 'Ej: Juan Rodríguez', rules: [required()] },
+    { name: 'relatedStudentEmail', label: 'Correo institucional del familiar', type: 'email', placeholder: 'familiar@mail.escuelaing.edu.co', rules: [required(), email()] },
   ],
   REFEREE: [
-    { name: 'institutionalEmail', label: 'Correo',             type: 'email',    placeholder: 'correo@ejemplo.com', rules: [required(), email()] },
-    { name: 'password',           label: 'Contraseña',         type: 'password', placeholder: '••••••••', rules: [required()] },
-    { name: 'confirmPassword',    label: 'Confirmar contraseña', type: 'password', placeholder: '••••••••', rules: [required()] },
+    { name: 'gmailEmail',      label: 'Correo Gmail',        type: 'email',    placeholder: 'arbitro@gmail.com', rules: [required(), email()] },
+    { name: 'password',        label: 'Contraseña',          type: 'password', placeholder: '••••••••', rules: [required()] },
+    { name: 'confirmPassword', label: 'Confirmar contraseña', type: 'password', placeholder: '••••••••', rules: [required()] },
   ],
 }
 
@@ -85,7 +94,10 @@ export default function RegistrationStep2Page() {
   return (
     <div className={`${styles.root} page-enter`}>
       <div className={styles.card}>
-        <h1 className={styles.title}>Registro</h1>
+        <div className={styles.header}>
+          <img src="/images/logofinal.png" alt="TechCupFútbol" className={styles.logoImg} />
+          <h1 className={styles.title}>Registro</h1>
+        </div>
         <Stepper steps={STEPS} currentStep={1} />
 
         <h2 className={styles.stepTitle}>Datos institucionales</h2>
