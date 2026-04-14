@@ -15,12 +15,17 @@ export const getMyInvitations = () =>
 export const respondInvitation = (invitationId, accepted) =>
   axiosInstance.patch(`/api/teams/invitations/${invitationId}/respond`, { accepted })
 
-// Tournament standings
-export const getGroupStandings = (tournamentId, groupId) =>
-  axiosInstance.get(`/api/tournaments/${tournamentId}/groups/${groupId}/standings`)
+export const updateTeam = (teamId, data) =>
+  axiosInstance.put(`/api/teams/${teamId}`, data)
 
-// Tournament match history
-export const getMatchHistory = (tournamentId, teamId) =>
-  axiosInstance.get(`/api/tournaments/${tournamentId}/statistics/match-history`, {
-    params: teamId ? { teamId } : {},
-  })
+export const removePlayer = (teamId, playerId) =>
+  axiosInstance.delete(`/api/teams/${teamId}/members/${playerId}`)
+
+export const getAllTeams = () =>
+  axiosInstance.get('/api/teams')
+
+export const getTeamInvitations = (teamId) =>
+  axiosInstance.get(`/api/teams/${teamId}/invitations`)
+
+export const leaveTeam = (teamId) =>
+  axiosInstance.post(`/api/teams/${teamId}/leave-requests`)
