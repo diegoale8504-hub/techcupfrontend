@@ -9,17 +9,45 @@ export default function OAuthCallbackPage() {
 
   useEffect(() => {
     const token = searchParams.get('token')
+
     if (token) {
-      login(token)
-      navigate('/dashboard', { replace: true })
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        login({
+          token,
+          id:    payload.sub   ?? null,
+          name:  payload.name  ?? null,
+          email: payload.email ?? payload.sub ?? null,
+          role:  payload.role  ?? null,
+        })
+
+        if (payload.role === 'REFEREE') {
+          navigate('/referee/waiting', { replace: true })
+        } else if (payload.role === 'FAMILIAR' || payload.role === 'FAMILY_MEMBER') {
+          navigate('/dashboard', { replace: true })
+        } else {
+          navigate('/dashboard', { replace: true })
+        }
+      } catch {
+        navigate('/login?error=oauth', { replace: true })
+      }
     } else {
       navigate('/login?error=oauth', { replace: true })
     }
   }, [searchParams, login, navigate])
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', color: '#16A34A', fontFamily: 'Inter, sans-serif' }}>
-      Autenticando con Google...
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100vh',
+      gap: '16px',
+      fontFamily: 'Inter, sans-serif',
+      color: '#16A34A',
+    }}>
+      <p>Autenticando con Google...</p>
     </div>
   )
 }

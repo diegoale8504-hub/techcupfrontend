@@ -22,7 +22,7 @@ export default function LoginPage() {
   const { login, token } = useAuth()
 
   const [tab, setTab] = useState('institucional')
-  const [view, setView] = useState('login') 
+  const [view, setView] = useState('login')
   const [form, setForm] = useState({ email: '', password: '' })
   const [errors, setErrors] = useState({})
   const [apiError, setApiError] = useState(null)
@@ -34,6 +34,13 @@ export default function LoginPage() {
   useEffect(() => {
     if (token) navigate('/dashboard', { replace: true })
   }, [token, navigate])
+
+  // Mostrar error si viene de un intento OAuth fallido
+  useEffect(() => {
+    if (searchParams.get('error') === 'oauth') {
+      setApiError('No se pudo autenticar con Google. Intenta de nuevo.')
+    }
+  }, [searchParams])
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -52,7 +59,7 @@ export default function LoginPage() {
       const res = await loginApi({ email: form.email, password: form.password })
       // Backend returns { token, id, name, email, role }
       const { token: jwt, id, name, email: userEmail, role } = res.data
-      login(jwt, { id, name, email: userEmail, role })
+      login({ token: jwt, id, name, email: userEmail, role })
       navigate('/dashboard')
     } catch (err) {
       setApiError(err.userMessage ?? 'Credenciales inválidas. Verifique e intente de nuevo.')
@@ -76,10 +83,6 @@ export default function LoginPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleGoogleLogin = () => {
-    window.location.href = '/oauth2/authorization/google'
   }
 
   return (
@@ -142,6 +145,20 @@ export default function LoginPage() {
                   Ingresar al sistema
                 </Button>
 
+                <div className={styles.divider}><span>— o —</span></div>
+
+                <a
+                  href="https://localhost:8443/oauth2/authorization/google"
+                  className={styles.btnGoogle}
+                >
+                  <img
+                    src="https://developers.google.com/identity/images/g-logo.png"
+                    alt="Google"
+                  />
+                  Ingresar con Google
+                </a>
+                <p className={styles.googleHint}>Árbitros y familiares deben ingresar con Google</p>
+
                 <button type="button" className={styles.forgotLink} onClick={() => setView('forgot')}>
                   ¿Olvidaste tu contraseña?
                 </button>
@@ -151,9 +168,16 @@ export default function LoginPage() {
                 <p className={styles.gmailText}>
                   Acceso para familiares mediante cuenta Gmail registrada.
                 </p>
-                <Button variant="secondary" fullWidth onClick={handleGoogleLogin}>
+                <a
+                  href="https://localhost:8443/oauth2/authorization/google"
+                  className={styles.btnGoogle}
+                >
+                  <img
+                    src="https://developers.google.com/identity/images/g-logo.png"
+                    alt="Google"
+                  />
                   Continuar con Google
-                </Button>
+                </a>
               </div>
             )}
 
