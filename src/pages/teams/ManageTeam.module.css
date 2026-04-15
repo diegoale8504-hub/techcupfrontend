@@ -1,0 +1,285 @@
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.teamHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.logoWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.logoImg {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #eee;
+}
+
+.logoPlaceholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.uploadBtn {
+  font-size: 12px;
+  color: #007bff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.uploadBtn:hover {
+  text-decoration: underline;
+}
+
+.info h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status--FORMING { background: #e3f2fd; color: #1976d2; }
+.status--COMPLETE { background: #e8f5e9; color: #2e7d32; }
+.status--LOCKED { background: #fff3e0; color: #ef6c00; }
+.status--REGISTERED { background: #f3e5f5; color: #7b1fa2; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.subTitle {
+  margin: 20px 0 12px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.email {
+  font-size: 14px;
+  color: #333;
+}
+
+.tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.tag--pending { background: #fff8e1; color: #f57f17; }
+.tag--accepted { background: #e8f5e9; color: #2e7d32; }
+.tag--rejected { background: #ffebee; color: #c62828; }
+
+.inviteForm {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1.5px solid #eee;
+  border-radius: 6px;
+  outline: none;
+}
+
+.input:focus { border-color: #007bff; }
+
+.btnPrimary {
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btnPrimary:disabled { opacity: 0.6; }
+
+.btnDelete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+.btnDelete:hover { opacity: 1; }
+.btnDelete:disabled { opacity: 0.2; cursor: not-allowed; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btnApprove, .btnReject {
+  padding: 4px 10px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btnApprove { background: #e8f5e9; color: #2e7d32; }
+.btnReject { background: #ffebee; color: #c62828; }
+
+.actionGrid {
+  display: flex;
+  gap: 12px;
+}
+
+.btnValidate, .btnDissolve {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btnValidate { background: #28a745; color: white; }
+.btnDissolve { background: #dc3545; color: white; }
+.btnDissolve:disabled { background: #eee; color: #999; cursor: not-allowed; }
+
+.warning {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #c62828;
+  font-style: italic;
+}
+
+.empty {
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.loading, .errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading {
+  font-weight: 600;
+  color: #666;
+  font-size: 16px;
+}
+
+.errorContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  margin: 40px auto;
+  max-width: 400px;
+}
+
+.errorIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.errorText {
+  color: #dc3545;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.btnSecondary {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1.5px solid #eee;
+  border-radius: 8px;
+  color: #666;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnSecondary:hover {
+  border-color: #999;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+  .teamHeader { flex-direction: column; text-align: center; }
+}

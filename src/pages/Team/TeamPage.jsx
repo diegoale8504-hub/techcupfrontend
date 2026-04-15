@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout/PageLayout'
 import Button from '../../components/ui/Button/Button'
 import { useAuth } from '../../hooks/useAuth'
-import { getEffectiveRole } from '../../utils/roles'
 import { getTeam, removePlayer, invitePlayer } from '../../api/teams'
 import { searchUsers } from '../../api/users'
 import styles from './TeamPage.module.css'
@@ -16,8 +15,13 @@ function Avatar({ name }) {
 export default function TeamPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const role = getEffectiveRole(user)
-  const isCapitan = role === 'capitán'
+  
+  // Normalizar roles para la UI
+  const role = user?.role?.toUpperCase()
+  const isCapitan = role === 'CAPTAIN'
+  
+  // Encontrar teamId. Priorizamos URL, luego AuthContext, luego nada.
+  // Pero en TeamPage usualmente es "mi equipo", así que usamos el del usuario resuelto en Layout o Auth.
   const teamId = user?.teamId
 
   const [team, setTeam]               = useState(null)
@@ -45,7 +49,7 @@ export default function TeamPage() {
       await removePlayer(teamId, playerId)
       setTeam((prev) => ({
         ...prev,
-        members: prev.members.filter((m) => m.id !== playerId),
+        miembros: (prev.miembros || prev.members || []).filter((m) => m.id !== playerId),
       }))
     } catch {
       setError('No se pudo retirar al jugador.')
@@ -87,7 +91,7 @@ export default function TeamPage() {
         <div className={styles.noTeam}>
           <h1 className={styles.heading}>Mi equipo</h1>
           <p className={styles.noTeamMsg}>No perteneces a ningún equipo aún.</p>
-          <Button variant="primary" onClick={() => navigate('/captain')}>
+          <Button variant="primary" onClick={() => navigate('/teams/create')}>
             Crear equipo
           </Button>
         </div>
@@ -95,11 +99,13 @@ export default function TeamPage() {
     )
   }
 
+  const miembros = team?.miembros || team?.members || []
+
   return (
     <PageLayout>
       <div className={styles.header}>
         <h1 className={styles.heading}>{isCapitan ? 'Gestión de equipo' : 'Mi equipo'}</h1>
-        {team && <p className={styles.sub}>{team.name}</p>}
+        {team && <p className={styles.sub}>{team.nombre ?? team.name}</p>}
       </div>
 
       {loading && <p className={styles.loading}>Cargando...</p>}
@@ -111,15 +117,15 @@ export default function TeamPage() {
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>
               Jugadores del equipo
-              <span className={styles.memberCount}>{team.members?.length ?? 0} / 12</span>
+              <span className={styles.memberCount}>{miembros.length} / 12</span>
             </h2>
 
             <div className={styles.memberList}>
-              {(team.members ?? []).map((m) => (
+              {miembros.map((m) => (
                 <div key={m.id} className={styles.memberRow}>
-                  <Avatar name={m.name} />
+                  <Avatar name={m.nombre ?? m.name} />
                   <div className={styles.memberInfo}>
-                    <span className={styles.memberName}>{m.name}</span>
+                    <span className={styles.memberName}>{m.nombre ?? m.name}</span>
                     <span className={styles.memberRole}>{m.userType ?? '—'}</span>
                   </div>
                   <span className={styles.jersey}>#{m.jerseyNumber ?? '—'}</span>
@@ -135,7 +141,7 @@ export default function TeamPage() {
                   )}
                 </div>
               ))}
-              {(team.members ?? []).length === 0 && (
+              {miembros.length === 0 && (
                 <p className={styles.emptyMsg}>No hay jugadores registrados aún.</p>
               )}
             </div>
@@ -168,9 +174,9 @@ export default function TeamPage() {
               <div className={styles.resultList}>
                 {searchResults.map((p) => (
                   <div key={p.id} className={styles.resultRow}>
-                    <Avatar name={p.name} />
+                    <Avatar name={p.nombre ?? p.name} />
                     <div className={styles.memberInfo}>
-                      <span className={styles.memberName}>{p.name}</span>
+                      <span className={styles.memberName}>{p.nombre ?? p.name}</span>
                       <span className={styles.memberRole}>{p.mainPosition ?? '—'}</span>
                     </div>
                     <Button
@@ -186,7 +192,7 @@ export default function TeamPage() {
               </div>
 
               <div className={styles.cardNote}>
-                También puedes buscar jugadores en la sección <a href="/players">Jugador</a>.
+                También puedes buscar jugadores en la sección <a href="/players">Jugadores</a>.
               </div>
             </div>
           )}

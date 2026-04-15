@@ -7,7 +7,7 @@ const axiosInstance = axios.create({
 })
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('techcup_token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
@@ -24,7 +24,7 @@ axiosInstance.interceptors.response.use(
       if (error.response.data?.message) {
         error.userMessage = error.response.data.message
       } else {
-        localStorage.removeItem('token')
+        localStorage.removeItem('techcup_token')
         window.dispatchEvent(new Event('auth:unauthorized'))
       }
     } else if (error.response.status === 403) {

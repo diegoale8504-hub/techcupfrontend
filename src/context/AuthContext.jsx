@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 export const AuthContext = createContext(null)
@@ -47,6 +48,18 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
+  // Escucha el evento que dispara axiosInstance cuando recibe un 401 sin cuerpo.
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(USER_KEY)
+      setToken(null)
+      setUser(null)
+    }
+    window.addEventListener('auth:unauthorized', handleUnauthorized)
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized)
+  }, [])
+
   /**
    * login(data) — data = { token, id, name, email, role, teamId? }
    * Llamar con los datos completos devueltos por el backend.
@@ -67,8 +80,20 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
+  /**
+   * updateUser(patch) — merges patch into the current user state and persists to localStorage.
+   * Use this for in-session changes (e.g. role promotion to CAPTAIN after team creation).
+   */
+  const updateUser = useCallback((patch) => {
+    setUser((prev) => {
+      const updated = { ...prev, ...patch }
+      localStorage.setItem(USER_KEY, JSON.stringify(updated))
+      return updated
+    })
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   )

@@ -32,6 +32,7 @@ const NavItem = ({ icon, label, to, badge, highlight, onClick }) => (
 
 /**
  * MENU BUILDER BY ROLE
+ * teamId is used only for specific conditional links.
  */
 function buildMenu(role, teamId, userId, unreadCount) {
   const common = [
@@ -45,36 +46,53 @@ function buildMenu(role, teamId, userId, unreadCount) {
     { to: '/tournaments/active/statistics', icon: '📊', label: 'Estadísticas' },
   ]
 
-  // --- PLAYER MENU ---
-  if (role === 'PLAYER') {
+  const normalizedRole = role?.toUpperCase()
+
+  // --- CAPTAIN MENU ---
+  if (normalizedRole === 'CAPTAIN') {
     const menu = [...common]
+    
+    // Use the teamId if we have it, otherwise use 'my' as a placeholder 
+    // or let the ManageTeam page handle the resolution.
+    const effectiveId = teamId || 'null'
+    const teamBase = `/teams/${effectiveId}`
+
+    if (teamId) {
+      menu.push(
+        { to: `${teamBase}`,               icon: '👥', label: 'Mi Equipo' },
+        { to: `${teamBase}/manage`,        icon: '⚙️', label: 'Gestionar Equipo' },
+        { to: `${teamBase}/payment`,       icon: '💳', label: 'Comprobante de Pago' },
+        { to: `${teamBase}/lineups`,       icon: '📋', label: 'Alineaciones' }
+      )
+    } else {
+      // CAPTAIN role but no ID yet - Show a way to get to the team page
+      menu.push({ to: '/teams/create', icon: '➕', label: 'Crear/Vincular Equipo', highlight: true })
+      // Even without ID, show the manage link - the page itself has fallback logic
+      menu.push({ to: '/teams/null/manage', icon: '⚙️', label: 'Gestionar Equipo (Pendiente)' })
+    }
+
+    menu.push(...tournament)
+    return menu
+  }
+
+  // --- PLAYER MENU ---
+  else if (normalizedRole === 'PLAYER') {
+    const menu = [...common]
+    // Only show team link if teamId exists
     if (teamId) {
       menu.push({ to: `/teams/${teamId}`, icon: '👥', label: 'Mi Equipo' })
     }
     menu.push({ to: '/invitations', icon: '📩', label: 'Mis Invitaciones' })
     menu.push(...tournament)
+    // Only show create if NO teamId
     if (!teamId) {
       menu.push({ to: '/teams/create', icon: '➕', label: 'Crear Equipo', highlight: true })
     }
     return menu
   }
 
-  // --- CAPTAIN MENU ---
-  if (role === 'CAPTAIN') {
-    return [
-      ...common,
-      { to: `/teams/${teamId}`,               icon: '👥', label: 'Mi Equipo' },
-      { to: `/teams/${teamId}/manage`,        icon: '⚙️', label: 'Gestionar Equipo' },
-      { to: `/teams/${teamId}/manage#invite`, icon: '📨', label: 'Invitar Jugadores' },
-      { to: `/teams/${teamId}/manage#leave`,  icon: '🚪', label: 'Solicitudes de Salida' },
-      { to: `/teams/${teamId}/payment`,       icon: '💳', label: 'Comprobante de Pago' },
-      { to: `/teams/${teamId}/lineups`,       icon: '📋', label: 'Alineaciones' },
-      ...tournament
-    ]
-  }
-
-  // --- OTHER ROLES (Fallback) ---
-  if (role === 'REFEREE') {
+  // --- OTHER ROLES ---
+  else if (normalizedRole === 'REFEREE') {
     return [
       ...common,
       { to: '/matches', icon: '🎯', label: 'Mis Partidos' },
@@ -82,7 +100,7 @@ function buildMenu(role, teamId, userId, unreadCount) {
     ]
   }
 
-  if (role === 'ADMINISTRATIVE' || role === 'ADMINISTRATOR') {
+  else if (normalizedRole === 'ADMINISTRATIVE' || normalizedRole === 'ADMINISTRATOR') {
     return [
       ...common,
       ...tournament,
@@ -94,7 +112,7 @@ function buildMenu(role, teamId, userId, unreadCount) {
 }
 
 export default function Layout() {
-  const { user, logout } = useAuth()
+  const { user, logout, updateUser } = useAuth()
 
   // State
   const [myTeamId, setMyTeamId] = useState(null)
@@ -102,21 +120,60 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pollRef = useRef(null)
 
-  // 1. FETCH TEAM ID ON MOUNT
+  // Debugging
+  useEffect(() => {
+    console.log('ROLE:', user?.role);
+    console.log('TEAM ID (local):', myTeamId, '| user.teamId:', user?.teamId);
+  }, [user?.role, myTeamId, user?.teamId])
+
+  // 1. RESOLVE team info + SYNC ROLE from backend
   useEffect(() => {
     if (!user?.id) return
+
+    console.log('[Layout] Resolving team info for user:', user.id)
+
+    // A. FETCH USER PROFILE (Updated: backend now includes teamId in UserResponse)
     api.get(`/api/users/${user.id}`)
       .then((res) => {
-        // Extract teamId from profile
-        const tid = res.data.teamId ?? res.data.team?.id ?? null
-        setMyTeamId(tid)
+        const profile = res.data
+        const foundTeamId = profile.teamId || profile.team?.id
+        
+        if (foundTeamId) {
+          console.log('[Layout] Found teamId in profile:', foundTeamId)
+          setMyTeamId(foundTeamId)
+          if (user.teamId !== foundTeamId) {
+            updateUser({ teamId: foundTeamId })
+          }
+        }
       })
-      .catch(() => {
-        // Silently fail if user not found or other API error
+      .catch((err) => {
+        console.error('[Layout] Profile fetch failed:', err.message)
       })
-  }, [user?.id])
 
-  // 2. NOTIFICATIONS POLLING (Every 60s)
+    // B. FETCH MY TEAM (New endpoint: returns details of the team the user belongs to)
+    api.get('/api/teams/my-team')
+      .then((res) => {
+        const myTeam = res.data
+        if (myTeam?.id) {
+          console.log('[Layout] Found team via /api/teams/my-team:', myTeam.id)
+          setMyTeamId(myTeam.id)
+          
+          // Auto-promote to CAPTAIN if backend says user is captain of this team
+          const captainId = myTeam.captainId ?? myTeam.captain?.id
+          if (captainId === user.id && user.role !== 'CAPTAIN') {
+            updateUser({ role: 'CAPTAIN', teamId: myTeam.id })
+          } else if (user.teamId !== myTeam.id) {
+            updateUser({ teamId: myTeam.id })
+          }
+        }
+      })
+      .catch((err) => {
+        // Silently fail if no team or forbidden
+        console.log('[Layout] My-team fetch failed or user has no team:', err.response?.status)
+      })
+  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 2. NOTIFICATIONS POLLING
   const fetchUnread = useCallback(async () => {
     try {
       const res = await api.get('/api/notifications/unread')
@@ -134,8 +191,11 @@ export default function Layout() {
     return () => clearInterval(pollRef.current)
   }, [fetchUnread])
 
-  // Menu generation
-  const menu = buildMenu(user?.role, myTeamId, user?.id, unreadCount)
+  // Prefer API-resolved teamId; fall back to user.teamId so the sidebar
+  // re-renders immediately after updateUser({ teamId, role:'CAPTAIN' })
+  // without waiting for the /api/equipos resolution on next mount.
+  const effectiveTeamId = myTeamId || user?.teamId
+  const menu = buildMenu(user?.role, effectiveTeamId, user?.id, unreadCount)
 
   // UI Helpers
   const initial = (user?.name ?? user?.email ?? 'U')[0].toUpperCase()
@@ -143,7 +203,6 @@ export default function Layout() {
 
   return (
     <div className={styles.layout}>
-      {/* Dynamic override for sidebar background as per requirements */}
       <style>{`
         .${styles.sidebar} { background-color: #1e1e2e !important; }
       `}</style>
@@ -162,14 +221,14 @@ export default function Layout() {
         <div className={styles.overlay} onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* FIXED SIDEBAR (260px) */}
+      {/* Sidebar renders immediately */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.logoSection}>
           <img src="/images/logoFinalFinal.png" alt="TechCupFútbol" className={styles.logoImg} />
           <span className={styles.logoText}>TechCupFútbol</span>
         </div>
 
-        {/* SIDEBAR HEADER: User Info */}
+        {/* User Info Header */}
         <div className={styles.sidebarHeader}>
           <div className={styles.avatarCircle}>{initial}</div>
           <div className={styles.userInfo}>
@@ -182,7 +241,7 @@ export default function Layout() {
           </div>
         </div>
 
-        {/* NAVIGATION */}
+        {/* Navigation - Always renders items based on current data */}
         <nav className={styles.nav}>
           {menu.map((item) => (
             <NavItem
@@ -193,7 +252,6 @@ export default function Layout() {
           ))}
         </nav>
 
-        {/* SIDEBAR FOOTER: Logout */}
         <div className={styles.sidebarFooter}>
           <button className={styles.logoutBtn} onClick={logout}>
             Cerrar sesión
@@ -201,7 +259,6 @@ export default function Layout() {
         </div>
       </aside>
 
-      {/* MAIN CONTENT (margin-left: 260px) */}
       <main className={styles.layoutMain}>
         <Outlet />
       </main>

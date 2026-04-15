@@ -16,6 +16,8 @@ const USER_TYPES = [
 // Tipos que deben registrarse exclusivamente con Google
 const GOOGLE_REQUIRED = ['REFEREE', 'FAMILY_MEMBER']
 
+const GOOGLE_AUTH_URL = `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:8443'}/oauth2/authorization/google`
+
 export default function UserTypeSelectionPage() {
   const { startRegistration, isSubmitting, error } = useRegistration()
   const [selectedType, setSelectedType] = useState(null)
@@ -62,10 +64,9 @@ export default function UserTypeSelectionPage() {
               únicamente con Google.
             </p>
             <a
-              href="https://localhost:8443/oauth2/authorization/google"
+              href={GOOGLE_AUTH_URL}
               className={`${styles.btnGoogle} ${styles.btnGoogleLarge}`}
-            >
-              <img
+            >              <img
                 src="https://developers.google.com/identity/images/g-logo.png"
                 alt="Google"
               />

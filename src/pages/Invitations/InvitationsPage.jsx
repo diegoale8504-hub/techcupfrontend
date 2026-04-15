@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import PageLayout from '../../components/layout/PageLayout/PageLayout'
 import Button from '../../components/ui/Button/Button'
 import { useAuth } from '../../hooks/useAuth'
-import { getEffectiveRole } from '../../utils/roles'
 import { getMyInvitations, respondInvitation, getTeamInvitations } from '../../api/teams'
 import styles from './InvitationsPage.module.css'
 
@@ -10,9 +9,14 @@ const STATUS_LABELS = { PENDING: 'Pendiente', ACCEPTED: 'Aceptada', REJECTED: 'R
 const STATUS_CSS    = { PENDING: styles.pending, ACCEPTED: styles.accepted, REJECTED: styles.rejected }
 
 export default function InvitationsPage() {
-  const { user, setTeamId } = useAuth()
-  const role = getEffectiveRole(user)
-  const isCapitan = role === 'capitán'
+  const { user } = useAuth()
+  
+  // Normalizar rol
+  const role = user?.role?.toUpperCase()
+  const isCapitan = role === 'CAPTAIN'
+
+  // Resolver teamId (encontrar de AuthContext o Layout ya lo resolvió)
+  const teamId = user?.teamId
 
   const [invitations, setInvitations] = useState([])
   const [loading, setLoading]         = useState(true)
@@ -21,15 +25,23 @@ export default function InvitationsPage() {
   const [msg, setMsg]                 = useState(null)
 
   useEffect(() => {
-    const fetch = isCapitan
-      ? () => getTeamInvitations(user.teamId)
-      : () => getMyInvitations()
+    const fetchInvs = async () => {
+      setLoading(true)
+      try {
+        const fetchFn = isCapitan && teamId
+          ? () => getTeamInvitations(teamId)
+          : () => getMyInvitations()
 
-    fetch()
-      .then((r) => setInvitations(r.data ?? []))
-      .catch(() => setError('No se pudieron cargar las invitaciones.'))
-      .finally(() => setLoading(false))
-  }, [isCapitan, user?.teamId])
+        const r = await fetchFn()
+        setInvitations(r.data ?? [])
+      } catch {
+        setError('No se pudieron cargar las invitaciones.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchInvs()
+  }, [isCapitan, teamId])
 
   const handleRespond = async (invitationId, accepted) => {
     setResponding(invitationId)
@@ -37,12 +49,10 @@ export default function InvitationsPage() {
     try {
       const r = await respondInvitation(invitationId, accepted)
       setInvitations((prev) =>
-        prev.map((inv) => inv.id === invitationId ? { ...inv, status: r.data.status } : inv)
+        prev.map((inv) => inv.id === invitationId ? { ...inv, status: r.data.status || (accepted ? 'ACCEPTED' : 'REJECTED') } : inv)
       )
       if (accepted) {
-        const teamId = r.data.teamId
-        if (teamId) setTeamId(teamId)
-        setMsg('¡Invitación aceptada! Ahora eres parte del equipo.')
+        setMsg('¡Invitación aceptada! Ahora eres parte del equipo. Recarga para ver cambios.')
       } else {
         setMsg('Invitación rechazada.')
       }
@@ -53,8 +63,8 @@ export default function InvitationsPage() {
     }
   }
 
-  const pending = invitations.filter((i) => i.status === 'PENDING')
-  const past    = invitations.filter((i) => i.status !== 'PENDING')
+  const pending = invitations.filter((i) => (i.status || i.estado) === 'PENDING')
+  const past    = invitations.filter((i) => (i.status || i.estado) !== 'PENDING')
 
   return (
     <PageLayout>
@@ -86,7 +96,7 @@ export default function InvitationsPage() {
               <div key={inv.id} className={styles.inviteRow}>
                 <div className={styles.inviteInfo}>
                   <span className={styles.inviteName}>
-                    {isCapitan ? inv.playerName : inv.teamName}
+                    {isCapitan ? (inv.nombreJugador || inv.playerName) : (inv.nombreEquipo || inv.teamName)}
                   </span>
                   <span className={styles.inviteDate}>
                     {inv.createdAt ? new Date(inv.createdAt).toLocaleDateString('es-CO') : '—'}
@@ -127,21 +137,24 @@ export default function InvitationsPage() {
         <div className={`${styles.card} ${styles.cardMuted}`}>
           <h2 className={styles.cardTitle}>Historial</h2>
           <div className={styles.inviteList}>
-            {past.map((inv) => (
-              <div key={inv.id} className={styles.inviteRow}>
-                <div className={styles.inviteInfo}>
-                  <span className={styles.inviteName}>
-                    {isCapitan ? inv.playerName : inv.teamName}
-                  </span>
-                  <span className={styles.inviteDate}>
-                    {inv.createdAt ? new Date(inv.createdAt).toLocaleDateString('es-CO') : '—'}
+            {past.map((inv) => {
+              const status = inv.status || inv.estado
+              return (
+                <div key={inv.id} className={styles.inviteRow}>
+                  <div className={styles.inviteInfo}>
+                    <span className={styles.inviteName}>
+                      {isCapitan ? (inv.nombreJugador || inv.playerName) : (inv.nombreEquipo || inv.teamName)}
+                    </span>
+                    <span className={styles.inviteDate}>
+                      {inv.createdAt ? new Date(inv.createdAt).toLocaleDateString('es-CO') : '—'}
+                    </span>
+                  </div>
+                  <span className={`${styles.statusBadge} ${STATUS_CSS[status]}`}>
+                    {STATUS_LABELS[status] ?? status}
                   </span>
                 </div>
-                <span className={`${styles.statusBadge} ${STATUS_CSS[inv.status]}`}>
-                  {STATUS_LABELS[inv.status] ?? inv.status}
-                </span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}

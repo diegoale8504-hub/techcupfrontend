@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import PageLayout from '../../components/layout/PageLayout/PageLayout'
 import api from '../../api/axiosInstance'
+import { getAllTeams } from '../../api/teams'
 import styles from './CreateTeam.module.css'
 
 export default function CreateTeam() {
   const navigate              = useNavigate()
-  const { user, login }        = useAuth()
+  const { user, updateUser }   = useAuth()
 
   const [name,           setName]           = useState('')
   const [primaryColor,   setPrimaryColor]   = useState('#16A34A')
@@ -17,6 +18,14 @@ export default function CreateTeam() {
   const [loading,        setLoading]        = useState(false)
   const [error,          setError]          = useState(null)
   const [success,        setSuccess]        = useState(false)
+
+  // Navigate only after both `success` and the role/teamId state update are committed.
+  // useEffect runs post-commit, so ProtectedRoute sees role='CAPTAIN' before navigate fires.
+  useEffect(() => {
+    if (success && user?.role === 'CAPTAIN' && user?.teamId) {
+      navigate(`/teams/${user.teamId}/manage`, { replace: true })
+    }
+  }, [success, user?.role, user?.teamId, navigate])
 
   const handleLogoChange = (e) => {
     const file = e.target.files?.[0]
@@ -50,39 +59,37 @@ export default function CreateTeam() {
         try {
           const formData = new FormData()
           formData.append('logo', logoFile)
-          await api.post(`/api/teams/${newTeam.id}/logo`, formData, {
+          await api.patch(`/api/teams/${newTeam.id}/logo`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
           })
         } catch (logoErr) {
           console.error('Error subiendo logo:', logoErr)
-          // No detenemos el flujo si el logo falla, pero podríamos avisar
         }
       }
 
+      // Both setState calls are batched by React 18; the useEffect above
+      // fires after the commit and handles navigation.
+      updateUser({ teamId: newTeam.id, role: 'CAPTAIN' })
       setSuccess(true)
 
-      // ── PASO 3 & 4: Actualizar AuthContext ─────────────────────────
-      // Intentamos obtener el nuevo token (el backend debería devolverlo con role=CAPTAIN)
-      const newToken = newTeam.token || localStorage.getItem('techcup_token')
-
-      if (newToken) {
-        const payload = JSON.parse(atob(newToken.split('.')[1]))
-        login({
-          token:  newToken,
-          id:     payload.sub    ?? payload.id ?? user.id,
-          name:   payload.name   ?? user.name,
-          email:  payload.email  ?? user.email,
-          role:   payload.role   ?? 'CAPTAIN',
-          teamId: payload.teamId ?? newTeam.id,
-        })
-      }
-
-      // ── PASO 5: Ir al panel del equipo tras un breve delay ─────────
-      setTimeout(() => {
-        navigate(`/teams/${newTeam.id}/manage`)
-      }, 1500)
-
     } catch (err) {
+      // 422/409 = user is already a captain or has a team; recover via profile
+      if (err.response?.status === 422 || err.response?.status === 409) {
+        try {
+          // Instead of getAllTeams (which is forbidden for non-admins), use the user's profile
+          const res = await api.get(`/api/users/${user.id}`)
+          const profile = res.data
+          const teamId = profile.teamId || profile.team?.id
+          
+          if (teamId) {
+            updateUser({ teamId, role: 'CAPTAIN' })
+            setSuccess(true)
+            return
+          }
+        } catch (recoveryErr) {
+          console.error('Error recovering team from profile:', recoveryErr)
+        }
+      }
       if (err.response?.status === 409) {
         setError('Ya existe un equipo con ese nombre. Elige otro.')
       } else {

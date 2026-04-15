@@ -5,11 +5,11 @@ import Button from '../../components/ui/Button/Button'
 import Input from '../../components/ui/Input/Input'
 import { useAuth } from '../../hooks/useAuth'
 import { getEffectiveRole } from '../../utils/roles'
-import { createTeam } from '../../api/teams'
+import { createTeam, getAllTeams } from '../../api/teams'
 import styles from './CaptainPage.module.css'
 
 export default function CaptainPage() {
-  const { user, setTeamId } = useAuth()
+  const { user, updateUser } = useAuth()
   const navigate = useNavigate()
   const role = getEffectiveRole(user)
 
@@ -18,10 +18,10 @@ export default function CaptainPage() {
   const [loading, setLoading] = useState(false)
   const [apiError, setApiError] = useState(null)
 
-  // If already captain, redirect to team
+  // If already captain, redirect to their team management page
   useEffect(() => {
-    if (role === 'capitán') navigate('/team', { replace: true })
-  }, [role, navigate])
+    if (role === 'capitán' && user?.teamId) navigate(`/teams/${user.teamId}/manage`, { replace: true })
+  }, [role, user?.teamId, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -30,12 +30,37 @@ export default function CaptainPage() {
     setLoading(true)
     setApiError(null)
     try {
-      const res = await createTeam({ name: name.trim() })
+      console.log('[CaptainPage] calling createTeam...')
+      const res = await createTeam({ name: name.trim(), primaryColor: '#16A34A', secondaryColor: '#ffffff' })
+      console.log('[CaptainPage] createTeam response:', res.data)
       const teamId = res.data?.id
-      if (teamId) setTeamId(teamId)
-      navigate('/team')
+      if (teamId) {
+        console.log('[CaptainPage] calling updateUser with teamId:', teamId)
+        updateUser({ teamId, role: 'CAPTAIN' })
+      } else {
+        console.warn('[CaptainPage] teamId missing in response — cannot update role')
+      }
+      // Navigation is intentionally delegated to the useEffect below.
     } catch (err) {
-      setApiError(err.userMessage ?? 'No se pudo crear el equipo. Intenta de nuevo.')
+      console.error('[CaptainPage] createTeam error:', err.response?.status, err.response?.data, err.message)
+      // 409 or 422 = user is already a captain; recover their existing team via profile
+      if (err.response?.status === 422 || err.response?.status === 409) {
+        try {
+          console.log('[CaptainPage] recovering team from user profile...')
+          const res = await api.get(`/api/users/${user?.id}`)
+          const profile = res.data
+          const teamId = profile.teamId || profile.team?.id
+          
+          if (teamId) {
+            console.log('[CaptainPage] found teamId in profile:', teamId)
+            updateUser({ teamId, role: 'CAPTAIN' })
+            return
+          }
+        } catch (recoveryErr) {
+          console.error('[CaptainPage] profile recovery failed:', recoveryErr)
+        }
+      }
+      setApiError(err.userMessage ?? err.response?.data?.message ?? 'No se pudo crear el equipo. Intenta de nuevo.')
     } finally {
       setLoading(false)
     }

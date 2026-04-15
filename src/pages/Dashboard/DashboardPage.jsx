@@ -211,27 +211,39 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true)
+      
+      // Envolvemos todo en un gran try/catch para que un 500 no detenga la carga de la página
       try {
         const [tRes, sRes] = await Promise.allSettled([getTournament(), getTopScorers()])
-        if (tRes.status === 'fulfilled') setTournament(tRes.value.data)
-        if (sRes.status === 'fulfilled') setScorers(sRes.value.data ?? [])
-      } catch { /* handled individually */ }
+        
+        if (tRes.status === 'fulfilled') {
+          setTournament(tRes.value.data)
+        }
+        
+        if (sRes.status === 'fulfilled') {
+          setScorers(sRes.value.data ?? [])
+        }
+      } catch (err) {
+        console.log('[Dashboard] Note: Tournament data not available yet.')
+      }
 
-      if (role === 'árbitro') {
-        try {
+      try {
+        if (role === 'árbitro') {
           const r = await getRefereeMatches()
           setRefereeMatches(r.data ?? [])
-        } catch { /* no data */ }
-      } else if (['jugador', 'capitán', 'organizador'].includes(role)) {
-        try {
-          const r = await getMatchHistory()
+        } else if (['jugador', 'capitán', 'organizador'].includes(role)) {
+          // El 500 aquí suele ser porque no hay partidos aún
+          const r = await getMatchHistory(undefined, user?.teamId)
           setMatchHistory(r.data ?? [])
-        } catch { /* no data */ }
+        }
+      } catch (err) {
+        // Silencioso: es normal que no haya partidos al inicio
       }
+      
       setLoading(false)
     }
     fetchAll()
-  }, [role])
+  }, [role, user?.teamId])
 
   const greeting = user?.name
     ? `Bienvenid${user.name.toLowerCase().endsWith('a') ? 'a' : 'o'}, ${user.name}`

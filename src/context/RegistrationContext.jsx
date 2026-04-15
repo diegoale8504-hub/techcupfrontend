@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
@@ -166,7 +167,7 @@ export function RegistrationProvider({ children }) {
     } finally {
       setIsSubmitting(false)
     }
-  }, [login, navigate, clearRegistration])
+  }, [sessionId, login, navigate, clearRegistration])
 
   return (
     <RegistrationContext.Provider

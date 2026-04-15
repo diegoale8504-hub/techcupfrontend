@@ -16,6 +16,8 @@ const FORGOT_RULES = {
   email: [required(), email()],
 }
 
+const GOOGLE_AUTH_URL = `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:8443'}/oauth2/authorization/google`
+
 export default function LoginPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -60,7 +62,12 @@ export default function LoginPage() {
       // Backend returns { token, id, name, email, role }
       const { token: jwt, id, name, email: userEmail, role } = res.data
       login({ token: jwt, id, name, email: userEmail, role })
-      navigate('/dashboard')
+      
+      if (role === 'REFEREE') {
+        navigate('/referee/waiting')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err) {
       setApiError(err.userMessage ?? 'Credenciales inválidas. Verifique e intente de nuevo.')
     } finally {
@@ -148,7 +155,7 @@ export default function LoginPage() {
                 <div className={styles.divider}><span>— o —</span></div>
 
                 <a
-                  href="https://localhost:8443/oauth2/authorization/google"
+                  href={GOOGLE_AUTH_URL}
                   className={styles.btnGoogle}
                 >
                   <img
@@ -169,7 +176,7 @@ export default function LoginPage() {
                   Acceso para familiares mediante cuenta Gmail registrada.
                 </p>
                 <a
-                  href="https://localhost:8443/oauth2/authorization/google"
+                  href={GOOGLE_AUTH_URL}
                   className={styles.btnGoogle}
                 >
                   <img
