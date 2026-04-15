@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm run:*)",
       "Bash(npx eslint:*)",
-      "Read(//c/Users/diego/OneDrive/Documentos/U/DOSW/Corte 2/Proyecto/techcup-back/src/main/java/edu/dosw/proyecto/core/model/**)"
+      "Read(//c/Users/diego/OneDrive/Documentos/U/DOSW/Corte 2/Proyecto/techcup-back/src/main/java/edu/dosw/proyecto/core/model/**)",
+      "Bash(curl -sk https://localhost:8443/api/auth/login -o /dev/null -w \"%{http_code}\")",
+      "Bash(curl -s -X POST http://localhost:5173/api/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"test@test.com\",\"password\":\"test\"}' -w '\\\\nHTTP_STATUS:%{http_code}')"
     ]
   }
 }
