@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import { useRegistration } from '../../../hooks/useRegistration'
 import Stepper from '../../../components/ui/Stepper/Stepper'
 import Input from '../../../components/ui/Input/Input'
@@ -10,18 +10,18 @@ import styles from './RegistrationStep3Page.module.css'
 const STEPS = ['Datos personales', 'Datos institucionales', 'Perfil deportivo']
 
 const POSITION_OPTIONS = [
-  { value: '', label: 'Selecciona tu posición' },
+  { value: '',           label: 'Selecciona tu posición' },
   { value: 'GOALKEEPER', label: 'Portero' },
-  { value: 'DEFENDER', label: 'Defensa' },
+  { value: 'DEFENDER',   label: 'Defensa' },
   { value: 'MIDFIELDER', label: 'Centrocampista' },
-  { value: 'FORWARD', label: 'Delantero' },
+  { value: 'FORWARD',    label: 'Delantero' },
 ]
 
 const ALL_POSITIONS = [
   { value: 'GOALKEEPER', label: 'Portero' },
-  { value: 'DEFENDER', label: 'Defensa' },
+  { value: 'DEFENDER',   label: 'Defensa' },
   { value: 'MIDFIELDER', label: 'Centrocampista' },
-  { value: 'FORWARD', label: 'Delantero' },
+  { value: 'FORWARD',    label: 'Delantero' },
 ]
 
 const RULES = {
@@ -29,8 +29,26 @@ const RULES = {
   jerseyNumber: [required()],
 }
 
+function extractFieldErrors(data) {
+  if (!data) return {}
+  if (data.fieldErrors && typeof data.fieldErrors === 'object' && !Array.isArray(data.fieldErrors))
+    return data.fieldErrors
+  if (Array.isArray(data.errors))
+    return Object.fromEntries(data.errors.map((e) => [e.field, e.defaultMessage ?? e.message ?? 'Campo inválido']))
+  if (data.errors && typeof data.errors === 'object')
+    return data.errors
+  return {}
+}
+
 export default function RegistrationStep3Page() {
-  const { sessionId, saveStep3, isSubmitting, error } = useRegistration()
+  const {
+    sessionId,
+    saveStep3,
+    retryComplete,
+    isSubmitting,
+    error,
+    completeFailed,
+  } = useRegistration()
 
   const [form, setForm] = useState({
     mainPosition: '',
@@ -64,8 +82,11 @@ export default function RegistrationStep3Page() {
         jerseyNumber: parseInt(form.jerseyNumber, 10),
         secondaryPositions,
       })
-    } catch {
-      // error shown via context
+    } catch (err) {
+      if (err.response?.status === 400) {
+        const apiErrors = extractFieldErrors(err.response.data)
+        if (Object.keys(apiErrors).length > 0) setErrors(apiErrors)
+      }
     }
   }
 
@@ -131,14 +152,30 @@ export default function RegistrationStep3Page() {
             </label>
           </div>
 
+          {/* Error genérico del contexto */}
           {error && <p className={styles.apiError}>{error}</p>}
 
-          <div className={styles.actions}>
-            <a href="/register/step2" className={styles.backLink}>← Anterior</a>
-            <Button type="submit" variant="primary" loading={isSubmitting}>
-              Finalizar registro
-            </Button>
-          </div>
+          {/* Bloque de retry cuando /complete falló pero step3 ya fue enviado */}
+          {completeFailed ? (
+            <div className={styles.actions}>
+              <span />
+              <Button
+                type="button"
+                variant="primary"
+                loading={isSubmitting}
+                onClick={retryComplete}
+              >
+                Reintentar
+              </Button>
+            </div>
+          ) : (
+            <div className={styles.actions}>
+              <Link to="/register/step2" className={styles.backLink}>← Anterior</Link>
+              <Button type="submit" variant="primary" loading={isSubmitting}>
+                Finalizar registro
+              </Button>
+            </div>
+          )}
         </form>
       </div>
     </div>

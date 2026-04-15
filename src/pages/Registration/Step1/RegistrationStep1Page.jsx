@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import { useRegistration } from '../../../hooks/useRegistration'
 import Stepper from '../../../components/ui/Stepper/Stepper'
 import Input from '../../../components/ui/Input/Input'
@@ -10,18 +10,18 @@ import styles from './RegistrationStep1Page.module.css'
 const STEPS = ['Datos personales', 'Datos institucionales', 'Perfil deportivo']
 
 const DOC_OPTIONS = [
-  { value: '',                 label: 'Selecciona tipo de documento' },
-  { value: 'CEDULA',           label: 'Cédula de ciudadanía' },
-  { value: 'CEDULA_EXTRANJERA',label: 'Cédula de extranjería' },
-  { value: 'PASAPORTE',        label: 'Pasaporte' },
-  { value: 'CEDULA_DIGITAL',   label: 'Cédula digital' },
+  { value: '',                  label: 'Selecciona tipo de documento' },
+  { value: 'CEDULA',            label: 'Cédula de ciudadanía' },
+  { value: 'CEDULA_EXTRANJERA', label: 'Cédula de extranjería' },
+  { value: 'PASAPORTE',         label: 'Pasaporte' },
+  { value: 'CEDULA_DIGITAL',    label: 'Cédula digital' },
 ]
 
 const GENDER_OPTIONS = [
-  { value: '',           label: 'Selecciona género' },
-  { value: 'Masculino',  label: 'Masculino' },
-  { value: 'Femenino',   label: 'Femenino' },
-  { value: 'Otro',       label: 'Otro' },
+  { value: '',          label: 'Selecciona género' },
+  { value: 'Masculino', label: 'Masculino' },
+  { value: 'Femenino',  label: 'Femenino' },
+  { value: 'Otro',      label: 'Otro' },
 ]
 
 const RULES = {
@@ -31,6 +31,19 @@ const RULES = {
   idNumber:     [required(), numeric()],
   age:          [required()],
   gender:       [required('*Selecciona un género')],
+}
+
+// Extrae errores por campo del body de un error 400 del backend.
+// Soporta: { fieldErrors: {...} }, { errors: [{field, defaultMessage}] }, { errors: {...} }
+function extractFieldErrors(data) {
+  if (!data) return {}
+  if (data.fieldErrors && typeof data.fieldErrors === 'object' && !Array.isArray(data.fieldErrors))
+    return data.fieldErrors
+  if (Array.isArray(data.errors))
+    return Object.fromEntries(data.errors.map((e) => [e.field, e.defaultMessage ?? e.message ?? 'Campo inválido']))
+  if (data.errors && typeof data.errors === 'object')
+    return data.errors
+  return {}
 }
 
 export default function RegistrationStep1Page() {
@@ -54,7 +67,12 @@ export default function RegistrationStep1Page() {
     if (!isValid) { setErrors(fieldErrors); return }
     try {
       await saveStep1({ ...form, age: parseInt(form.age, 10) })
-    } catch { /* error shown via context */ }
+    } catch (err) {
+      if (err.response?.status === 400) {
+        const apiErrors = extractFieldErrors(err.response.data)
+        if (Object.keys(apiErrors).length > 0) setErrors(apiErrors)
+      }
+    }
   }
 
   return (
@@ -71,15 +89,15 @@ export default function RegistrationStep1Page() {
         <form onSubmit={handleSubmit} noValidate>
           <div className={styles.fields}>
             <div className={styles.row}>
-              <Input label="Nombres" name="firstName" value={form.firstName} onChange={handleChange} error={errors.firstName} placeholder="Ej: Carlos Andrés" required />
-              <Input label="Apellidos" name="lastName" value={form.lastName} onChange={handleChange} error={errors.lastName} placeholder="Ej: Rodríguez Gómez" required />
+              <Input label="Nombres"    name="firstName" value={form.firstName} onChange={handleChange} error={errors.firstName} placeholder="Ej: Carlos Andrés" required />
+              <Input label="Apellidos"  name="lastName"  value={form.lastName}  onChange={handleChange} error={errors.lastName}  placeholder="Ej: Rodríguez Gómez" required />
             </div>
             <div className={styles.row}>
-              <Input label="Tipo de documento" name="documentType" type="select" value={form.documentType} onChange={handleChange} error={errors.documentType} options={DOC_OPTIONS} required />
-              <Input label="Número de documento" name="idNumber" value={form.idNumber} onChange={handleChange} error={errors.idNumber} placeholder="Ej: 1234567890" required />
+              <Input label="Tipo de documento"   name="documentType" type="select" value={form.documentType} onChange={handleChange} error={errors.documentType} options={DOC_OPTIONS} required />
+              <Input label="Número de documento" name="idNumber"     value={form.idNumber}     onChange={handleChange} error={errors.idNumber}     placeholder="Ej: 1234567890" required />
             </div>
             <div className={styles.row}>
-              <Input label="Edad" name="age" type="number" value={form.age} onChange={handleChange} error={errors.age} placeholder="Ej: 21" required />
+              <Input label="Edad"   name="age"    type="number" value={form.age}    onChange={handleChange} error={errors.age}    placeholder="Ej: 21" required />
               <Input label="Género" name="gender" type="select" value={form.gender} onChange={handleChange} error={errors.gender} options={GENDER_OPTIONS} required />
             </div>
           </div>
@@ -87,7 +105,7 @@ export default function RegistrationStep1Page() {
           {error && <p className={styles.apiError}>{error}</p>}
 
           <div className={styles.actions}>
-            <a href="/register" className={styles.backLink}>← Cambiar tipo</a>
+            <Link to="/register" className={styles.backLink}>← Cambiar tipo</Link>
             <Button type="submit" variant="primary" loading={isSubmitting}>
               Continuar →
             </Button>

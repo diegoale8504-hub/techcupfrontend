@@ -1,0 +1,229 @@
+/* ── Centrado en el área principal ─────────────────────────────── */
+.wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-lg) 0;
+}
+
+/* ── Card con cristal idéntico al Login / Registro ─────────────── */
+.card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+  padding: 40px;
+  width: 100%;
+  max-width: 520px;
+  backdrop-filter: blur(4px);
+}
+
+/* ── Cabecera ──────────────────────────────────────────────────── */
+.header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.iconBadge {
+  font-size: 40px;
+  margin-bottom: var(--space-sm);
+  line-height: 1;
+}
+
+.title {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-gray);
+}
+
+/* ── Campos ────────────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--space-lg);
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.required {
+  color: var(--color-error);
+  margin-left: 2px;
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--color-gray);
+  font-size: 12px;
+}
+
+.input {
+  padding: 12px 14px;
+  border: 1.5px solid var(--color-gray-light);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  color: var(--color-text);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Colores ───────────────────────────────────────────────────── */
+.colorsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.colorField {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--color-gray-light);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.colorInput {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  flex-shrink: 0;
+}
+
+.colorHex {
+  font-size: 13px;
+  color: var(--color-gray);
+  font-family: monospace;
+}
+
+/* ── Vista previa del uniforme ─────────────────────────────────── */
+.colorPreview {
+  height: 48px;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.colorPreviewLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  mix-blend-mode: overlay;
+}
+
+/* ── Logo ──────────────────────────────────────────────────────── */
+.fileInput {
+  padding: 8px;
+  border: 1.5px dashed var(--color-gray-light);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--color-gray);
+  cursor: pointer;
+  background: #fafafa;
+}
+
+.logoPreview {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 8px;
+  border: 2px solid var(--color-gray-light);
+}
+
+/* ── Error ─────────────────────────────────────────────────────── */
+.error {
+  background: #fff0f0;
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-error);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+/* ── Acciones ──────────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.btnPrimary {
+  flex: 1;
+  padding: 13px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-title);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btnPrimary:hover {
+  background: var(--color-primary-hover, #15803d);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  flex: 1;
+  padding: 13px;
+  background: transparent;
+  color: var(--color-gray);
+  border: 1.5px solid var(--color-gray-light);
+  border-radius: var(--radius-md);
+  font-family: var(--font-title);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btnSecondary:hover {
+  border-color: #aaa;
+  color: var(--color-text);
+}
+
+.btnSecondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

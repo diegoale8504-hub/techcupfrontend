@@ -1,0 +1,159 @@
+.root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/images/bg-campo.png');
+  background-size: cover;
+  background-position: center;
+  padding: 24px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.iconWrapper {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #16A34A;
+  margin: 0;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+  text-align: center;
+}
+
+/* ── Bloque de rol ── */
+.roleBlock {
+  width: 100%;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.roleLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.roleBadge {
+  font-size: 18px;
+  font-weight: 800;
+  padding: 4px 16px;
+  border-radius: 999px;
+}
+
+.roleBadgeOk {
+  background: #16A34A;
+  color: #fff;
+}
+
+.roleBadgeWarn {
+  background: #f59e0b;
+  color: #fff;
+}
+
+.roleWarning {
+  font-size: 13px;
+  color: #b45309;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── Tabla de debug ── */
+.debugBlock {
+  width: 100%;
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.debugTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 10px;
+}
+
+.debugTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.debugTable tr + tr td {
+  border-top: 1px solid #f0f0f0;
+}
+
+.debugKey {
+  color: #888;
+  font-weight: 600;
+  padding: 5px 8px 5px 0;
+  width: 60px;
+}
+
+.debugVal {
+  color: #222;
+  padding: 5px 0;
+}
+
+.debugVal em {
+  color: #bbb;
+  font-style: italic;
+}
+
+/* ── Footer ── */
+.pending {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.logoutBtn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.logoutBtn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}

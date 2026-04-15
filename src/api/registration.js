@@ -1,7 +1,8 @@
 import axiosInstance from './axiosInstance'
 
-export const selectUserType = (userType) =>
-  axiosInstance.post('/api/registration/type', { userType })
+// POST /api/registration/type — body: { userType: "STUDENT" }
+export const selectUserType = (type) =>
+  axiosInstance.post('/api/registration/type', { userType: type })
 
 export const submitStep1 = (data) =>
   axiosInstance.post('/api/registration/step1', data)
@@ -12,5 +13,6 @@ export const submitStep2 = (data) =>
 export const submitStep3 = (data) =>
   axiosInstance.post('/api/registration/step3', data)
 
-export const completeRegistration = (sessionId) =>
+// POST /api/registration/complete
+export const completeRegistrationApi = (sessionId) =>
   axiosInstance.post('/api/registration/complete', { sessionId })

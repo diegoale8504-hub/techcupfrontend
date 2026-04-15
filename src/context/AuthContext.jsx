@@ -18,8 +18,8 @@ function isExpired(payload) {
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser]     = useState(null)
-  const [token, setToken]   = useState(null)
+  const [user,    setUser]    = useState(null)
+  const [token,   setToken]   = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -31,10 +31,11 @@ export function AuthProvider({ children }) {
         const userData = storedUser
           ? JSON.parse(storedUser)
           : {
-              id:    payload.sub ?? null,
-              name:  null,
-              email: payload.sub ?? null,
-              role:  payload.role ?? null,
+              id:     payload.sub    ?? null,
+              name:   payload.name   ?? null,
+              email:  payload.email  ?? payload.sub ?? null,
+              role:   payload.role   ?? null,
+              teamId: payload.teamId ?? null,
             }
         setToken(storedToken)
         setUser(userData)
@@ -46,7 +47,11 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  // data = { token, id, name, email, role } — objeto directo del backend
+  /**
+   * login(data) — data = { token, id, name, email, role, teamId? }
+   * Llamar con los datos completos devueltos por el backend.
+   * También se usa al crear equipo: el backend devuelve un nuevo token con role=CAPTAIN.
+   */
   const login = useCallback((data) => {
     const { token: newToken, ...userData } = data
     localStorage.setItem(TOKEN_KEY, newToken)

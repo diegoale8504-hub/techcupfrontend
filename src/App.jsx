@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
-import RoleGuard from './components/auth/RoleGuard'
+import Layout from './components/Layout'
 import { RegistrationProvider } from './context/RegistrationContext'
 
 // Auth / Landing
@@ -22,21 +22,31 @@ import CalendarPage from './pages/Calendar/CalendarPage'
 import StandingsPage from './pages/Standings/StandingsPage'
 import ProfilePage from './pages/Profile/ProfilePage'
 import PlayerSearchPage from './pages/PlayerSearch/PlayerSearchPage'
+import InvitationsPage from './pages/Invitations/InvitationsPage'
 
 // Protected pages — Captain
 import TeamPage from './pages/Team/TeamPage'
-import InvitationsPage from './pages/Invitations/InvitationsPage'
 import PaymentPage from './pages/Payment/PaymentPage'
 import CaptainPage from './pages/Captain/CaptainPage'
 
 // Protected pages — Referee
 import MatchesPage from './pages/Matches/MatchesPage'
+import RefereeWaitingPage from './pages/Referee/RefereeWaitingPage'
 
 // Protected pages — Organizer
 import SettingsPage from './pages/Settings/SettingsPage'
 
+// Protected pages — Teams
+import CreateTeam from './pages/teams/CreateTeam'
+import ManageTeam from './pages/teams/ManageTeam'
+
 // Placeholders — páginas pendientes de implementar
-const NotificationsPage = () => <div>Página Notificaciones</div>
+const NotificationsPage    = () => <div style={{ padding: 32 }}><h2>Notificaciones</h2></div>
+const TournamentActivePage = () => <div style={{ padding: 32 }}><h2>Torneo Activo</h2></div>
+const StatisticsPage       = () => <div style={{ padding: 32 }}><h2>Estadísticas</h2></div>
+const LineupsPage          = () => <div style={{ padding: 32 }}><h2>Alineaciones</h2></div>
+const TeamPaymentPage      = () => <div style={{ padding: 32 }}><h2>Comprobante de Pago</h2></div>
+const TeamViewPage         = () => <div style={{ padding: 32 }}><h2>Mi Equipo</h2></div>
 
 function RegistrationLayout() {
   return (
@@ -50,47 +60,65 @@ export default function App() {
   return (
     <Routes>
       {/* ── Rutas públicas ── */}
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/"               element={<LandingPage />} />
+      <Route path="/login"          element={<LoginPage />} />
       <Route path="/oauth2/callback" element={<OAuthCallbackPage />} />
-      <Route path="/auth/callback" element={<OAuthCallbackPage />} />
+      <Route path="/auth/callback"  element={<OAuthCallbackPage />} />
 
       <Route path="/register" element={<RegistrationLayout />}>
         <Route index element={<UserTypeSelectionPage />} />
-        <Route path="step1" element={<RegistrationStep1Page />} />
-        <Route path="step2" element={<RegistrationStep2Page />} />
-        <Route path="step3" element={<RegistrationStep3Page />} />
+        <Route path="step1"   element={<RegistrationStep1Page />} />
+        <Route path="step2"   element={<RegistrationStep2Page />} />
+        <Route path="step3"   element={<RegistrationStep3Page />} />
         <Route path="success" element={<RegistrationSuccessPage />} />
       </Route>
 
-      {/* ── Rutas protegidas (cualquier usuario autenticado) ── */}
+      {/* ── Rutas protegidas: autenticación + Layout ── */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard"     element={<DashboardPage />} />
-        <Route path="/profile/:id"   element={<ProfilePage />} />
-        <Route path="/profile"       element={<ProfilePage />} />
-        <Route path="/notifications" element={<NotificationsPage />} />
-        <Route path="/tournament"    element={<TournamentPage />} />
-        <Route path="/calendar"      element={<CalendarPage />} />
-        <Route path="/standings"     element={<StandingsPage />} />
-        <Route path="/players"       element={<PlayerSearchPage />} />
-        <Route path="/team"          element={<TeamPage />} />
-        <Route path="/invitations"   element={<InvitationsPage />} />
-        <Route path="/captain"       element={<CaptainPage />} />
+        <Route element={<Layout />}>
 
-        {/* Solo CAPTAIN */}
-        <Route element={<ProtectedRoute allowedRoles={['CAPTAIN']} />}>
-          <Route path="/payments" element={<PaymentPage />} />
-          <Route path="/payment"  element={<PaymentPage />} />
-        </Route>
+          {/* Accesibles a cualquier rol autenticado */}
+          <Route path="/dashboard"     element={<DashboardPage />} />
+          <Route path="/profile/:id"   element={<ProfilePage />} />
+          <Route path="/profile"       element={<ProfilePage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/tournament"    element={<TournamentPage />} />
+          <Route path="/calendar"      element={<CalendarPage />} />
+          <Route path="/standings"     element={<StandingsPage />} />
+          <Route path="/players"       element={<PlayerSearchPage />} />
+          <Route path="/invitations"   element={<InvitationsPage />} />
+          <Route path="/captain"       element={<CaptainPage />} />
 
-        {/* Solo REFEREE */}
-        <Route element={<ProtectedRoute allowedRoles={['REFEREE']} />}>
-          <Route path="/matches" element={<MatchesPage />} />
-        </Route>
+          <Route path="/tournaments/active"            element={<TournamentActivePage />} />
+          <Route path="/tournaments/active/statistics" element={<StatisticsPage />} />
 
-        {/* Solo ADMINISTRATIVE / ADMINISTRATOR */}
-        <Route element={<ProtectedRoute allowedRoles={['ADMINISTRATIVE', 'ADMINISTRATOR']} />}>
-          <Route path="/settings" element={<SettingsPage />} />
+          {/* PLAYER y CAPTAIN — crear equipo */}
+          <Route element={<ProtectedRoute allowedRoles={['PLAYER', 'CAPTAIN']} />}>
+            <Route path="/teams/create" element={<CreateTeam />} />
+          </Route>
+
+          {/* Solo CAPTAIN */}
+          <Route element={<ProtectedRoute allowedRoles={['CAPTAIN']} />}>
+            <Route path="/teams/:id"         element={<TeamViewPage />} />
+            <Route path="/teams/:id/manage"  element={<ManageTeam />} />
+            <Route path="/teams/:id/payment" element={<TeamPaymentPage />} />
+            <Route path="/teams/:id/lineups" element={<LineupsPage />} />
+            <Route path="/team"              element={<TeamPage />} />
+            <Route path="/payments"          element={<PaymentPage />} />
+            <Route path="/payment"           element={<PaymentPage />} />
+          </Route>
+
+          {/* Solo REFEREE */}
+          <Route element={<ProtectedRoute allowedRoles={['REFEREE']} />}>
+            <Route path="/referee/waiting" element={<RefereeWaitingPage />} />
+            <Route path="/matches"         element={<MatchesPage />} />
+          </Route>
+
+          {/* Solo ADMINISTRATIVE / ADMINISTRATOR */}
+          <Route element={<ProtectedRoute allowedRoles={['ADMINISTRATIVE', 'ADMINISTRATOR']} />}>
+            <Route path="/settings" element={<SettingsPage />} />
+          </Route>
+
         </Route>
       </Route>
 

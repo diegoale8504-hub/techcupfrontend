@@ -1,75 +1,90 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../../hooks/useAuth'
-import { getEffectiveRole } from '../../../utils/roles'
 import styles from './Sidebar.module.css'
 
-const menuConfig = {
-  estudiante: [
-    { to: '/dashboard',   label: 'Inicio' },
-    { to: '/tournament',  label: 'Torneo' },
-    { to: '/calendar',    label: 'Calendario' },
-    { to: '/standings',   label: 'Tabla' },
-    { to: '/profile',     label: 'Mi perfil' },
-    { to: '/players',     label: 'Jugador' },
-    { to: '/captain',     label: 'Capitán', disabled: true, tooltip: 'Crea un equipo para ser capitán' },
-  ],
-  jugador: [
-    { to: '/dashboard',    label: 'Inicio' },
-    { to: '/tournament',   label: 'Torneo' },
-    { to: '/team',         label: 'Mi equipo' },
-    { to: '/calendar',     label: 'Calendario' },
-    { to: '/standings',    label: 'Tabla' },
-    { to: '/invitations',  label: 'Invitaciones' },
-    { to: '/profile',      label: 'Mi perfil' },
-    { to: '/captain',      label: 'Capitán' },
-  ],
-  capitán: [
-    { to: '/dashboard',    label: 'Inicio' },
-    { to: '/tournament',   label: 'Torneo' },
-    { to: '/payments',     label: 'Pagos' },
-    { to: '/calendar',     label: 'Calendario' },
-    { to: '/standings',    label: 'Tabla' },
-    { to: '/team',         label: 'Equipo' },
-    { to: '/profile',      label: 'Mi perfil' },
-    { to: '/invitations',  label: 'Invitaciones' },
-    { to: '/captain',      label: 'Capitán', disabled: true, tooltip: 'Ya eres capitán' },
-  ],
-  organizador: [
-    { to: '/dashboard',   label: 'Inicio' },
-    { to: '/tournament',  label: 'Torneo' },
-    { to: '/payments',    label: 'Pagos' },
-    { to: '/calendar',    label: 'Calendario' },
-    { to: '/standings',   label: 'Tabla' },
-    { to: '/profile',     label: 'Mi perfil' },
-    { to: '/settings',    label: 'Configuración' },
-  ],
-  árbitro: [
-    { to: '/dashboard',  label: 'Inicio' },
-    { to: '/matches',    label: 'Partidos' },
-    { to: '/calendar',   label: 'Calendario' },
-    { to: '/standings',  label: 'Tabla' },
-    { to: '/profile',    label: 'Mi perfil' },
-  ],
-  padre: [
+/**
+ * Construye los ítems de navegación según el rol y teamId del usuario.
+ * Se recalcula automáticamente cuando AuthContext cambia (p.ej. PLAYER → CAPTAIN).
+ */
+function buildNavItems(user) {
+  const role   = user?.role   ?? ''
+  const teamId = user?.teamId ?? null
+
+  if (role === 'CAPTAIN') {
+    const teamBase = teamId ? [
+      { to: `/teams/${teamId}`,         label: 'Mi Equipo' },
+      { to: `/teams/${teamId}/manage`,  label: 'Gestionar Equipo' },
+      { to: `/teams/${teamId}/payment`, label: 'Pagos' },
+      { to: `/teams/${teamId}/lineups`, label: 'Alineaciones' },
+    ] : []
+    return [
+      { to: '/dashboard',    label: 'Inicio' },
+      ...teamBase,
+      { to: '/tournament',   label: 'Torneo' },
+      { to: '/calendar',     label: 'Calendario' },
+      { to: '/standings',    label: 'Tabla' },
+      { to: '/invitations',  label: 'Invitaciones' },
+      { to: '/profile',      label: 'Mi perfil' },
+    ]
+  }
+
+  if (role === 'PLAYER') {
+    return [
+      { to: '/dashboard',    label: 'Inicio' },
+      { to: '/teams/create', label: 'Crear Equipo' },
+      { to: '/invitations',  label: 'Mis Invitaciones' },
+      ...(teamId ? [{ to: `/teams/${teamId}`, label: 'Mi Equipo' }] : []),
+      { to: '/tournament',   label: 'Torneo' },
+      { to: '/calendar',     label: 'Calendario' },
+      { to: '/standings',    label: 'Tabla' },
+      { to: '/profile',      label: 'Mi perfil' },
+    ]
+  }
+
+  if (role === 'REFEREE') {
+    return [
+      { to: '/dashboard', label: 'Inicio' },
+      { to: '/matches',   label: 'Partidos' },
+      { to: '/calendar',  label: 'Calendario' },
+      { to: '/standings', label: 'Tabla' },
+      { to: '/profile',   label: 'Mi perfil' },
+    ]
+  }
+
+  if (role === 'ADMINISTRATIVE' || role === 'ADMINISTRATOR') {
+    return [
+      { to: '/dashboard',  label: 'Inicio' },
+      { to: '/tournament', label: 'Torneo' },
+      { to: '/calendar',   label: 'Calendario' },
+      { to: '/standings',  label: 'Tabla' },
+      { to: '/settings',   label: 'Configuración' },
+      { to: '/profile',    label: 'Mi perfil' },
+    ]
+  }
+
+  if (role === 'FAMILY_MEMBER') {
+    return [
+      { to: '/dashboard',  label: 'Inicio' },
+      { to: '/tournament', label: 'Torneo' },
+      { to: '/calendar',   label: 'Calendario' },
+      { to: '/standings',  label: 'Tabla' },
+      { to: '/profile',    label: 'Mi perfil' },
+    ]
+  }
+
+  // Default: STUDENT, GRADUATE, PROFESSOR y cualquier rol no mapeado
+  return [
     { to: '/dashboard',  label: 'Inicio' },
     { to: '/tournament', label: 'Torneo' },
     { to: '/calendar',   label: 'Calendario' },
     { to: '/standings',  label: 'Tabla' },
     { to: '/profile',    label: 'Mi perfil' },
-  ],
-  graduado: [
-    { to: '/dashboard',  label: 'Inicio' },
-    { to: '/tournament', label: 'Torneo' },
-    { to: '/calendar',   label: 'Calendario' },
-    { to: '/standings',  label: 'Tabla' },
-    { to: '/profile',    label: 'Mi perfil' },
-  ],
+  ]
 }
 
 export default function Sidebar() {
   const { user, logout } = useAuth()
-  const effectiveRole = getEffectiveRole(user)
-  const navItems = menuConfig[effectiveRole] ?? menuConfig.estudiante
+  const navItems = buildNavItems(user)
 
   return (
     <aside className={styles.sidebar}>
@@ -79,29 +94,18 @@ export default function Sidebar() {
       </div>
 
       <nav className={styles.nav}>
-        {navItems.map((item, i) =>
-          item.disabled ? (
-            <span
-              key={item.label}
-              className={`${styles.link} ${styles.disabled}`}
-              style={{ animationDelay: `${i * 0.06}s` }}
-              title={item.tooltip}
-            >
-              {item.label}
-            </span>
-          ) : (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                [styles.link, isActive ? styles.active : ''].filter(Boolean).join(' ')
-              }
-              style={{ animationDelay: `${i * 0.06}s` }}
-            >
-              {item.label}
-            </NavLink>
-          )
-        )}
+        {navItems.map((item, i) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              [styles.link, isActive ? styles.active : ''].filter(Boolean).join(' ')
+            }
+            style={{ animationDelay: `${i * 0.06}s` }}
+          >
+            {item.label}
+          </NavLink>
+        ))}
       </nav>
 
       <div className={styles.footer}>
