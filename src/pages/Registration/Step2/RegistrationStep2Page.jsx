@@ -10,27 +10,46 @@ import styles from './RegistrationStep2Page.module.css'
 const STEPS = ['Datos personales', 'Datos institucionales', 'Perfil deportivo']
 
 // Field names match exactly what the backend expects in RegistrationStep2Request
+const ACADEMIC_PROGRAMS = [
+  { value: '',                                    label: 'Selecciona un programa' },
+  { value: 'INGENIERIA_EN_BIOTECNOLOGIA',         label: 'Ingeniería en Biotecnología' },
+  { value: 'INGENIERIA_DE_INTELIGENCIA_ARTIFICIAL', label: 'Ingeniería de Inteligencia Artificial' },
+  { value: 'INGENIERIA_DE_CIBERSEGURIDAD',        label: 'Ingeniería de Ciberseguridad' },
+  { value: 'INGENIERIA_CIVIL',                    label: 'Ingeniería Civil' },
+  { value: 'INGENIERIA_AMBIENTAL',                label: 'Ingeniería Ambiental' },
+  { value: 'INGENIERIA_ESTADISTICA',              label: 'Ingeniería Estadística' },
+  { value: 'INGENIERIA_ELECTRICA',                label: 'Ingeniería Eléctrica' },
+  { value: 'INGENIERIA_DE_SISTEMAS',              label: 'Ingeniería de Sistemas' },
+  { value: 'INGENIERIA_INDUSTRIAL',               label: 'Ingeniería Industrial' },
+  { value: 'INGENIERIA_ELECTRONICA',              label: 'Ingeniería Electrónica' },
+  { value: 'ECONOMIA',                            label: 'Economía' },
+  { value: 'ADMINISTRACION_DE_EMPRESAS',          label: 'Administración de Empresas' },
+  { value: 'MATEMATICAS',                         label: 'Matemáticas' },
+  { value: 'INGENIERIA_MECANICA',                 label: 'Ingeniería Mecánica' },
+  { value: 'INGENIERIA_BIOMEDICA',                label: 'Ingeniería Biomédica' },
+]
+
 const FIELD_CONFIGS = {
   STUDENT: [
-    { name: 'institutionalEmail', label: 'Correo institucional', type: 'email', placeholder: 'usuario@mail.escuelaing.edu.co', rules: [required(), email()] },
+    { name: 'institutionalEmail', label: 'Correo institucional', type: 'email',    placeholder: 'usuario@mail.escuelaing.edu.co', rules: [required(), email()] },
     { name: 'password',           label: 'Contraseña',           type: 'password', placeholder: '••••••••', rules: [required()] },
     { name: 'confirmPassword',    label: 'Confirmar contraseña', type: 'password', placeholder: '••••••••', rules: [required()] },
     { name: 'studentCode',        label: 'Código estudiantil',   type: 'text',     placeholder: 'Ej: 0000000000', rules: [required(), numeric()] },
-    { name: 'academicProgram',    label: 'Programa académico',   type: 'text',     placeholder: 'Ej: Ingeniería de Sistemas', rules: [required()] },
+    { name: 'academicProgram',    label: 'Programa académico',   type: 'select',   rules: [required('*Selecciona un programa')], options: ACADEMIC_PROGRAMS },
     { name: 'semester',           label: 'Semestre actual',      type: 'number',   placeholder: 'Ej: 5', rules: [required()] },
   ],
   GRADUATE: [
-    { name: 'institutionalEmail', label: 'Correo institucional', type: 'email', placeholder: 'usuario@mail.escuelaing.edu.co', rules: [required(), email()] },
+    { name: 'institutionalEmail', label: 'Correo institucional', type: 'email',    placeholder: 'usuario@mail.escuelaing.edu.co', rules: [required(), email()] },
     { name: 'password',           label: 'Contraseña',           type: 'password', placeholder: '••••••••', rules: [required()] },
     { name: 'confirmPassword',    label: 'Confirmar contraseña', type: 'password', placeholder: '••••••••', rules: [required()] },
-    { name: 'academicProgram',    label: 'Programa de egreso',   type: 'text',     placeholder: 'Ej: Ingeniería Civil', rules: [required()] },
+    { name: 'academicProgram',    label: 'Programa de egreso',   type: 'select',   rules: [required('*Selecciona un programa')], options: ACADEMIC_PROGRAMS },
     { name: 'graduationYear',     label: 'Año de graduación',    type: 'number',   placeholder: 'Ej: 2020', rules: [required()] },
   ],
   PROFESSOR: [
-    { name: 'institutionalEmail', label: 'Correo institucional', type: 'email',   placeholder: 'usuario@escuelaing.edu.co', rules: [required(), email()] },
+    { name: 'institutionalEmail', label: 'Correo institucional', type: 'email',    placeholder: 'usuario@escuelaing.edu.co', rules: [required(), email()] },
     { name: 'password',           label: 'Contraseña',           type: 'password', placeholder: '••••••••', rules: [required()] },
     { name: 'confirmPassword',    label: 'Confirmar contraseña', type: 'password', placeholder: '••••••••', rules: [required()] },
-    { name: 'academicProgram',    label: 'Programa que dicta',   type: 'text',     placeholder: 'Ej: Ingeniería de Sistemas', rules: [required()] },
+    { name: 'academicProgram',    label: 'Programa que dicta',   type: 'select',   rules: [required('*Selecciona un programa')], options: ACADEMIC_PROGRAMS },
     { name: 'teachingArea',       label: 'Área de docencia',     type: 'text',     placeholder: 'Ej: Ingeniería de Software', rules: [required()] },
   ],
   ADMINISTRATIVE: [
@@ -114,6 +133,7 @@ export default function RegistrationStep2Page() {
                 onChange={handleChange}
                 error={errors[field.name]}
                 placeholder={field.placeholder}
+                options={field.options}
                 required
               />
             ))}
