@@ -95,7 +95,7 @@ export default function RegistrationStep2Page() {
     <div className={`${styles.root} page-enter`}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <img src="/images/logofinal.png" alt="TechCupFútbol" className={styles.logoImg} />
+          <img src="/images/logoFinalFinal.png" alt="TechCupFútbol" className={styles.logoImg} />
           <h1 className={styles.title}>Registro</h1>
         </div>
         <Stepper steps={STEPS} currentStep={1} />
