@@ -1,19 +1,30 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useRegistration } from '../../../hooks/useRegistration'
 import Button from '../../../components/ui/Button/Button'
 import styles from './UserTypeSelectionPage.module.css'
 
 const USER_TYPES = [
-  { value: 'STUDENT',        label: 'Estudiante',      icon: '/images/registro_Estudiante.png', desc: 'Estudiante activo de la Escuela' },
-  { value: 'GRADUATE',       label: 'Graduado',        icon: '/images/registro_Graduado.png', desc: 'Egresado de la institución' },
-  { value: 'PROFESSOR',      label: 'Profesor',        icon: '/images/registro_Profesor.png', desc: 'Docente de la Escuela' },
-  { value: 'ADMINISTRATIVE', label: 'Administrativo',  icon: '/images/registro_Administrativo.png', desc: 'Personal administrativo' },
-  { value: 'FAMILY_MEMBER',  label: 'Familiar',        icon: '/images/registro_Familiar.png', desc: 'Familiar de un miembro de la comunidad' },
-  { value: 'REFEREE',        label: 'Árbitro',         icon: '/images/registro_Arbitro.png', desc: 'Árbitro del torneo' },
+  { value: 'STUDENT',        label: 'Estudiante',      icon: '/images/registro_Estudiante.png',      desc: 'Estudiante activo de la Escuela' },
+  { value: 'GRADUATE',       label: 'Graduado',        icon: '/images/registro_Graduado.png',        desc: 'Egresado de la institución' },
+  { value: 'PROFESSOR',      label: 'Profesor',        icon: '/images/registro_Profesor.png',        desc: 'Docente de la Escuela' },
+  { value: 'ADMINISTRATIVE', label: 'Administrativo',  icon: '/images/registro_Administrativo.png',  desc: 'Personal administrativo' },
+  { value: 'FAMILY_MEMBER',  label: 'Familiar',        icon: '/images/registro_Familiar.png',        desc: 'Familiar de un miembro de la comunidad' },
+  { value: 'REFEREE',        label: 'Árbitro',         icon: '/images/registro_Arbitro.png',         desc: 'Árbitro del torneo' },
 ]
+
+// Tipos que deben registrarse exclusivamente con Google
+const GOOGLE_REQUIRED = ['REFEREE', 'FAMILY_MEMBER']
 
 export default function UserTypeSelectionPage() {
   const { startRegistration, isSubmitting, error } = useRegistration()
+  const [selectedType, setSelectedType] = useState(null)
+
+  const isGoogleRequired = selectedType && GOOGLE_REQUIRED.includes(selectedType)
+  const isNormalFlow     = selectedType && !GOOGLE_REQUIRED.includes(selectedType)
+
+  const labelFor = (value) =>
+    USER_TYPES.find((t) => t.value === value)?.label?.toLowerCase() ?? value.toLowerCase()
 
   return (
     <div className={styles.root}>
@@ -30,8 +41,8 @@ export default function UserTypeSelectionPage() {
           {USER_TYPES.map((type) => (
             <button
               key={type.value}
-              className={styles.typeCard}
-              onClick={() => startRegistration(type.value)}
+              className={`${styles.typeCard} ${selectedType === type.value ? styles.typeCardSelected : ''}`}
+              onClick={() => setSelectedType(type.value)}
               disabled={isSubmitting}
             >
               <span className={styles.icon}>
@@ -42,6 +53,43 @@ export default function UserTypeSelectionPage() {
             </button>
           ))}
         </div>
+
+        {/* Bloque Google — solo para REFEREE y FAMILY_MEMBER */}
+        {isGoogleRequired && (
+          <div className={styles.googleRequired}>
+            <p className={styles.googleRequiredText}>
+              Los <strong>{labelFor(selectedType)}s</strong> deben registrarse e ingresar
+              únicamente con Google.
+            </p>
+            <a
+              href="https://localhost:8443/oauth2/authorization/google"
+              className={`${styles.btnGoogle} ${styles.btnGoogleLarge}`}
+            >
+              <img
+                src="https://developers.google.com/identity/images/g-logo.png"
+                alt="Google"
+              />
+              Continuar con Google
+            </a>
+            <p className={styles.googleRequiredNote}>
+              Necesitas una cuenta de Gmail para continuar.
+            </p>
+          </div>
+        )}
+
+        {/* Botón continuar — solo para tipos del flujo normal */}
+        {isNormalFlow && (
+          <div className={styles.continueBlock}>
+            <Button
+              variant="primary"
+              fullWidth
+              loading={isSubmitting}
+              onClick={() => startRegistration(selectedType)}
+            >
+              Continuar como {labelFor(selectedType)}
+            </Button>
+          </div>
+        )}
 
         <div className={styles.footer}>
           <a href="/login" className={styles.backLink}>← Ya tengo cuenta</a>

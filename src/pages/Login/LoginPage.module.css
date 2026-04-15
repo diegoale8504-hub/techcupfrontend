@@ -194,3 +194,58 @@
 .fields :global(.label) {
   font-size: 15px;
 }
+
+/* ── Google OAuth ── */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+  color: #888;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-gray-light);
+}
+
+.divider span {
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.btnGoogle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-sizing: border-box;
+}
+
+.btnGoogle:hover {
+  background: #f5f5f5;
+}
+
+.btnGoogle img {
+  width: 20px;
+  height: 20px;
+}
+
+.googleHint {
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+  margin-top: 8px;
+}
