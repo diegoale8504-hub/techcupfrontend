@@ -162,6 +162,19 @@
   border: 2px solid var(--color-gray-light);
 }
 
+/* ── Success ───────────────────────────────────────────────────── */
+.successMsg {
+  background: #f0fff4;
+  border: 1px solid #38a169;
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  color: #2f855a;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+  text-align: center;
+}
+
 /* ── Error ─────────────────────────────────────────────────────── */
 .error {
   background: #fff0f0;

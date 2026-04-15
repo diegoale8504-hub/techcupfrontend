@@ -2,8 +2,8 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 
 export const AuthContext = createContext(null)
 
-const TOKEN_KEY = 'token'
-const USER_KEY  = 'user'
+const TOKEN_KEY = 'techcup_token'
+const USER_KEY  = 'techcup_user'
 
 function decodePayload(token) {
   try {

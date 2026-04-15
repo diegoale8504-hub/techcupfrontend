@@ -1,151 +1,175 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import api from '../api/axios'
+import api from '../api/axiosInstance'
 import styles from './Layout.module.css'
 
-// ── Construcción del menú por rol ──────────────────────────────────────────
-function buildMenu(role, teamId, userId, unreadCount) {
-  const notifItem = {
-    to: '/notifications',
-    icon: '🔔',
-    label: 'Notificaciones',
-    badge: unreadCount > 0 ? unreadCount : 0,
-  }
+/**
+ * REUSABLE NAVIGATION ITEM
+ * Classes: nav-item, nav-item--active, nav-item--highlight (mapped from styles)
+ */
+const NavItem = ({ icon, label, to, badge, highlight, onClick }) => (
+  <NavLink
+    to={to}
+    className={({ isActive }) =>
+      [
+        styles.navItem,
+        isActive ? styles.navItemActive : '',
+        highlight ? styles.navItemHighlight : '',
+      ]
+        .filter(Boolean)
+        .join(' ')
+    }
+    onClick={onClick}
+  >
+    <span className={styles.navIcon}>{icon}</span>
+    <span className={styles.navLabel}>{label}</span>
+    {badge > 0 && (
+      <span className={styles.navItemBadge}>{badge}</span>
+    )}
+  </NavLink>
+)
 
-  const shared = [
-    { to: '/dashboard',                  icon: '🏠', label: 'Dashboard' },
-    { to: `/profile/${userId}`,          icon: '👤', label: 'Mi Perfil' },
-    notifItem,
+/**
+ * MENU BUILDER BY ROLE
+ */
+function buildMenu(role, teamId, userId, unreadCount) {
+  const common = [
+    { to: '/dashboard',         icon: '🏠', label: 'Dashboard' },
+    { to: `/profile/${userId}`, icon: '👤', label: 'Mi Perfil' },
+    { to: '/notifications',     icon: '🔔', label: 'Notificaciones', badge: unreadCount },
   ]
 
   const tournament = [
-    { to: '/tournaments/active',               icon: '🏆', label: 'Torneo Activo' },
-    { to: '/tournaments/active/statistics',    icon: '📊', label: 'Estadísticas' },
+    { to: '/tournaments/active',            icon: '🏆', label: 'Torneo Activo' },
+    { to: '/tournaments/active/statistics', icon: '📊', label: 'Estadísticas' },
   ]
 
-  if (role === 'CAPTAIN') {
-    const teamItems = teamId ? [
-      { to: `/teams/${teamId}`,                icon: '👥', label: 'Mi Equipo' },
-      { to: `/teams/${teamId}/manage`,         icon: '⚙️', label: 'Gestionar Equipo' },
-      { to: `/teams/${teamId}/manage#invite`,  icon: '📨', label: 'Invitar Jugadores' },
-      { to: `/teams/${teamId}/manage#leave`,   icon: '🚪', label: 'Solicitudes de Salida' },
-      { to: `/teams/${teamId}/payment`,        icon: '💳', label: 'Comprobante de Pago' },
-      { to: `/teams/${teamId}/lineups`,        icon: '📋', label: 'Alineaciones' },
-    ] : []
-    return [...shared, ...teamItems, ...tournament]
+  // --- PLAYER MENU ---
+  if (role === 'PLAYER') {
+    const menu = [...common]
+    if (teamId) {
+      menu.push({ to: `/teams/${teamId}`, icon: '👥', label: 'Mi Equipo' })
+    }
+    menu.push({ to: '/invitations', icon: '📩', label: 'Mis Invitaciones' })
+    menu.push(...tournament)
+    if (!teamId) {
+      menu.push({ to: '/teams/create', icon: '➕', label: 'Crear Equipo', highlight: true })
+    }
+    return menu
   }
 
-  if (role === 'PLAYER') {
-    const teamItem = teamId
-      ? [{ to: `/teams/${teamId}`, icon: '👥', label: 'Mi Equipo' }]
-      : []
-    const createItem = !teamId
-      ? [{ to: '/teams/create', icon: '➕', label: 'Crear Equipo', highlight: true }]
-      : []
+  // --- CAPTAIN MENU ---
+  if (role === 'CAPTAIN') {
     return [
-      ...shared,
-      ...teamItem,
-      { to: '/invitations', icon: '📩', label: 'Mis Invitaciones' },
-      ...createItem,
-      ...tournament,
+      ...common,
+      { to: `/teams/${teamId}`,               icon: '👥', label: 'Mi Equipo' },
+      { to: `/teams/${teamId}/manage`,        icon: '⚙️', label: 'Gestionar Equipo' },
+      { to: `/teams/${teamId}/manage#invite`, icon: '📨', label: 'Invitar Jugadores' },
+      { to: `/teams/${teamId}/manage#leave`,  icon: '🚪', label: 'Solicitudes de Salida' },
+      { to: `/teams/${teamId}/payment`,       icon: '💳', label: 'Comprobante de Pago' },
+      { to: `/teams/${teamId}/lineups`,       icon: '📋', label: 'Alineaciones' },
+      ...tournament
     ]
   }
 
+  // --- OTHER ROLES (Fallback) ---
   if (role === 'REFEREE') {
     return [
-      ...shared,
-      { to: '/matches',  icon: '🎯', label: 'Mis Partidos' },
-      ...tournament,
+      ...common,
+      { to: '/matches', icon: '🎯', label: 'Mis Partidos' },
+      ...tournament
     ]
   }
 
   if (role === 'ADMINISTRATIVE' || role === 'ADMINISTRATOR') {
     return [
-      ...shared,
+      ...common,
       ...tournament,
       { to: '/settings', icon: '🛠️', label: 'Configuración' },
     ]
   }
 
-  // Default
-  return [...shared, ...tournament]
+  return [...common, ...tournament]
 }
 
-// ── Componente ─────────────────────────────────────────────────────────────
 export default function Layout() {
-  const { user, token, logout } = useAuth()
+  const { user, logout } = useAuth()
 
-  const [myTeamId,    setMyTeamId]    = useState(user?.teamId ?? null)
+  // State
+  const [myTeamId, setMyTeamId] = useState(null)
   const [unreadCount, setUnreadCount] = useState(0)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pollRef = useRef(null)
 
-  // Obtener perfil completo → teamId actualizado desde el servidor
+  // 1. FETCH TEAM ID ON MOUNT
   useEffect(() => {
     if (!user?.id) return
     api.get(`/api/users/${user.id}`)
       .then((res) => {
+        // Extract teamId from profile
         const tid = res.data.teamId ?? res.data.team?.id ?? null
-        if (tid) setMyTeamId(tid)
+        setMyTeamId(tid)
       })
-      .catch(() => {})
+      .catch(() => {
+        // Silently fail if user not found or other API error
+      })
   }, [user?.id])
 
-  // Si el AuthContext ya tiene teamId (p.ej. recién creó equipo), úsalo de inmediato
-  useEffect(() => {
-    if (user?.teamId && !myTeamId) setMyTeamId(user.teamId)
-  }, [user?.teamId])
-
-  // Polling de notificaciones cada 60 s
+  // 2. NOTIFICATIONS POLLING (Every 60s)
   const fetchUnread = useCallback(async () => {
     try {
       const res = await api.get('/api/notifications/unread')
       const data = res.data
-      setUnreadCount(Array.isArray(data) ? data.length : (data?.count ?? data?.total ?? 0))
-    } catch { /* silencioso */ }
+      const count = Array.isArray(data) ? data.length : (data?.count ?? data?.total ?? 0)
+      setUnreadCount(count)
+    } catch {
+      // Silently fail
+    }
   }, [])
 
   useEffect(() => {
     fetchUnread()
-    pollRef.current = setInterval(fetchUnread, 60_000)
+    pollRef.current = setInterval(fetchUnread, 60000)
     return () => clearInterval(pollRef.current)
   }, [fetchUnread])
 
-  const effectiveTeamId = myTeamId ?? user?.teamId ?? null
-  const menu = buildMenu(user?.role, effectiveTeamId, user?.id, unreadCount)
+  // Menu generation
+  const menu = buildMenu(user?.role, myTeamId, user?.id, unreadCount)
 
+  // UI Helpers
   const initial = (user?.name ?? user?.email ?? 'U')[0].toUpperCase()
   const roleKey = user?.role?.toLowerCase() ?? 'player'
 
   return (
     <div className={styles.layout}>
-      {/* ── Botón hamburguesa (móvil) ── */}
+      {/* Dynamic override for sidebar background as per requirements */}
+      <style>{`
+        .${styles.sidebar} { background-color: #1e1e2e !important; }
+      `}</style>
+
+      {/* Hamburger button for mobile */}
       <button
         className={styles.hamburger}
-        onClick={() => setSidebarOpen((v) => !v)}
+        onClick={() => setSidebarOpen(v => !v)}
         aria-label="Abrir menú"
       >
         ☰
       </button>
 
-      {/* ── Overlay móvil ── */}
+      {/* Mobile Overlay */}
       {sidebarOpen && (
-        <div
-          className={styles.overlay}
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className={styles.overlay} onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* ── Sidebar ── */}
+      {/* FIXED SIDEBAR (260px) */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
-        {/* Logo de la app */}
         <div className={styles.logoSection}>
           <img src="/images/logoFinalFinal.png" alt="TechCupFútbol" className={styles.logoImg} />
           <span className={styles.logoText}>TechCupFútbol</span>
         </div>
 
-        {/* Info del usuario */}
+        {/* SIDEBAR HEADER: User Info */}
         <div className={styles.sidebarHeader}>
           <div className={styles.avatarCircle}>{initial}</div>
           <div className={styles.userInfo}>
@@ -158,33 +182,18 @@ export default function Layout() {
           </div>
         </div>
 
-        {/* Navegación */}
+        {/* NAVIGATION */}
         <nav className={styles.nav}>
           {menu.map((item) => (
-            <NavLink
+            <NavItem
               key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                [
-                  styles.navItem,
-                  isActive            ? styles.navItemActive    : '',
-                  item.highlight      ? styles.navItemHighlight : '',
-                ]
-                  .filter(Boolean)
-                  .join(' ')
-              }
+              {...item}
               onClick={() => setSidebarOpen(false)}
-            >
-              <span className={styles.navIcon}>{item.icon}</span>
-              <span className={styles.navLabel}>{item.label}</span>
-              {item.badge > 0 && (
-                <span className={styles.navItemBadge}>{item.badge}</span>
-              )}
-            </NavLink>
+            />
           ))}
         </nav>
 
-        {/* Footer del sidebar */}
+        {/* SIDEBAR FOOTER: Logout */}
         <div className={styles.sidebarFooter}>
           <button className={styles.logoutBtn} onClick={logout}>
             Cerrar sesión
@@ -192,7 +201,7 @@ export default function Layout() {
         </div>
       </aside>
 
-      {/* ── Contenido principal ── */}
+      {/* MAIN CONTENT (margin-left: 260px) */}
       <main className={styles.layoutMain}>
         <Outlet />
       </main>

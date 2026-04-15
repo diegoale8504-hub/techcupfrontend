@@ -92,14 +92,14 @@ export default function App() {
           <Route path="/tournaments/active"            element={<TournamentActivePage />} />
           <Route path="/tournaments/active/statistics" element={<StatisticsPage />} />
 
-          {/* PLAYER y CAPTAIN — crear equipo */}
+          {/* PLAYER y CAPTAIN — crear equipo y ver equipo */}
           <Route element={<ProtectedRoute allowedRoles={['PLAYER', 'CAPTAIN']} />}>
-            <Route path="/teams/create" element={<CreateTeam />} />
+            <Route path="/teams/create"  element={<CreateTeam />} />
+            <Route path="/teams/:id"     element={<TeamViewPage />} />
           </Route>
 
           {/* Solo CAPTAIN */}
           <Route element={<ProtectedRoute allowedRoles={['CAPTAIN']} />}>
-            <Route path="/teams/:id"         element={<TeamViewPage />} />
             <Route path="/teams/:id/manage"  element={<ManageTeam />} />
             <Route path="/teams/:id/payment" element={<TeamPaymentPage />} />
             <Route path="/teams/:id/lineups" element={<LineupsPage />} />
