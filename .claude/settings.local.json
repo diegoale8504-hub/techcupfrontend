@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm run:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Read(//c/Users/diego/OneDrive/Documentos/U/DOSW/Corte 2/Proyecto/techcup-back/src/main/java/edu/dosw/proyecto/core/model/**)"
     ]
   }
 }
