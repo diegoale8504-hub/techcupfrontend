@@ -1,10 +1,10 @@
 import { Navigate, Outlet } from 'react-router-dom'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../context/AuthContext'
 
 export default function RoleGuard({ allowedRoles = [] }) {
   const { user } = useAuth()
-  const userRoles = user?.roles ?? []
-  const allowed = allowedRoles.some((r) => userRoles.includes(r))
 
-  return allowed ? <Outlet /> : <Navigate to="/dashboard" replace />
+  return allowedRoles.includes(user?.role)
+    ? <Outlet />
+    : <Navigate to="/dashboard" replace />
 }

@@ -1,54 +1,58 @@
-import { createContext, useState, useEffect, useCallback } from 'react'
-import { decodeJWT, isTokenExpired, extractRoles } from '../utils/jwt'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 export const AuthContext = createContext(null)
 
-const TOKEN_KEY = 'techcup_token'
-const USER_KEY  = 'techcup_user'
+const TOKEN_KEY = 'token'
+const USER_KEY  = 'user'
 
-// Build user from token + optional extra data from login response body
-function buildUser(token, extra = {}) {
-  const decoded = decodeJWT(token)
-  if (!decoded || isTokenExpired(decoded)) return null
-  return {
-    id:     extra.id    ?? decoded.sub,   // id comes from login response body
-    name:   extra.name  ?? null,
-    email:  extra.email ?? decoded.sub,
-    roles:  extractRoles(decoded),        // ["PLAYER"] / ["CAPTAIN"] etc.
-    teamId: extra.teamId ?? null,
-    exp:    decoded.exp,
+function decodePayload(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]))
+  } catch {
+    return null
   }
 }
 
+function isExpired(payload) {
+  return payload?.exp ? payload.exp * 1000 < Date.now() : true
+}
+
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(null)
-  const [user, setUser]   = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser]     = useState(null)
+  const [token, setToken]   = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const storedToken = localStorage.getItem(TOKEN_KEY)
-    const storedUser  = localStorage.getItem(USER_KEY)
     if (storedToken) {
-      const extra = storedUser ? JSON.parse(storedUser) : {}
-      const parsedUser = buildUser(storedToken, extra)
-      if (parsedUser) {
+      const payload = decodePayload(storedToken)
+      if (payload && !isExpired(payload)) {
+        const storedUser = localStorage.getItem(USER_KEY)
+        const userData = storedUser
+          ? JSON.parse(storedUser)
+          : {
+              id:    payload.sub ?? null,
+              name:  null,
+              email: payload.sub ?? null,
+              role:  payload.role ?? null,
+            }
         setToken(storedToken)
-        setUser(parsedUser)
+        setUser(userData)
       } else {
         localStorage.removeItem(TOKEN_KEY)
         localStorage.removeItem(USER_KEY)
       }
     }
-    setIsLoading(false)
+    setLoading(false)
   }, [])
 
-  // login(token, extra) — extra = { id, name, email, role } from login response body
-  const login = useCallback((newToken, extra = {}) => {
+  // data = { token, id, name, email, role } — objeto directo del backend
+  const login = useCallback((data) => {
+    const { token: newToken, ...userData } = data
     localStorage.setItem(TOKEN_KEY, newToken)
-    localStorage.setItem(USER_KEY, JSON.stringify(extra))
-    const parsedUser = buildUser(newToken, extra)
+    localStorage.setItem(USER_KEY, JSON.stringify(userData))
     setToken(newToken)
-    setUser(parsedUser)
+    setUser(userData)
   }, [])
 
   const logout = useCallback(() => {
@@ -58,30 +62,15 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
-  // Update teamId after user creates/joins a team
-  const setTeamId = useCallback((teamId) => {
-    setUser((prev) => {
-      if (!prev) return prev
-      const updated = { ...prev, teamId }
-      localStorage.setItem(USER_KEY, JSON.stringify(updated))
-      return updated
-    })
-  }, [])
-
-  useEffect(() => {
-    const handleUnauthorized = () => logout()
-    window.addEventListener('auth:unauthorized', handleUnauthorized)
-    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized)
-  }, [logout])
-
-  const hasRole = useCallback(
-    (role) => user?.roles?.includes(role) ?? false,
-    [user]
-  )
-
   return (
-    <AuthContext.Provider value={{ token, user, isLoading, login, logout, hasRole, setTeamId }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used within an AuthProvider')
+  return ctx
 }
