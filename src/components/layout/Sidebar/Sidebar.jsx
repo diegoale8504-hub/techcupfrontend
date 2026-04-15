@@ -74,7 +74,7 @@ export default function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
-        <img src="/images/logofinal.png" alt="TechCupFútbol" className={styles.logoImg} />
+        <img src="/images/logoFinalFinal.png" alt="TechCupFútbol" className={styles.logoImg} />
         <span className={styles.logoText}>TechCupFútbol</span>
       </div>
 
