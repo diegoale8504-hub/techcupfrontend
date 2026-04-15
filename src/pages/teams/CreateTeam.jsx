@@ -2,12 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import PageLayout from '../../components/layout/PageLayout/PageLayout'
-import api from '../../api/axios'
+import api from '../../api/axiosInstance'
 import styles from './CreateTeam.module.css'
 
 export default function CreateTeam() {
   const navigate              = useNavigate()
-  const { user, token, login } = useAuth()   // token separado de user
+  const { user, login }        = useAuth()
 
   const [name,           setName]           = useState('')
   const [primaryColor,   setPrimaryColor]   = useState('#16A34A')
@@ -16,6 +16,7 @@ export default function CreateTeam() {
   const [preview,        setPreview]        = useState(null)
   const [loading,        setLoading]        = useState(false)
   const [error,          setError]          = useState(null)
+  const [success,        setSuccess]        = useState(false)
 
   const handleLogoChange = (e) => {
     const file = e.target.files?.[0]
@@ -33,6 +34,7 @@ export default function CreateTeam() {
 
     setLoading(true)
     setError(null)
+    setSuccess(false)
 
     try {
       // ── PASO 1: Crear el equipo ────────────────────────────────────
@@ -41,22 +43,29 @@ export default function CreateTeam() {
         primaryColor,
         secondaryColor,
       })
-      const newTeam = response.data   // { id, name, token?, ... }
+      const newTeam = response.data
 
       // ── PASO 2: Subir logo si se seleccionó uno ────────────────────
       if (logoFile && newTeam.id) {
-        const formData = new FormData()
-        formData.append('logo', logoFile)
-        await api.patch(`/api/teams/${newTeam.id}/logo`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
+        try {
+          const formData = new FormData()
+          formData.append('logo', logoFile)
+          await api.post(`/api/teams/${newTeam.id}/logo`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
+        } catch (logoErr) {
+          console.error('Error subiendo logo:', logoErr)
+          // No detenemos el flujo si el logo falla, pero podríamos avisar
+        }
       }
 
+      setSuccess(true)
+
       // ── PASO 3 & 4: Actualizar AuthContext ─────────────────────────
-      const newToken = newTeam.token ?? null
+      // Intentamos obtener el nuevo token (el backend debería devolverlo con role=CAPTAIN)
+      const newToken = newTeam.token || localStorage.getItem('techcup_token')
 
       if (newToken) {
-        // Backend devolvió nuevo JWT con role=CAPTAIN
         const payload = JSON.parse(atob(newToken.split('.')[1]))
         login({
           token:  newToken,
@@ -66,30 +75,18 @@ export default function CreateTeam() {
           role:   payload.role   ?? 'CAPTAIN',
           teamId: payload.teamId ?? newTeam.id,
         })
-      } else {
-        // TODO: pedir al backend que devuelva el nuevo JWT con role=CAPTAIN
-        // en la respuesta del POST /api/teams.
-        // Por ahora actualizamos teamId y forzamos role=CAPTAIN localmente.
-        login({
-          token,                    // token actual (viene de useAuth, no de user)
-          id:     user.id,
-          name:   user.name,
-          email:  user.email,
-          role:   'CAPTAIN',        // forzamos el cambio de rol en el frontend
-          teamId: newTeam.id,
-        })
       }
 
-      // ── PASO 5: Ir al panel del equipo ─────────────────────────────
-      navigate(`/teams/${newTeam.id}/manage`)
+      // ── PASO 5: Ir al panel del equipo tras un breve delay ─────────
+      setTimeout(() => {
+        navigate(`/teams/${newTeam.id}/manage`)
+      }, 1500)
 
     } catch (err) {
       if (err.response?.status === 409) {
         setError('Ya existe un equipo con ese nombre. Elige otro.')
       } else {
-        setError(
-          err.response?.data?.message ?? 'Error al crear el equipo. Intenta de nuevo.'
-        )
+        setError(err.userMessage ?? 'Error al crear el equipo. Intenta de nuevo.')
       }
     } finally {
       setLoading(false)
@@ -110,6 +107,14 @@ export default function CreateTeam() {
           </div>
 
           <form onSubmit={handleSubmit} noValidate>
+            {/* Mensajes de feedback */}
+            {success && (
+              <div className={styles.successMsg}>
+                ¡Equipo creado con éxito! Redirigiendo...
+              </div>
+            )}
+            {error && <p className={styles.error}>{error}</p>}
+
             {/* Nombre */}
             <div className={styles.field}>
               <label className={styles.label} htmlFor="teamName">
