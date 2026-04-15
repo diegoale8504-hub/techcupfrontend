@@ -9,7 +9,7 @@ const STATUS_LABELS = { PENDING: 'Pendiente', ACCEPTED: 'Aceptada', REJECTED: 'R
 const STATUS_CSS    = { PENDING: styles.pending, ACCEPTED: styles.accepted, REJECTED: styles.rejected }
 
 export default function InvitationsPage() {
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
   
   // Normalizar rol
   const role = user?.role?.toUpperCase()
@@ -52,7 +52,11 @@ export default function InvitationsPage() {
         prev.map((inv) => inv.id === invitationId ? { ...inv, status: r.data.status || (accepted ? 'ACCEPTED' : 'REJECTED') } : inv)
       )
       if (accepted) {
-        setMsg('¡Invitación aceptada! Ahora eres parte del equipo. Recarga para ver cambios.')
+        // Sincronizar teamId en el contexto global si aceptó
+        if (r.data.teamId) {
+          updateUser({ teamId: r.data.teamId })
+        }
+        setMsg('¡Invitación aceptada! Ahora eres parte del equipo.')
       } else {
         setMsg('Invitación rechazada.')
       }

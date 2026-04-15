@@ -26,33 +26,53 @@ const PAGE_SIZE = 7
 
 export default function PlayerSearchPage() {
   const { user } = useAuth()
-  const isCaptain = user?.roles?.includes('CAPTAIN')
+  const isCaptain = user?.role === 'CAPTAIN'
 
   const [query, setQuery] = useState('')
   const [position, setPosition] = useState('')
-  const [availableOnly, setAvailableOnly] = useState(false)
+  const [availableOnly, setAvailableOnly] = useState(false) // Cambiado a false para depuración inicial
   const [players, setPlayers] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(0)
   const [loading, setLoading] = useState(false)
-  const [inviting, setInviting] = useState({}) // { [playerId]: 'loading' | 'done' }
+  const [inviting, setInviting] = useState({}) 
+  const [selectedPlayer, setSelectedPlayer] = useState(null) // Para el detalle
 
   const fetchPlayers = useCallback(() => {
     setLoading(true)
+    
+    // Construimos los parámetros exactos que espera el backend de Spring
     const params = {
-      ...(query ? { name: query } : {}),
-      ...(position ? { position } : {}),
-      ...(availableOnly ? { available: true } : {}),
+      role: 'PLAYER', // Filtro crítico: solo jugadores
       page,
       size: PAGE_SIZE,
+      ...(availableOnly ? { available: true } : {}),
+      ...(position ? { position } : {}),
     }
+
+    // Si hay una consulta, la enviamos tanto para nombre como para documento 
+    // para que el backend filtre por lo que coincida
+    if (query) {
+      if (/^\d+$/.test(query)) {
+        params.document = query
+      } else {
+        params.name = query
+      }
+    }
+
     searchUsers(params)
       .then((res) => {
         const data = res.data
-        setPlayers(Array.isArray(data) ? data : data.content ?? [])
-        setTotal(data.totalElements ?? (Array.isArray(data) ? data.length : 0))
+        // Manejo flexible de la respuesta (Lista directa o Page de Spring)
+        const content = data.content || (Array.isArray(data) ? data : [])
+        setPlayers(content)
+        setTotal(data.totalElements ?? (Array.isArray(data) ? data.length : content.length))
       })
-      .catch(() => setPlayers([]))
+      .catch((err) => {
+        console.error('Error en búsqueda:', err)
+        setPlayers([])
+        setTotal(0)
+      })
       .finally(() => setLoading(false))
   }, [query, position, availableOnly, page])
 
@@ -63,12 +83,17 @@ export default function PlayerSearchPage() {
   }, [fetchPlayers])
 
   const handleInvite = async (playerId) => {
-    if (!user?.teamId) return
+    if (!user?.teamId) {
+      alert('Debes tener un equipo para invitar jugadores.')
+      return
+    }
     setInviting((p) => ({ ...p, [playerId]: 'loading' }))
     try {
       await invitePlayer(user.teamId, playerId)
       setInviting((p) => ({ ...p, [playerId]: 'done' }))
-    } catch {
+      // No cerramos el detalle si estaba abierto, solo marcamos como enviado
+    } catch (err) {
+      alert(err.userMessage ?? 'No se pudo enviar la invitación.')
       setInviting((p) => ({ ...p, [playerId]: null }))
     }
   }
@@ -78,15 +103,15 @@ export default function PlayerSearchPage() {
   return (
     <PageLayout>
       <div className={styles.header}>
-        <h1 className={styles.heading}>Buscar jugadores</h1>
-        <p className={styles.sub}>Encuentra y invita jugadores disponibles a tu equipo.</p>
+        <h1 className={styles.heading}>Mercado de Jugadores</h1>
+        <p className={styles.sub}>Busca por nombre, documento o filtra por posición para completar tu equipo.</p>
       </div>
 
       <div className={styles.filters}>
         <input
           className={styles.searchInput}
           type="text"
-          placeholder="Buscar por nombre o correo..."
+          placeholder="Nombre o Documento..."
           value={query}
           onChange={(e) => { setQuery(e.target.value); setPage(0) }}
         />
@@ -105,7 +130,7 @@ export default function PlayerSearchPage() {
             checked={availableOnly}
             onChange={(e) => { setAvailableOnly(e.target.checked); setPage(0) }}
           />
-          Solo disponibles
+          Solo libres
         </label>
       </div>
 
@@ -114,18 +139,18 @@ export default function PlayerSearchPage() {
           <thead>
             <tr className={styles.tableHead}>
               <th className={styles.nameCol}>Jugador</th>
+              <th>Documento</th>
               <th>Posición</th>
-              <th>Equipo</th>
               <th>Estado</th>
-              {isCaptain && <th>Acción</th>}
+              <th>Acción</th>
             </tr>
           </thead>
           <tbody>
             {loading && (
-              <tr><td colSpan={isCaptain ? 5 : 4} className={styles.loadingCell}>Buscando...</td></tr>
+              <tr><td colSpan={5} className={styles.loadingCell}>Buscando...</td></tr>
             )}
             {!loading && players.length === 0 && (
-              <tr><td colSpan={isCaptain ? 5 : 4} className={styles.emptyCell}>No se encontraron jugadores.</td></tr>
+              <tr><td colSpan={5} className={styles.emptyCell}>No se encontraron jugadores disponibles con esos criterios.</td></tr>
             )}
             {!loading && players.map((player) => (
               <tr key={player.id} className={styles.row}>
@@ -133,16 +158,19 @@ export default function PlayerSearchPage() {
                   <div className={styles.playerName}>{player.name}</div>
                   <div className={styles.playerEmail}>{player.email}</div>
                 </td>
-                <td>{POSITION_LABELS[player.mainPosition] ?? '—'}</td>
-                <td>{player.teamName ?? '—'}</td>
+                <td>{player.document || '—'}</td>
+                <td>{POSITION_LABELS[player.mainPosition] ?? POSITION_LABELS[player.position] ?? '—'}</td>
                 <td>
                   <Badge status={player.available ? 'available' : 'in-team'} />
                 </td>
-                {isCaptain && (
-                  <td>
-                    {player.available ? (
+                <td>
+                  <div className={styles.rowActions}>
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedPlayer(player)}>
+                      Ver Detalle
+                    </Button>
+                    {isCaptain && player.available && (
                       inviting[player.id] === 'done' ? (
-                        <span className={styles.sent}>Enviada ✓</span>
+                        <span className={styles.sent}>✓ Enviada</span>
                       ) : (
                         <Button
                           variant="accent"
@@ -153,18 +181,66 @@ export default function PlayerSearchPage() {
                           Invitar
                         </Button>
                       )
-                    ) : (
-                      <Button variant="secondary" size="sm">
-                        Ver perfil
-                      </Button>
                     )}
-                  </td>
-                )}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Modal de Detalle (Simple) */}
+      {selectedPlayer && (
+        <div className={styles.modalOverlay} onClick={() => setSelectedPlayer(null)}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <button className={styles.closeModal} onClick={() => setSelectedPlayer(null)}>×</button>
+            <div className={styles.modalHeader}>
+              <div className={styles.modalAvatar}>{(selectedPlayer.name || 'U')[0].toUpperCase()}</div>
+              <div>
+                <h3>{selectedPlayer.name}</h3>
+                <p>{selectedPlayer.email}</p>
+              </div>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.infoGrid}>
+                <div className={styles.infoItem}>
+                  <label>Documento</label>
+                  <span>{selectedPlayer.document || '—'}</span>
+                </div>
+                <div className={styles.infoItem}>
+                  <label>Posición</label>
+                  <span>{POSITION_LABELS[selectedPlayer.mainPosition] ?? POSITION_LABELS[selectedPlayer.position] ?? '—'}</span>
+                </div>
+                <div className={styles.infoItem}>
+                  <label>Estado</label>
+                  <Badge status={selectedPlayer.available ? 'available' : 'in-team'} />
+                </div>
+                <div className={styles.infoItem}>
+                  <label>Teléfono</label>
+                  <span>{selectedPlayer.phone || '—'}</span>
+                </div>
+              </div>
+            </div>
+            <div className={styles.modalFooter}>
+              {isCaptain && selectedPlayer.available && (
+                <Button
+                  variant="primary"
+                  fullWidth
+                  loading={inviting[selectedPlayer.id] === 'loading'}
+                  disabled={inviting[selectedPlayer.id] === 'done'}
+                  onClick={() => handleInvite(selectedPlayer.id)}
+                >
+                  {inviting[selectedPlayer.id] === 'done' ? 'Invitación enviada' : 'Enviar invitación al equipo'}
+                </Button>
+              )}
+              <Button variant="ghost" fullWidth onClick={() => setSelectedPlayer(null)}>
+                Cerrar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={styles.pagination}>
         <span className={styles.pageInfo}>

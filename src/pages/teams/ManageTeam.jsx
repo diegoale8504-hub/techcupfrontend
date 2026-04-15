@@ -2,13 +2,22 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import {
-  getTeam, getMyTeam, getAllTeams, getTeamInvitations, getTeamLeaveRequests,
+  getTeam, getMyTeam, getTeamInvitations, getTeamLeaveRequests,
   invitePlayer, removePlayer, respondLeaveRequest,
   validateTeam, dissolveTeam, uploadTeamLogo,
 } from '../../api/teams'
 import { getUserById } from '../../api/users'
 import PageLayout from '../../components/layout/PageLayout/PageLayout'
+import Button from '../../components/ui/Button/Button'
 import styles from './ManageTeam.module.css'
+
+// Opciones de etiquetas para posiciones
+const POSITION_LABELS = {
+  GOALKEEPER: 'Portero',
+  DEFENDER: 'Defensa',
+  MIDFIELDER: 'Centrocampista',
+  FORWARD: 'Delantero',
+}
 
 export default function ManageTeam() {
   const { id } = useParams()
@@ -21,10 +30,12 @@ export default function ManageTeam() {
   const [leaveRequests,setLeaveRequests] = useState([])
   const [loading,      setLoading]       = useState(true)
   const [error,        setError]         = useState(null)
-  const [invitePlayerId, setInvitePlayerId] = useState('')
-  const [isSubmitting, setIsSubmitting]  = useState(false)
+  const [successMsg,   setSuccessMsg]    = useState(null)
 
-  // ── Fetch member details from memberIds array ─────────────────────
+  // Estado para modales de confirmación
+  const [confirm, setConfirm] = useState({ open: false, type: '', data: null })
+
+  // ── Fetch member details ──────────────────────────────────────────
   const fetchMembers = useCallback(async (memberIds = []) => {
     if (!memberIds.length) { setMembers([]); return }
     const results = await Promise.allSettled(memberIds.map(mid => getUserById(mid)))
@@ -39,57 +50,34 @@ export default function ManageTeam() {
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
-
     try {
       let teamData = null
-      
-      // 1. Try with ID from URL if valid
       if (id && id !== 'null' && id !== 'undefined') {
-        try {
-          const res = await getTeam(id)
-          teamData = res.data
-        } catch (err) {
-          console.warn('Could not fetch team by ID, trying my-team...', err)
-        }
+        try { const res = await getTeam(id); teamData = res.data } catch (e) { /* fallback */ }
       }
-
-      // 2. Try getMyTeam if no data yet (or as verification for non-admins)
       if (!teamData) {
-        try {
-          const res = await getMyTeam()
-          teamData = res.data
-          // Update local state if it was missing
-          if (teamData?.id && user && user.teamId !== teamData.id) {
-            updateUser({ teamId: teamData.id, role: 'CAPTAIN' })
-          }
-        } catch (err) {
-          console.error('Could not fetch my-team:', err)
-        }
+        try { const res = await getMyTeam(); teamData = res.data } catch (e) { /* fallback */ }
       }
 
       if (!teamData) {
-        setError('No se pudo encontrar tu equipo. Si eres capitán, asegúrate de haber creado uno.')
+        setError('No se pudo encontrar tu equipo.')
         setLoading(false)
         return
       }
 
       setTeam(teamData)
-      const teamId = teamData.id
-      
-      await fetchMembers(teamData?.memberIds || [])
-
-      try {
-        const [invRes, leaveRes] = await Promise.all([
-          getTeamInvitations(teamId),
-          getTeamLeaveRequests(teamId),
-        ])
-        setInvitations(invRes.data || [])
-        setLeaveRequests(leaveRes.data || [])
-      } catch (secondaryErr) {
-        console.warn('ManageTeam: Error fetching secondary lists', secondaryErr)
+      if (teamData.id && user && user.teamId !== teamData.id) {
+        updateUser({ teamId: teamData.id, role: 'CAPTAIN' })
       }
+      
+      await fetchMembers(teamData.memberIds || [])
+      const [invRes, leaveRes] = await Promise.all([
+        getTeamInvitations(teamData.id),
+        getTeamLeaveRequests(teamData.id),
+      ])
+      setInvitations(invRes.data || [])
+      setLeaveRequests(leaveRes.data || [])
     } catch (err) {
-      console.error('ManageTeam: Error fetching team data:', err)
       setError(err.userMessage ?? 'Error al cargar los datos del equipo.')
     } finally {
       setLoading(false)
@@ -98,239 +86,211 @@ export default function ManageTeam() {
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  // ── Invite ────────────────────────────────────────────────────────
-  const handleInvite = async (e) => {
-    e.preventDefault()
-    if (!invitePlayerId.trim() || !team?.id) return
-    setIsSubmitting(true)
+  // ── Helper para notificaciones ────────────────────────────────────
+  const notify = (msg, isError = false) => {
+    if (isError) setError(msg)
+    else setSuccessMsg(msg)
+    setTimeout(() => { setError(null); setSuccessMsg(null) }, 5000)
+  }
+
+  // ── Acciones de Equipo con Confirmación Interna ────────────────────
+  const handleAction = async () => {
+    const { type, data } = confirm
+    setConfirm({ open: false, type: '', data: null })
+
     try {
-      await invitePlayer(team.id, invitePlayerId.trim())
-      setInvitePlayerId('')
-      const invRes = await getTeamInvitations(team.id)
-      setInvitations(invRes.data || [])
+      if (type === 'dissolve') {
+        await dissolveTeam(team.id)
+        updateUser({ role: 'PLAYER', teamId: null })
+        navigate('/dashboard', { replace: true })
+      } 
+      else if (type === 'removeMember') {
+        await removePlayer(team.id, data)
+        notify('Jugador eliminado correctamente.')
+        fetchData()
+      }
     } catch (err) {
-      alert(err.userMessage ?? 'No se pudo enviar la invitación.')
-    } finally {
-      setIsSubmitting(false)
+      notify(err.userMessage ?? 'Ocurrió un error al procesar la acción.', true)
     }
   }
 
-  // ── Remove member ─────────────────────────────────────────────────
-  const handleRemoveMember = async (playerId) => {
-    if (!team?.id) return
-    if (!window.confirm('¿Estás seguro de eliminar a este jugador del equipo?')) return
-    try {
-      await removePlayer(team.id, playerId)
-      fetchData()
-    } catch (err) {
-      alert(err.userMessage ?? 'No se pudo eliminar al jugador.')
-    }
-  }
-
-  // ── Leave requests ────────────────────────────────────────────────
-  const handleRespondLeave = async (requestId, approve) => {
-    try {
-      await respondLeaveRequest(requestId, approve)
-      const leaveRes = await getTeamLeaveRequests(team.id)
-      setLeaveRequests(leaveRes.data || [])
-    } catch (err) {
-      alert(err.userMessage ?? 'No se pudo responder a la solicitud.')
-    }
-  }
-
-  // ── Team actions ──────────────────────────────────────────────────
   const handleValidate = async () => {
-    if (!team?.id) return
     try {
       await validateTeam(team.id)
-      alert('Equipo validado correctamente.')
+      notify('Equipo validado correctamente.')
       fetchData()
     } catch (err) {
-      alert(err.userMessage ?? 'Error al validar el equipo.')
+      notify(err.userMessage ?? 'Error al validar el equipo.', true)
     }
   }
 
-  const handleDissolve = async () => {
-    if (!team?.id) return
-    if (!window.confirm('¿Estás seguro de disolver el equipo? Esta acción no se puede deshacer.')) return
-    try {
-      await dissolveTeam(team.id)
-      navigate('/dashboard')
-    } catch (err) {
-      alert(err.userMessage ?? 'No se pudo disolver el equipo.')
-    }
-  }
-
-  // ── Logo ──────────────────────────────────────────────────────────
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0]
-    if (!file || !team?.id) return
+    if (!file) return
     const formData = new FormData()
     formData.append('logo', file)
     try {
       await uploadTeamLogo(team.id, formData)
-      alert('Logo actualizado con éxito.')
+      notify('Logo actualizado con éxito.')
       fetchData()
     } catch (err) {
-      alert(err.userMessage ?? 'Error al subir el logo.')
+      notify('Error al subir el logo.', true)
     }
   }
 
-  if (loading) return (
-    <PageLayout>
-      <div className={styles.loading}>Cargando datos del equipo...</div>
-    </PageLayout>
-  )
+  if (loading) return <PageLayout><div className={styles.loading}>Cargando...</div></PageLayout>
 
-  if (error) return (
-    <PageLayout>
-      <div className={styles.errorContainer}>
-        <div className={styles.errorIcon}>⚠️</div>
-        <p className={styles.errorText}>{error}</p>
-        <button className={styles.btnSecondary} onClick={() => navigate('/dashboard')}>
-          Volver al Dashboard
-        </button>
-      </div>
-    </PageLayout>
-  )
-
-  const isLocked     = team?.status === 'LOCKED'
-  const isRegistered = team?.status === 'REGISTERED'
+  const isLocked = team?.status === 'LOCKED'
 
   return (
     <PageLayout>
       <div className={styles.container}>
-        <h1 className={styles.title}>Gestionar Equipo</h1>
+        <h1 className={styles.title}>Panel de Gestión de Equipo</h1>
 
-        {/* SECTION: Team Info */}
-        <section className={styles.section}>
-          <div className={styles.teamHeader}>
-            <div className={styles.logoWrapper}>
-              {team?.logo ? (
-                <img src={team.logo} alt="Logo" className={styles.logoImg} />
-              ) : (
-                <div className={styles.logoPlaceholder}>⚽</div>
-              )}
-              {!isLocked && (
-                <label className={styles.uploadBtn}>
-                  Subir Logo
-                  <input type="file" hidden accept="image/*" onChange={handleLogoUpload} />
-                </label>
-              )}
-            </div>
-            <div className={styles.info}>
-              <h2>{team?.name}</h2>
-              <span className={`${styles.status} ${styles[`status--${team?.status}`]}`}>
-                {team?.status}
-              </span>
-            </div>
+        {/* Banners de Notificación */}
+        {successMsg && (
+          <div className={`${styles.banner} ${styles.bannerSuccess}`}>
+            <span>✅ {successMsg}</span>
+            <button onClick={() => setSuccessMsg(null)}>×</button>
           </div>
-        </section>
+        )}
+        {error && (
+          <div className={`${styles.banner} ${styles.bannerError}`}>
+            <span>⚠️ {error}</span>
+            <button onClick={() => setError(null)}>×</button>
+          </div>
+        )}
+
+        {/* SECTION: Team Header */}
+        <header className={styles.teamHeader}>
+          <div className={styles.logoWrapper}>
+            {team?.logo ? (
+              <img src={team.logo} alt="Logo" className={styles.logoImg} />
+            ) : (
+              <div className={styles.logoPlaceholder}>⚽</div>
+            )}
+            {!isLocked && (
+              <label className={styles.uploadBtn} title="Cambiar logo">
+                📷
+                <input type="file" hidden accept="image/*" onChange={handleLogoUpload} />
+              </label>
+            )}
+          </div>
+          <div className={styles.info}>
+            <h2>{team?.name}</h2>
+            <span className={`${styles.status} ${styles[`status--${team?.status}`]}`}>
+              {team?.status}
+            </span>
+          </div>
+        </header>
 
         <div className={styles.grid}>
-          {/* SECTION: Members */}
+          {/* SECTION: Members List */}
           <section className={styles.card}>
-            <h3>Miembros del Equipo ({team?.memberCount ?? members.length})</h3>
-            <ul className={styles.list}>
-              {members.map(member => (
-                <li key={member.id} className={styles.listItem}>
-                  <span>{member.name}</span>
-                  {!isLocked && member.id !== user?.id && (
-                    <button
-                      className={styles.btnDelete}
-                      onClick={() => handleRemoveMember(member.id)}
-                      title="Eliminar del equipo"
-                    >
-                      🗑️
-                    </button>
-                  )}
-                </li>
-              ))}
-              {members.length === 0 && <p className={styles.empty}>No hay miembros todavía.</p>}
-            </ul>
-          </section>
-
-          {/* SECTION: Invite */}
-          <section className={styles.card}>
-            <h3>Invitar Jugador</h3>
-            {!isLocked && (
-              <form onSubmit={handleInvite} className={styles.inviteForm}>
-                <input
-                  type="text"
-                  placeholder="ID del jugador"
-                  value={invitePlayerId}
-                  onChange={(e) => setInvitePlayerId(e.target.value)}
-                  className={styles.input}
-                  required
-                />
-                <button type="submit" className={styles.btnPrimary} disabled={isSubmitting}>
-                  {isSubmitting ? 'Enviando...' : 'Invitar'}
-                </button>
-              </form>
-            )}
-
-            <h4 className={styles.subTitle}>Invitaciones Enviadas</h4>
-            <ul className={styles.list}>
-              {invitations.map(inv => (
-                <li key={inv.id} className={styles.listItem}>
-                  <span className={styles.email}>{inv.playerId}</span>
-                  <span className={`${styles.tag} ${styles[`tag--${inv.status}`]}`}>
-                    {inv.status}
-                  </span>
-                </li>
-              ))}
-              {invitations.length === 0 && <p className={styles.empty}>No hay invitaciones.</p>}
-            </ul>
-          </section>
-
-          {/* SECTION: Leave Requests */}
-          <section className={styles.card}>
-            <h3>Solicitudes de Salida</h3>
-            <ul className={styles.list}>
-              {leaveRequests.map(req => (
-                <li key={req.id} className={styles.listItem}>
-                  <div>
-                    <span>{req.playerId}</span>
-                    {req.reason && <span className={styles.reason}> — {req.reason}</span>}
-                  </div>
-                  {req.status === 'PENDING' && (
-                    <div className={styles.actions}>
-                      <button className={styles.btnApprove} onClick={() => handleRespondLeave(req.id, true)}>
-                        Aprobar
-                      </button>
-                      <button className={styles.btnReject} onClick={() => handleRespondLeave(req.id, false)}>
-                        Rechazar
-                      </button>
+            <h3>👥 Miembros del Equipo ({members.length})</h3>
+            <div className={styles.memberList}>
+              {members.map(member => {
+                const isCaptain = member.id === team.captainId
+                return (
+                  <div key={member.id} className={styles.memberItem}>
+                    <div className={styles.memberMain}>
+                      <div className={styles.memberNumber}>#{member.playerNumber || '—'}</div>
+                      <div className={styles.memberInfo}>
+                        <h4>{member.name}</h4>
+                        <div className={styles.memberMeta}>
+                          <span className={`${styles.roleBadge} ${isCaptain ? styles.roleCaptain : styles.rolePlayer}`}>
+                            {isCaptain ? 'Capitán' : 'Jugador'}
+                          </span>
+                          <span className={styles.playerPos}>
+                            • {POSITION_LABELS[member.mainPosition] || 'Sin posición'}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                </li>
-              ))}
-              {leaveRequests.length === 0 && <p className={styles.empty}>No hay solicitudes pendientes.</p>}
-            </ul>
+                    {!isLocked && !isCaptain && (
+                      <button
+                        className={styles.btnDanger}
+                        onClick={() => setConfirm({ open: true, type: 'removeMember', data: member.id })}
+                      >
+                        Eliminar
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </section>
 
-          {/* SECTION: Actions */}
-          <section className={styles.card}>
-            <h3>Acciones del Equipo</h3>
-            <div className={styles.actionGrid}>
-              <button className={styles.btnValidate} onClick={handleValidate}>
-                Validar Equipo
-              </button>
-              {!isLocked && !isRegistered && (
-                <button className={styles.btnDissolve} onClick={handleDissolve}>
+          {/* SECTION: Invitations & Actions */}
+          <div className={styles.inviteSection}>
+            <section className={styles.card}>
+              <h3>📩 Invitar Jugadores</h3>
+              <p className={styles.modalText}>Busca nuevos talentos para tu equipo.</p>
+              <Button 
+                variant="primary" 
+                fullWidth 
+                onClick={() => navigate('/players')}
+                className={styles.btnSearchInvite}
+              >
+                🔍 Ir al Mercado de Jugadores
+              </Button>
+              
+              <h4 style={{marginTop: 20, marginBottom: 10, fontSize: 14}}>Invitaciones Pendientes</h4>
+              <ul className={styles.memberList}>
+                {invitations.filter(i => i.status === 'PENDING').map(inv => (
+                  <div key={inv.id} className={styles.memberItem}>
+                    <span style={{fontSize: 13}}>{inv.playerName || inv.playerId}</span>
+                    <span className={styles.roleBadge} style={{background: '#f3f4f6'}}>Enviada</span>
+                  </div>
+                ))}
+                {invitations.filter(i => i.status === 'PENDING').length === 0 && (
+                  <p style={{fontSize: 12, color: '#999'}}>No hay invitaciones pendientes.</p>
+                )}
+              </ul>
+            </section>
+
+            <section className={styles.card}>
+              <h3>⚙️ Acciones de Control</h3>
+              <div style={{display: 'flex', flexDirection: 'column', gap: 10}}>
+                <Button variant="accent" fullWidth onClick={handleValidate} disabled={isLocked}>
+                  Validar y Cerrar Nómina
+                </Button>
+                <button 
+                  className={styles.btnDanger} 
+                  style={{width: '100%'}}
+                  onClick={() => setConfirm({ open: true, type: 'dissolve' })}
+                  disabled={isLocked}
+                >
                   Disolver Equipo
                 </button>
-              )}
-            </div>
-            {isLocked && (
-              <p className={styles.warning}>El equipo está bloqueado. No se puede modificar.</p>
-            )}
-            {!isLocked && isRegistered && (
-              <p className={styles.warning}>El equipo está registrado. No se puede disolver.</p>
-            )}
-          </section>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
+
+      {/* MODAL DE CONFIRMACIÓN INTERNO */}
+      {confirm.open && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalIcon}>{confirm.type === 'dissolve' ? '🧨' : '👤'}</div>
+            <h3 className={styles.modalTitle}>
+              {confirm.type === 'dissolve' ? '¿Disolver equipo?' : '¿Eliminar jugador?'}
+            </h3>
+            <p className={styles.modalText}>
+              Esta acción no se puede deshacer. ¿Estás seguro de que deseas continuar?
+            </p>
+            <div className={styles.modalActions}>
+              <button className={styles.btnSecondary} onClick={() => setConfirm({ open: false, type: '', data: null })}>
+                Cancelar
+              </button>
+              <button className={styles.btnDanger} onClick={handleAction}>
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageLayout>
   )
 }
