@@ -32,11 +32,12 @@ export function AuthProvider({ children }) {
         const userData = storedUser
           ? JSON.parse(storedUser)
           : {
-              id:     payload.sub    ?? null,
-              name:   payload.name   ?? null,
-              email:  payload.email  ?? payload.sub ?? null,
-              role:   payload.role   ?? null,
-              teamId: payload.teamId ?? null,
+              id:                 payload.sub    ?? null,
+              name:               payload.name   ?? null,
+              email:              payload.email  ?? payload.sub ?? null,
+              role:               payload.role   ?? null,
+              teamId:             payload.teamId ?? null,
+              mustChangePassword: payload.mustChangePassword ?? false,
             }
         setToken(storedToken)
         setUser(userData)

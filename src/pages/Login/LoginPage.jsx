@@ -59,11 +59,13 @@ export default function LoginPage() {
     setApiError(null)
     try {
       const res = await loginApi({ email: form.email, password: form.password })
-      // Backend returns { token, id, name, email, role }
-      const { token: jwt, id, name, email: userEmail, role } = res.data
-      login({ token: jwt, id, name, email: userEmail, role })
-      
-      if (role === 'REFEREE') {
+      // Backend returns { token, id, name, email, role, mustChangePassword? }
+      const { token: jwt, id, name, email: userEmail, role, mustChangePassword } = res.data
+      login({ token: jwt, id, name, email: userEmail, role, mustChangePassword: mustChangePassword ?? false })
+
+      if (mustChangePassword) {
+        navigate('/change-password')
+      } else if (role === 'REFEREE') {
         navigate('/referee/waiting')
       } else {
         navigate('/dashboard')

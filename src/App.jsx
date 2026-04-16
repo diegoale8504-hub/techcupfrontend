@@ -35,7 +35,13 @@ import MatchesPage from './pages/Matches/MatchesPage'
 import RefereeWaitingPage from './pages/Referee/RefereeWaitingPage'
 
 // Protected pages — Organizer
-import SettingsPage from './pages/Settings/SettingsPage'
+import SettingsPage        from './pages/Settings/SettingsPage'
+import ChangePasswordPage  from './pages/Organizer/ChangePassword/ChangePasswordPage'
+import OrgUsersPage        from './pages/Organizer/Users/OrgUsersPage'
+import OrgTeamsPage        from './pages/Organizer/Teams/OrgTeamsPage'
+import OrgTournamentsPage  from './pages/Organizer/Tournaments/OrgTournamentsPage'
+import OrgPaymentsPage     from './pages/Organizer/Payments/OrgPaymentsPage'
+import OrgRefereesPage     from './pages/Organizer/Referees/OrgRefereesPage'
 
 // Protected pages — Teams
 import CreateTeam from './pages/teams/CreateTeam'
@@ -71,6 +77,11 @@ export default function App() {
         <Route path="step2"   element={<RegistrationStep2Page />} />
         <Route path="step3"   element={<RegistrationStep3Page />} />
         <Route path="success" element={<RegistrationSuccessPage />} />
+      </Route>
+
+      {/* ── Cambio de contraseña obligatorio (sin Layout) ── */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/change-password" element={<ChangePasswordPage />} />
       </Route>
 
       {/* ── Rutas protegidas: autenticación + Layout ── */}
@@ -114,8 +125,17 @@ export default function App() {
             <Route path="/matches"         element={<MatchesPage />} />
           </Route>
 
-          {/* Solo ADMINISTRATIVE / ADMINISTRATOR */}
-          <Route element={<ProtectedRoute allowedRoles={['ADMINISTRATIVE', 'ADMINISTRATOR']} />}>
+          {/* Solo ORGANIZER */}
+          <Route element={<ProtectedRoute allowedRoles={['ORGANIZER', 'ADMINISTRATIVE', 'ADMINISTRATOR']} />}>
+            <Route path="/organizer/users"       element={<OrgUsersPage />} />
+            <Route path="/organizer/teams"       element={<OrgTeamsPage />} />
+            <Route path="/organizer/tournaments" element={<OrgTournamentsPage />} />
+            <Route path="/organizer/payments"    element={<OrgPaymentsPage />} />
+            <Route path="/organizer/referees"    element={<OrgRefereesPage />} />
+          </Route>
+
+          {/* Solo ADMINISTRATIVE / ADMINISTRATOR / ORGANIZER */}
+          <Route element={<ProtectedRoute allowedRoles={['ADMINISTRATIVE', 'ADMINISTRATOR', 'ORGANIZER']} />}>
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
 
