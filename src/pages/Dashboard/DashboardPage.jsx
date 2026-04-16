@@ -7,9 +7,24 @@ import { getTournament, getTopScorers, getMatchHistory } from '../../api/tournam
 import { getRefereeMatches } from '../../api/referee'
 import styles from './DashboardPage.module.css'
 
-const STATUS_LABELS = {
-  DRAFT: 'Borrador', ACTIVE: 'Activo',
-  IN_PROGRESS: 'En progreso', FINISHED: 'Finalizado',
+import { getMyInvitations } from '../../api/teams'
+
+// ... (después de STATUS_LABELS)
+
+function PendingInvitesCard({ count }) {
+  if (count === 0) return null
+  return (
+    <div className={`${styles.card} ${styles.inviteAlert}`}>
+      <div className={styles.inviteContent}>
+        <span className={styles.inviteIcon}>📩</span>
+        <div>
+          <h3 className={styles.inviteTitle}>¡Tienes {count} {count === 1 ? 'invitación pendiente' : 'invitaciones pendientes'}!</h3>
+          <p className={styles.inviteText}>Un equipo quiere que formes parte de su nómina.</p>
+        </div>
+      </div>
+      <Link to="/invitations" className={styles.inviteBtn}>Ver invitaciones</Link>
+    </div>
+  )
 }
 
 function Avatar({ name }) {
@@ -206,11 +221,20 @@ export default function DashboardPage() {
   const [scorers, setScorers]             = useState([])
   const [matchHistory, setMatchHistory]   = useState([])
   const [refereeMatches, setRefereeMatches] = useState([])
+  const [pendingInvites, setPendingInvites] = useState(0)
   const [loading, setLoading]             = useState(true)
 
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true)
+      
+      // Invitaciones (solo para jugadores sin equipo o con invitaciones)
+      if (role === 'jugador' || role === 'estudiante') {
+        getMyInvitations().then(res => {
+          const pending = (res.data || []).filter(i => i.status === 'PENDING').length
+          setPendingInvites(pending)
+        }).catch(() => {})
+      }
       
       // Envolvemos todo en un gran try/catch para que un 500 no detenga la carga de la página
       try {
@@ -263,6 +287,13 @@ export default function DashboardPage() {
 
       {!loading && (
         <div className={styles.grid}>
+          {/* Alertas críticas en el tope del grid */}
+          {pendingInvites > 0 && (
+            <div className={styles.fullWidth}>
+              <PendingInvitesCard count={pendingInvites} />
+            </div>
+          )}
+
           {/* ── ÁRBITRO ── */}
           {role === 'árbitro' && (
             <>

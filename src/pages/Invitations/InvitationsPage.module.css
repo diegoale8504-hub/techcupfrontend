@@ -1,69 +1,109 @@
 .header {
-  background: linear-gradient(135deg, #1b7d4d 0%, #2d9e63 100%);
-  border-radius: var(--radius-lg);
-  padding: 30px 36px;
   margin-bottom: var(--space-xl);
-  box-shadow: 0 4px 24px rgba(27,125,77,0.25);
 }
 
-.heading { font-family: var(--font-title); font-weight: 800; font-size: 28px; color: #fff; margin-bottom: 4px; }
-.sub     { font-size: 14px; color: rgba(255,255,255,0.75); }
-
-.card {
-  background: rgba(255,255,255,0.97);
-  border-radius: var(--radius-lg);
-  padding: var(--space-xl);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
-  margin-bottom: var(--space-lg);
-}
-
-.cardMuted { opacity: 0.85; }
-
-.cardTitle {
+.title {
   font-family: var(--font-title);
-  font-weight: 700;
-  font-size: 15px;
-  color: #1b7d4d;
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-sm);
-  border-bottom: 2px solid #e8f5e9;
+  font-weight: 800;
+  font-size: 32px;
+  color: var(--color-white);
+  margin: 0;
 }
 
-.inviteList { display: flex; flex-direction: column; gap: 0; }
-
-.inviteRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 0;
-  border-bottom: 1px solid #f5f5f5;
+.sub {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
 }
 
-.inviteRow:last-child { border-bottom: none; }
+.invitesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--space-lg);
+}
 
-.inviteInfo {
+.inviteCard {
+  background: white; /* Fondo blanco solicitado */
+  border-radius: var(--radius-lg);
+  padding: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  color: #333; /* Texto oscuro para contraste */
 }
 
-.inviteName { font-size: 14px; font-weight: 700; color: #333; }
-.inviteDate { font-size: 11px; color: #aaa; }
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
 
-.actions { display: flex; gap: var(--space-sm); }
+.teamLogo {
+  font-size: 24px;
+  background: #f0fdf4;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid #dcfce7;
+}
+
+.teamInfo h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #111;
+}
+
+.teamInfo p {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: #666;
+}
 
 .statusBadge {
+  margin-left: auto;
   font-size: 11px;
   font-weight: 700;
-  padding: 3px 12px;
+  padding: 4px 10px;
   border-radius: 20px;
+  text-transform: uppercase;
 }
 
-.pending  { background: #fff8e1; color: #f57f17; }
-.accepted { background: #e8f5e9; color: #1b7d4d; }
-.rejected { background: #ffebee; color: #d32f2f; }
+.pending { background: #fef3c7; color: #92400e; }
+.accepted { background: #dcfce7; color: #166534; }
+.rejected { background: #fee2e2; color: #991b1b; }
 
-.emptyMsg  { color: #aaa; font-size: 14px; }
-.loading   { color: rgba(255,255,255,0.8); font-size: 15px; }
-.errorMsg  { color: #ffaaaa; font-size: 14px; margin-bottom: var(--space-md); }
-.infoMsg   { color: #C8F135; font-size: 13px; font-weight: 600; margin-bottom: var(--space-md); }
+.cardBody {
+  margin-bottom: 25px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.detailRow span { color: #777; }
+.detailRow strong { color: #222; }
+
+.cardActions {
+  display: flex;
+  gap: 10px;
+}
+
+.banner {
+  background: var(--color-primary);
+  color: white;
+  padding: 15px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.empty { color: white; opacity: 0.6; }

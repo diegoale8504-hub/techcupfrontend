@@ -1,0 +1,101 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--space-xl);
+}
+
+.title {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 32px;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.sub {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item {
+  background: white; /* Estética limpia sobre fondo oscuro */
+  border-radius: var(--radius-md);
+  padding: 18px 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.unread {
+  border-left: 5px solid var(--color-primary);
+  background: #f0fdf4; /* Tinte verde muy suave para no leídas */
+}
+
+.icon {
+  font-size: 24px;
+  background: #f3f4f6;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.content {
+  flex: 1;
+}
+
+.message {
+  margin: 0;
+  font-weight: 600;
+  color: #111;
+  font-size: 15px;
+}
+
+.date {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  display: block;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+.empty {
+  text-align: center;
+  padding: 60px;
+  color: white;
+  opacity: 0.5;
+}
+
+.emptyIcon {
+  font-size: 50px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.loading { color: white; text-align: center; padding: 40px; }

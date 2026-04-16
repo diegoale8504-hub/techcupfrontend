@@ -187,7 +187,7 @@ export default function Layout() {
 
   useEffect(() => {
     fetchUnread()
-    pollRef.current = setInterval(fetchUnread, 60000)
+    pollRef.current = setInterval(fetchUnread, 30000) // Reducido a 30s
     return () => clearInterval(pollRef.current)
   }, [fetchUnread])
 

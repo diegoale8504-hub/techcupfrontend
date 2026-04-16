@@ -3,7 +3,7 @@ import PageLayout from '../../components/layout/PageLayout/PageLayout'
 import Badge from '../../components/ui/Badge/Badge'
 import Button from '../../components/ui/Button/Button'
 import { searchUsers } from '../../api/users'
-import { invitePlayer } from '../../api/teams'
+import { invitePlayer, getTeamInvitations } from '../../api/teams'
 import { useAuth } from '../../hooks/useAuth'
 import styles from './PlayerSearchPage.module.css'
 
@@ -22,256 +22,198 @@ const POSITION_LABELS = {
   FORWARD: 'Delantero',
 }
 
-const PAGE_SIZE = 7
-
 export default function PlayerSearchPage() {
   const { user } = useAuth()
   const isCaptain = user?.role === 'CAPTAIN'
 
   const [query, setQuery] = useState('')
   const [position, setPosition] = useState('')
-  const [availableOnly, setAvailableOnly] = useState(false) // Cambiado a false para depuración inicial
+  const [availableOnly, setAvailableOnly] = useState(false)
+  const [semester, setSemester] = useState('')
+
   const [players, setPlayers] = useState([])
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(0)
+  const [sentInvitations, setSentInvitations] = useState([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const [inviting, setInviting] = useState({}) 
-  const [selectedPlayer, setSelectedPlayer] = useState(null) // Para el detalle
+  const [selectedPlayer, setSelectedPlayer] = useState(null)
 
-  const fetchPlayers = useCallback(() => {
+  const fetchSentInvitations = useCallback(async () => {
+    if (isCaptain && user?.teamId) {
+      try {
+        const res = await getTeamInvitations(user.teamId)
+        setSentInvitations(res.data || [])
+      } catch (e) { console.warn('No se pudieron cargar invitaciones') }
+    }
+  }, [isCaptain, user?.teamId])
+
+  const fetchPlayers = useCallback(async () => {
     setLoading(true)
+    setError(null)
     
-    // Construimos los parámetros exactos que espera el backend de Spring
-    const params = {
-      role: 'PLAYER', // Filtro crítico: solo jugadores
-      page,
-      size: PAGE_SIZE,
-      ...(availableOnly ? { available: true } : {}),
-      ...(position ? { position } : {}),
+    const params = {}
+    if (availableOnly) params.available = true
+    if (position) params.position = position
+    const s = parseInt(semester, 10); if (!isNaN(s)) params.semester = s
+
+    if (query && query.trim() !== '') {
+      if (/^\d+$/.test(query.trim())) params.idNumber = query.trim()
+      else params.name = query.trim()
     }
 
-    // Si hay una consulta, la enviamos tanto para nombre como para documento 
-    // para que el backend filtre por lo que coincida
-    if (query) {
-      if (/^\d+$/.test(query)) {
-        params.document = query
-      } else {
-        params.name = query
-      }
+    try {
+      const res = await searchUsers(params)
+      const data = res.data
+      const content = Array.isArray(data) ? data : (data.content || [])
+      
+      // Filtrado Final:
+      // 1. Quitarme a mí
+      // 2. Solo Rol PLAYER
+      // 3. Si availableOnly está activo, quitar cualquiera que tenga teamId
+      const filtered = content.filter(p => {
+        const isNotMe = p.id !== user?.id
+        const isPlayer = p.role === 'PLAYER' || p.userType === 'PLAYER'
+        
+        // Si pide solo libres, el backend debería filtrarlo, pero reforzamos aquí
+        const isFree = !p.teamId && !p.teamName 
+        if (availableOnly && !isFree) return false
+
+        return isNotMe && isPlayer
+      })
+
+      setPlayers(filtered)
+      await fetchSentInvitations()
+    } catch (err) {
+      setError('Error al cargar el mercado.')
+      setPlayers([])
+    } finally {
+      setLoading(false)
     }
+  }, [query, position, availableOnly, semester, user?.id, user?.teamId, fetchSentInvitations])
 
-    searchUsers(params)
-      .then((res) => {
-        const data = res.data
-        // Manejo flexible de la respuesta (Lista directa o Page de Spring)
-        const content = data.content || (Array.isArray(data) ? data : [])
-        setPlayers(content)
-        setTotal(data.totalElements ?? (Array.isArray(data) ? data.length : content.length))
-      })
-      .catch((err) => {
-        console.error('Error en búsqueda:', err)
-        setPlayers([])
-        setTotal(0)
-      })
-      .finally(() => setLoading(false))
-  }, [query, position, availableOnly, page])
-
-  // Debounce query changes
   useEffect(() => {
-    const timer = setTimeout(fetchPlayers, 300)
+    const timer = setTimeout(fetchPlayers, 400)
     return () => clearTimeout(timer)
   }, [fetchPlayers])
 
   const handleInvite = async (playerId) => {
-    if (!user?.teamId) {
-      alert('Debes tener un equipo para invitar jugadores.')
-      return
-    }
+    if (!user?.teamId) return
     setInviting((p) => ({ ...p, [playerId]: 'loading' }))
     try {
       await invitePlayer(user.teamId, playerId)
       setInviting((p) => ({ ...p, [playerId]: 'done' }))
-      // No cerramos el detalle si estaba abierto, solo marcamos como enviado
+      fetchSentInvitations()
     } catch (err) {
-      alert(err.userMessage ?? 'No se pudo enviar la invitación.')
+      alert(err.userMessage || 'Error al invitar.')
       setInviting((p) => ({ ...p, [playerId]: null }))
     }
   }
 
-  const totalPages = Math.ceil(total / PAGE_SIZE)
+  const isAlreadyInvited = (playerId) => {
+    return sentInvitations.some(inv => inv.playerId === playerId && inv.status === 'PENDING')
+  }
 
   return (
     <PageLayout>
       <div className={styles.header}>
         <h1 className={styles.heading}>Mercado de Jugadores</h1>
-        <p className={styles.sub}>Busca por nombre, documento o filtra por posición para completar tu equipo.</p>
+        <p className={styles.sub}>Gestiona las incorporaciones de tu equipo.</p>
       </div>
 
-      <div className={styles.filters}>
-        <input
-          className={styles.searchInput}
-          type="text"
-          placeholder="Nombre o Documento..."
-          value={query}
-          onChange={(e) => { setQuery(e.target.value); setPage(0) }}
-        />
-        <select
-          className={styles.select}
-          value={position}
-          onChange={(e) => { setPosition(e.target.value); setPage(0) }}
-        >
-          {POSITION_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
-        <label className={styles.availableFilter}>
-          <input
-            type="checkbox"
-            checked={availableOnly}
-            onChange={(e) => { setAvailableOnly(e.target.checked); setPage(0) }}
-          />
-          Solo libres
-        </label>
+      <div className={styles.filtersGrid}>
+        <div className={styles.mainSearch}>
+          <input className={styles.searchInput} type="text" placeholder="Nombre o Documento..." value={query} onChange={(e) => setQuery(e.target.value)} />
+        </div>
+        <div className={styles.advancedFilters}>
+          <select className={styles.select} value={position} onChange={(e) => setPosition(e.target.value)}>
+            {POSITION_OPTIONS.map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
+          </select>
+          <input className={styles.miniInput} type="number" placeholder="Sem" value={semester} onChange={(e) => setSemester(e.target.value)} />
+          <label className={styles.availableFilter}>
+            <input type="checkbox" checked={availableOnly} onChange={(e) => setAvailableOnly(e.target.checked)} /> Solo Libres
+          </label>
+        </div>
       </div>
 
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
             <tr className={styles.tableHead}>
-              <th className={styles.nameCol}>Jugador</th>
-              <th>Documento</th>
+              <th>Jugador</th>
               <th>Posición</th>
-              <th>Estado</th>
+              <th>Situación</th>
               <th>Acción</th>
             </tr>
           </thead>
           <tbody>
-            {loading && (
-              <tr><td colSpan={5} className={styles.loadingCell}>Buscando...</td></tr>
-            )}
-            {!loading && players.length === 0 && (
-              <tr><td colSpan={5} className={styles.emptyCell}>No se encontraron jugadores disponibles con esos criterios.</td></tr>
-            )}
-            {!loading && players.map((player) => (
-              <tr key={player.id} className={styles.row}>
-                <td className={styles.nameCell}>
-                  <div className={styles.playerName}>{player.name}</div>
-                  <div className={styles.playerEmail}>{player.email}</div>
-                </td>
-                <td>{player.document || '—'}</td>
-                <td>{POSITION_LABELS[player.mainPosition] ?? POSITION_LABELS[player.position] ?? '—'}</td>
-                <td>
-                  <Badge status={player.available ? 'available' : 'in-team'} />
-                </td>
-                <td>
-                  <div className={styles.rowActions}>
-                    <Button variant="ghost" size="sm" onClick={() => setSelectedPlayer(player)}>
-                      Ver Detalle
-                    </Button>
-                    {isCaptain && player.available && (
-                      inviting[player.id] === 'done' ? (
-                        <span className={styles.sent}>✓ Enviada</span>
+            {loading ? (
+              <tr><td colSpan={4} className={styles.loadingCell}>Buscando...</td></tr>
+            ) : (
+              players.map((p) => {
+                const isInMyTeam = p.teamId === user?.teamId
+                const hasOtherTeam = p.teamId && p.teamId !== user?.teamId
+                const alreadySent = isAlreadyInvited(p.id) || inviting[p.id] === 'done'
+                
+                return (
+                  <tr key={p.id} className={styles.row}>
+                    <td>
+                      <div className={styles.playerName}>{p.name}</div>
+                      <div className={styles.playerEmail}>{p.idNumber || p.document}</div>
+                    </td>
+                    <td>{POSITION_LABELS[p.mainPosition] || POSITION_LABELS[p.position] || '—'}</td>
+                    <td>
+                      {isInMyTeam ? (
+                        <span className={styles.myTeamBadge}>En tu equipo</span>
+                      ) : hasOtherTeam ? (
+                        <span className={styles.inTeamLabel}>En equipo: <strong>{p.teamName || 'Registrado'}</strong></span>
                       ) : (
-                        <Button
-                          variant="accent"
-                          size="sm"
-                          loading={inviting[player.id] === 'loading'}
-                          onClick={() => handleInvite(player.id)}
-                        >
-                          Invitar
-                        </Button>
-                      )
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
+                        <Badge status="available" />
+                      )}
+                    </td>
+                    <td>
+                      <div className={styles.rowActions}>
+                        <Button variant="ghost" size="sm" onClick={() => setSelectedPlayer(p)}>Ver</Button>
+                        {isCaptain && !p.teamId && !p.teamName && (
+                          alreadySent ? (
+                            <span className={styles.sent}>✓ Invitado</span>
+                          ) : (
+                            <Button variant="accent" size="sm" loading={inviting[p.id] === 'loading'} onClick={() => handleInvite(p.id)}>Invitar</Button>
+                          )
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Modal de Detalle (Simple) */}
       {selectedPlayer && (
         <div className={styles.modalOverlay} onClick={() => setSelectedPlayer(null)}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <button className={styles.closeModal} onClick={() => setSelectedPlayer(null)}>×</button>
-            <div className={styles.modalHeader}>
-              <div className={styles.modalAvatar}>{(selectedPlayer.name || 'U')[0].toUpperCase()}</div>
-              <div>
-                <h3>{selectedPlayer.name}</h3>
-                <p>{selectedPlayer.email}</p>
+            <h3 style={{margin:0, fontSize: '24px'}}>{selectedPlayer.name}</h3>
+            <p style={{marginBottom:20, color: '#666'}}>{selectedPlayer.email}</p>
+            <div className={styles.infoGrid}>
+              <div className={styles.infoItem}><label>Documento</label><span>{selectedPlayer.idNumber || '—'}</span></div>
+              <div className={styles.infoItem}><label>Posición</label><span>{POSITION_LABELS[selectedPlayer.mainPosition] || '—'}</span></div>
+              <div className={styles.infoItem}><label>Estado</label>
+                <span style={{fontWeight:700, color: selectedPlayer.teamId ? '#ef4444' : '#16a34a'}}>
+                  {selectedPlayer.teamName ? `En equipo: ${selectedPlayer.teamName}` : 'Libre'}
+                </span>
               </div>
             </div>
-            <div className={styles.modalBody}>
-              <div className={styles.infoGrid}>
-                <div className={styles.infoItem}>
-                  <label>Documento</label>
-                  <span>{selectedPlayer.document || '—'}</span>
-                </div>
-                <div className={styles.infoItem}>
-                  <label>Posición</label>
-                  <span>{POSITION_LABELS[selectedPlayer.mainPosition] ?? POSITION_LABELS[selectedPlayer.position] ?? '—'}</span>
-                </div>
-                <div className={styles.infoItem}>
-                  <label>Estado</label>
-                  <Badge status={selectedPlayer.available ? 'available' : 'in-team'} />
-                </div>
-                <div className={styles.infoItem}>
-                  <label>Teléfono</label>
-                  <span>{selectedPlayer.phone || '—'}</span>
-                </div>
-              </div>
-            </div>
-            <div className={styles.modalFooter}>
-              {isCaptain && selectedPlayer.available && (
-                <Button
-                  variant="primary"
-                  fullWidth
-                  loading={inviting[selectedPlayer.id] === 'loading'}
-                  disabled={inviting[selectedPlayer.id] === 'done'}
-                  onClick={() => handleInvite(selectedPlayer.id)}
-                >
-                  {inviting[selectedPlayer.id] === 'done' ? 'Invitación enviada' : 'Enviar invitación al equipo'}
-                </Button>
+            <div style={{marginTop:30, display:'flex', gap:10}}>
+              {isCaptain && !selectedPlayer.teamId && !isAlreadyInvited(selectedPlayer.id) && (
+                <Button variant="primary" fullWidth loading={inviting[selectedPlayer.id] === 'loading'} onClick={() => handleInvite(selectedPlayer.id)}>Enviar Invitación</Button>
               )}
-              <Button variant="ghost" fullWidth onClick={() => setSelectedPlayer(null)}>
-                Cerrar
-              </Button>
+              <Button variant="ghost" fullWidth onClick={() => setSelectedPlayer(null)}>Cerrar</Button>
             </div>
           </div>
         </div>
       )}
-
-      <div className={styles.pagination}>
-        <span className={styles.pageInfo}>
-          Mostrando {players.length} de {total} jugadores
-        </span>
-        <div className={styles.pageControls}>
-          <button
-            className={styles.pageBtn}
-            disabled={page === 0}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            ←
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              className={[styles.pageBtn, i === page ? styles.pageBtnActive : ''].join(' ')}
-              onClick={() => setPage(i)}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            className={styles.pageBtn}
-            disabled={page >= totalPages - 1}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            →
-          </button>
-        </div>
-      </div>
     </PageLayout>
   )
 }

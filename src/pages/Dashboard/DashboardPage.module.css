@@ -1,472 +1,231 @@
-/* ── Animations ───────────────────────────────────────────────── */
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(32px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* ── Header ───────────────────────────────────────────────────── */
 .header {
-  background: linear-gradient(135deg, #1b7d4d 0%, #2d9e63 100%);
-  border-radius: var(--radius-lg);
-  padding: 30px 36px;
-  margin-bottom: var(--space-xl);
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  box-shadow: 0 4px 24px rgba(27,125,77,0.25);
-  animation: fadeIn 0.5s ease both;
-}
-
-.roleBadge {
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.35);
-  border-radius: 20px;
-  padding: 6px 16px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.5px;
-  text-transform: capitalize;
-  white-space: nowrap;
+  align-items: flex-start;
+  margin-bottom: var(--space-xl);
 }
 
 .welcome {
   font-family: var(--font-title);
   font-weight: 800;
-  font-size: 28px;
-  color: #ffffff;
-  margin-bottom: 6px;
+  font-size: 32px;
+  color: var(--color-white);
+  margin: 0;
 }
 
 .season {
+  color: rgba(255, 255, 255, 0.6);
   font-size: 14px;
-  color: rgba(255,255,255,0.75);
-  font-weight: 500;
+  margin-top: 4px;
 }
 
-/* ── Grid ─────────────────────────────────────────────────────── */
+.roleBadge {
+  background: var(--color-primary);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Grid System */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
 }
 
-/* ── Cards ────────────────────────────────────────────────────── */
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+/* Cards Base */
 .card {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  padding: var(--space-lg);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  animation: slideUp 0.45s ease both;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
 }
-
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 36px rgba(0,0,0,0.18);
-}
-
-.card1 { animation-delay: 0.1s; }
-.card2 { animation-delay: 0.2s; }
-.card3 { animation-delay: 0.3s; }
 
 .cardTitle {
   font-family: var(--font-title);
   font-weight: 700;
-  font-size: 15px;
-  color: #1b7d4d;
+  font-size: 18px;
   margin-bottom: var(--space-md);
-  padding-bottom: var(--space-sm);
-  border-bottom: 2px solid #e8f5e9;
+  color: var(--color-text);
 }
 
-/* ── Card 1: Profile ──────────────────────────────────────────── */
-.avatarRow {
+/* Invitation Alert Card */
+.inviteAlert {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+  border: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 30px;
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(22, 163, 74, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+}
+
+.inviteContent {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-md);
+  gap: 20px;
 }
 
-.avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1b7d4d, #2d9e63);
-  color: #ffffff;
-  font-family: var(--font-title);
-  font-weight: 800;
-  font-size: 18px;
+.inviteIcon {
+  font-size: 32px;
+  background: rgba(255,255,255,0.2);
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  border-radius: 50%;
 }
 
-.playerName {
-  font-family: var(--font-title);
+.inviteTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.inviteText {
+  margin: 4px 0 0 0;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+.inviteBtn {
+  background: white;
+  color: #16a34a;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
   font-weight: 700;
-  font-size: 15px;
-  color: #333;
+  text-decoration: none;
+  transition: transform 0.2s;
 }
 
-.infoList {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+.inviteBtn:hover {
+  transform: scale(1.05);
+}
+
+/* Tournament Info */
+.tournamentInfo {
+  margin-top: auto;
+}
+
+.statusBadge {
+  display: inline-block;
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--color-primary);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 16px;
 }
 
 .infoRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 13px;
-}
-
-.infoRow:last-child {
-  border-bottom: none;
-}
-
-.infoLabel {
-  color: #999;
-  font-size: 13px;
-}
-
-.infoValue {
-  font-weight: 600;
-  color: #333;
-}
-
-.jerseyBadge {
-  font-family: var(--font-title);
-  font-weight: 800;
-  font-size: 15px;
-  color: #1b7d4d;
-}
-
-.badgeAvailable {
-  background: #e8f5e9;
-  color: #1b7d4d;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 20px;
-}
-
-.badgeUnavailable {
-  background: #fbe9e7;
-  color: #d32f2f;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 20px;
-}
-
-/* ── Card 2: Tournament ───────────────────────────────────────── */
-.tournamentStatus {
+  margin-bottom: 8px;
   font-size: 14px;
-  color: #555;
-  margin-bottom: var(--space-lg);
 }
 
-.positionBlock {
+.infoLabel { color: var(--color-gray); }
+.infoValue { font-weight: 600; }
+.winner { color: var(--color-accent); }
+
+/* Best Player Card */
+.avatarRow {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  margin-bottom: var(--space-lg);
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-.positionNumber {
-  font-family: var(--font-title);
-  font-weight: 800;
-  font-size: 56px;
-  line-height: 1;
-  color: #1b7d4d;
-}
-
-.positionLabel {
-  font-size: 12px;
-  color: #999;
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.cardLink {
-  display: inline-block;
-  font-size: 13px;
+.avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 700;
-  color: #1b7d4d;
-  text-decoration: none;
-  position: relative;
-  padding-bottom: 2px;
+  font-size: 18px;
 }
 
-.cardLink::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 0;
-  height: 2px;
-  background: #1b7d4d;
-  transition: width 0.25s ease;
-}
+.playerName { font-weight: 700; margin: 0; }
+.teamName { font-size: 12px; color: var(--color-gray); margin: 2px 0 0 0; }
 
-.cardLink:hover::after {
-  width: 100%;
-}
-
-.cardLink:hover {
-  text-decoration: none;
-  color: #1b7d4d;
-}
-
-/* ── Card 3: Actions ──────────────────────────────────────────── */
-.statsRow {
-  display: flex;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
-}
-
-.statBox {
-  flex: 1;
-  background: #f5f5f5;
+.goalsBlock {
+  background: var(--color-row-alt);
+  padding: 16px;
   border-radius: var(--radius-md);
-  padding: var(--space-md);
   text-align: center;
+  margin-bottom: 20px;
 }
 
-.statNumber {
+.goalsNumber {
   display: block;
-  font-family: var(--font-title);
-  font-weight: 800;
   font-size: 32px;
-  color: #1b7d4d;
+  font-weight: 800;
+  color: var(--color-primary);
   line-height: 1;
 }
 
-.statLabel {
-  display: block;
-  font-size: 11px;
-  color: #999;
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+.goalsLabel { font-size: 12px; color: var(--color-gray); text-transform: uppercase; }
 
-.quickLinks {
-  display: flex;
-  flex-direction: column;
-}
-
-.quickLink {
+.miniScorer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   font-size: 13px;
-  font-weight: 600;
-  color: #333;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
-  text-decoration: none;
-  transition: color 0.2s ease, padding-left 0.2s ease;
+  padding: 8px 0;
+  border-top: 1px solid var(--color-gray-light);
 }
 
-.quickLink:last-child {
-  border-bottom: none;
-}
-
-.quickLink:hover {
-  color: #1b7d4d;
-  padding-left: 6px;
-  text-decoration: none;
-}
-
-.arrow {
-  font-size: 14px;
-  transition: transform 0.2s ease;
-}
-
-.quickLink:hover .arrow {
-  transform: translateX(4px);
-}
-
-/* ── States ───────────────────────────────────────────────────── */
-.loading {
-  color: rgba(255,255,255,0.8);
-  font-size: 15px;
-  padding: var(--space-lg) 0;
-}
-
-.errorMsg {
-  color: #ffaaaa;
-  font-size: 15px;
-  padding: var(--space-lg) 0;
-}
-
-/* ── Tournament status card ───────────────────────────────────── */
-.tournamentInfo {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-}
-
-.statusBadge {
-  display: inline-block;
-  background: #e8f5e9;
-  color: #1b7d4d;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 14px;
-  border-radius: 20px;
-  margin-bottom: var(--space-sm);
-}
-
-.winner {
-  color: #1b7d4d;
-  font-weight: 800;
-}
-
-/* ── Novedades card ───────────────────────────────────────────── */
+/* Matches */
 .novedadesList {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  margin-bottom: var(--space-md);
+  gap: 12px;
 }
 
 .novedadItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 13px;
+  padding: 10px;
+  background: var(--color-row-alt);
+  border-radius: var(--radius-sm);
 }
 
-.novedadItem:last-child { border-bottom: none; }
+.novedadTeams { font-weight: 600; font-size: 13px; }
+.novedadScore { font-family: var(--font-title); font-weight: 800; color: var(--color-primary); }
 
-.novedadTeams {
-  color: #333;
-  font-weight: 600;
-}
-
-.novedadScore {
-  font-family: var(--font-title);
-  font-weight: 800;
-  font-size: 15px;
-  color: #1b7d4d;
-}
-
-/* ── Best player card ─────────────────────────────────────────── */
-.teamName {
-  font-size: 12px;
-  color: #999;
-  margin-top: 2px;
-}
-
-.goalsBlock {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-  margin: var(--space-md) 0;
-}
-
-.goalsNumber {
-  font-family: var(--font-title);
-  font-weight: 800;
-  font-size: 52px;
-  line-height: 1;
-  color: #1b7d4d;
-}
-
-.goalsLabel {
-  font-size: 13px;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.miniScorer {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: 6px 0;
-  border-top: 1px solid #f0f0f0;
-  font-size: 12px;
-}
-
-.miniRank  { color: #999; font-weight: 700; width: 16px; }
-.miniName  { flex: 1; color: #333; font-weight: 600; }
-.miniGoals { color: #1b7d4d; font-weight: 700; }
-
-/* ── Referee next match card ──────────────────────────────────── */
-.matchBlock {
-  margin-bottom: var(--space-md);
-}
-
-.matchTeams {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-sm);
-}
-
-.matchTeam {
-  font-family: var(--font-title);
+/* Common */
+.cardLink {
+  margin-top: 20px;
+  color: var(--color-primary);
   font-weight: 700;
-  font-size: 14px;
-  color: #333;
-  text-align: center;
-}
-
-.matchVs {
-  font-size: 12px;
-  color: #999;
-  font-weight: 600;
-}
-
-.matchMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 12px;
-  color: #666;
-  text-align: center;
-}
-
-/* ── Empty state ──────────────────────────────────────────────── */
-.emptyMsg {
   font-size: 13px;
-  color: #aaa;
-  margin-bottom: var(--space-md);
+  text-decoration: none;
 }
 
-/* ── Responsive ───────────────────────────────────────────────── */
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-  .header {
-    padding: 20px;
-  }
-  .welcome {
-    font-size: 22px;
-  }
-}
+.loading { color: var(--color-white); text-align: center; padding: 40px; }
+.emptyMsg { color: var(--color-gray); font-size: 14px; }

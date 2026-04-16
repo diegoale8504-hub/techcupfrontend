@@ -23,6 +23,7 @@ import StandingsPage from './pages/Standings/StandingsPage'
 import ProfilePage from './pages/Profile/ProfilePage'
 import PlayerSearchPage from './pages/PlayerSearch/PlayerSearchPage'
 import InvitationsPage from './pages/Invitations/InvitationsPage'
+import NotificationsPage from './pages/Notifications/NotificationsPage'
 
 // Protected pages — Captain
 import TeamPage from './pages/Team/TeamPage'
@@ -41,7 +42,6 @@ import CreateTeam from './pages/teams/CreateTeam'
 import ManageTeam from './pages/teams/ManageTeam'
 
 // Placeholders — páginas pendientes de implementar
-const NotificationsPage    = () => <div style={{ padding: 32 }}><h2>Notificaciones</h2></div>
 const TournamentActivePage = () => <div style={{ padding: 32 }}><h2>Torneo Activo</h2></div>
 const StatisticsPage       = () => <div style={{ padding: 32 }}><h2>Estadísticas</h2></div>
 const LineupsPage          = () => <div style={{ padding: 32 }}><h2>Alineaciones</h2></div>
@@ -79,9 +79,9 @@ export default function App() {
 
           {/* Accesibles a cualquier rol autenticado */}
           <Route path="/dashboard"     element={<DashboardPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/profile/:id"   element={<ProfilePage />} />
           <Route path="/profile"       element={<ProfilePage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/tournament"    element={<TournamentPage />} />
           <Route path="/calendar"      element={<CalendarPage />} />
           <Route path="/standings"     element={<StandingsPage />} />

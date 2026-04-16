@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth'
 import {
   getTeam, getMyTeam, getTeamInvitations, getTeamLeaveRequests,
   invitePlayer, removePlayer, respondLeaveRequest,
-  validateTeam, dissolveTeam, uploadTeamLogo,
+  validateTeam, dissolveTeam, uploadTeamLogo, cancelInvitation,
 } from '../../api/teams'
 import { getUserById } from '../../api/users'
 import PageLayout from '../../components/layout/PageLayout/PageLayout'
@@ -107,6 +107,11 @@ export default function ManageTeam() {
       else if (type === 'removeMember') {
         await removePlayer(team.id, data)
         notify('Jugador eliminado correctamente.')
+        fetchData()
+      }
+      else if (type === 'cancelInv') {
+        await cancelInvitation(data)
+        notify('Invitación cancelada.')
         fetchData()
       }
     } catch (err) {
@@ -239,8 +244,17 @@ export default function ManageTeam() {
               <ul className={styles.memberList}>
                 {invitations.filter(i => i.status === 'PENDING').map(inv => (
                   <div key={inv.id} className={styles.memberItem}>
-                    <span style={{fontSize: 13}}>{inv.playerName || inv.playerId}</span>
-                    <span className={styles.roleBadge} style={{background: '#f3f4f6'}}>Enviada</span>
+                    <div style={{display:'flex', flexDirection:'column'}}>
+                      <span style={{fontSize: 13, fontWeight: 700}}>{inv.playerName || inv.playerId}</span>
+                      <span style={{fontSize: 11, color: '#888'}}>{new Date(inv.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <button 
+                      className={styles.btnDanger} 
+                      style={{padding: '4px 8px', fontSize: '11px'}}
+                      onClick={() => setConfirm({ open: true, type: 'cancelInv', data: inv.id })}
+                    >
+                      Cancelar
+                    </button>
                   </div>
                 ))}
                 {invitations.filter(i => i.status === 'PENDING').length === 0 && (
@@ -273,16 +287,22 @@ export default function ManageTeam() {
       {confirm.open && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <div className={styles.modalIcon}>{confirm.type === 'dissolve' ? '🧨' : '👤'}</div>
+            <div className={styles.modalIcon}>
+              {confirm.type === 'dissolve' ? '🧨' : confirm.type === 'cancelInv' ? '✉️' : '👤'}
+            </div>
             <h3 className={styles.modalTitle}>
-              {confirm.type === 'dissolve' ? '¿Disolver equipo?' : '¿Eliminar jugador?'}
+              {confirm.type === 'dissolve' ? '¿Disolver equipo?' : 
+               confirm.type === 'cancelInv' ? '¿Cancelar invitación?' : 
+               '¿Eliminar jugador?'}
             </h3>
             <p className={styles.modalText}>
-              Esta acción no se puede deshacer. ¿Estás seguro de que deseas continuar?
+              {confirm.type === 'cancelInv' 
+                ? 'El jugador dejará de ver esta propuesta en su buzón.' 
+                : 'Esta acción no se puede deshacer. ¿Estás seguro de que deseas continuar?'}
             </p>
             <div className={styles.modalActions}>
               <button className={styles.btnSecondary} onClick={() => setConfirm({ open: false, type: '', data: null })}>
-                Cancelar
+                Cerrar
               </button>
               <button className={styles.btnDanger} onClick={handleAction}>
                 Confirmar

@@ -44,6 +44,9 @@ export const getMyInvitations = () =>
 export const respondInvitation = (invitationId, accept) =>
   axiosInstance.patch(`/api/teams/invitations/${invitationId}/respond`, { accept })
 
+export const cancelInvitation = (invitationId) =>
+  axiosInstance.delete(`/api/teams/invitations/${invitationId}`)
+
 // Leave requests — respond body: { approve: boolean }
 export const leaveTeam = (teamId, reason = '') =>
   axiosInstance.post(`/api/teams/${teamId}/leave-requests`, { reason })
