@@ -1,11 +1,23 @@
+/* ── Top Card (Contenedor Blanco) ── */
+.topCard {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
 /* ── Header ── */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 20px;
   flex-wrap: wrap;
   gap: 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding-bottom: 20px;
 }
 
 .headerLeft {
@@ -19,31 +31,35 @@
   height: 56px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid #eeeeee;
 }
 
 .teamLogoPlaceholder {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.15);
+  background: var(--color-primary);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 24px;
 }
 
 .heading {
   font-family: var(--font-title);
   font-weight: 800;
   font-size: 26px;
-  color: #000;
+  color: #000000;
   margin-bottom: 2px;
 }
 
 .sub {
-  color: #000;
-  font-size: 13px;
+  color: #666666;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .headerRight {
@@ -61,11 +77,20 @@
   font-size: 22px;
   padding: 4px 16px;
   border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
 }
 
 .filledCount {
-  color: #000;
+  color: #000000;
   font-size: 12px;
+  font-weight: 700;
+}
+
+/* ── Fila de Selectores ── */
+.selectorsRow {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* ── Formation selector ── */
@@ -73,14 +98,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 10px;
   flex-wrap: wrap;
 }
 
 .formationSelectorLabel {
-  color: #000;
+  color: #000000;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -93,9 +117,9 @@
 .fBtn {
   padding: 6px 14px;
   border-radius: 20px;
-  border: 2px solid rgba(0,0,0,0.35);
-  background: rgba(255,255,255,0.1);
-  color: #000;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: #f5f5f5;
+  color: #000000;
   font-family: var(--font-title);
   font-weight: 700;
   font-size: 13px;
@@ -103,7 +127,7 @@
   transition: all 0.15s;
 }
 
-.fBtn:hover { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.6); }
+.fBtn:hover { background: #eeeeee; border-color: rgba(0,0,0,0.2); }
 
 .fBtnActive {
   background: #fbbf24;
@@ -118,16 +142,15 @@
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: var(--space-lg);
 }
 
 .legendItem {
   display: flex;
   align-items: center;
-  gap: 5px;
-  color: #000;
+  gap: 6px;
+  color: #000000;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .legendDot {
@@ -135,6 +158,7 @@
   height: 12px;
   border-radius: 50%;
   flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.1);
 }
 
 /* ── Match selector ── */
@@ -142,35 +166,36 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(0,0,0,0.05);
+  background: #f9f9f9;
   border-radius: var(--radius-md);
   padding: 12px 16px;
-  margin-bottom: var(--space-lg);
   flex-wrap: wrap;
+  border: 1px solid rgba(0,0,0,0.05);
 }
 
 .matchLabel {
-  color: #000;
+  color: #000000;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
 }
 
 .matchSelect {
   flex: 1;
   min-width: 200px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(255,255,255,0.15);
-  color: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: #ffffff;
+  color: #000000;
   font-size: 13px;
   outline: none;
+  font-weight: 600;
 }
 
-.matchSelect option { background: #1b7d4d; color: #fff; }
+.matchSelect option { background: #ffffff; color: #000000; }
 
-.noMatches { color: #000; font-size: 13px; }
+.noMatches { color: #000000; font-size: 13px; font-weight: 600; }
 
 .existingBadge {
   background: #10b981;

@@ -321,78 +321,85 @@ export default function LineupFormationPage() {
   return (
     <PageLayout>
 
-      {/* ── Cabecera ── */}
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          {team?.logo
-            ? <img src={team.logo} alt={team.name} className={styles.teamLogo} />
-            : <div className={styles.teamLogoPlaceholder}></div>
-          }
-          <div>
-            <h1 className={styles.heading}>Formación del Equipo</h1>
-            <p className={styles.sub}>{team?.name}</p>
+      {/* ── Tarjeta Superior (Header + Selectores) ── */}
+      <div className={styles.topCard}>
+        {/* ── Cabecera ── */}
+        <div className={styles.header}>
+          <div className={styles.headerLeft}>
+            {team?.logo
+              ? <img src={team.logo} alt={team.name} className={styles.teamLogo} />
+              : <div className={styles.teamLogoPlaceholder}>{team?.name?.[0]}</div>
+            }
+            <div>
+              <h1 className={styles.heading}>Formación del Equipo</h1>
+              <p className={styles.sub}>{team?.name}</p>
+            </div>
+          </div>
+          <div className={styles.headerRight}>
+            <span className={styles.formationBadge}>{formation}</span>
+            <span className={styles.filledCount}>{filledCount}/{slots.length} jugadores</span>
           </div>
         </div>
-        <div className={styles.headerRight}>
-          <span className={styles.formationBadge}>{formation}</span>
-          <span className={styles.filledCount}>{filledCount}/{slots.length} jugadores</span>
+
+        {/* ── Selectores (Fila) ── */}
+        <div className={styles.selectorsRow}>
+          {/* ── Selector de formación ── */}
+          <div className={styles.formationSelector}>
+            <span className={styles.formationSelectorLabel}>Formación:</span>
+            <div className={styles.formationButtons}>
+              {Object.keys(FORMATIONS).map((f) => (
+                <button
+                  key={f}
+                  className={`${styles.fBtn} ${formation === f ? styles.fBtnActive : ''}`}
+                  onClick={() => handleFormationChange(f)}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Leyenda de colores ── */}
+          <div className={styles.legend}>
+            {Object.entries(ROLE_LABEL).map(([role, label]) => (
+              <span key={role} className={styles.legendItem}>
+                <span className={styles.legendDot} style={{ background: ROLE_COLOR[role] }} />
+                {label}
+              </span>
+            ))}
+          </div>
+
+          {/* ── Selector de partido ── */}
+          <div className={styles.matchSelector}>
+            <label className={styles.matchLabel}>Partido:</label>
+            {matches.length === 0
+              ? <span className={styles.noMatches}>No hay partidos programados para tu equipo.</span>
+              : (
+                <select
+                  className={styles.matchSelect}
+                  value={selectedMatch?.id ?? selectedMatch?.matchScheduleId ?? ''}
+                  onChange={(e) => {
+                    const m = matches.find((mx) => (mx.id ?? mx.matchScheduleId) === e.target.value)
+                    setSelectedMatch(m ?? null)
+                    setAssigned({})
+                    setExistingLineup(null)
+                  }}
+                >
+                  <option value="">-- Selecciona un partido --</option>
+                  {matches.map((m) => {
+                    const mid = m.id ?? m.matchScheduleId
+                    return (
+                      <option key={mid} value={mid}>
+                        {m.homeTeamName ?? 'Local'} vs {m.awayTeamName ?? 'Visitante'} — {formatMatchDate(m.matchDate ?? m.scheduledDate)}
+                      </option>
+                    )
+                  })}
+                </select>
+              )
+            }
+            {existingLineup && <span className={styles.existingBadge}>✓ Guardada</span>}
+          </div>
         </div>
-      </div>
-
-      {/* ── Selector de formación ── */}
-      <div className={styles.formationSelector}>
-        <span className={styles.formationSelectorLabel}>Formación:</span>
-        <div className={styles.formationButtons}>
-          {Object.keys(FORMATIONS).map((f) => (
-            <button
-              key={f}
-              className={`${styles.fBtn} ${formation === f ? styles.fBtnActive : ''}`}
-              onClick={() => handleFormationChange(f)}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Leyenda de colores ── */}
-      <div className={styles.legend}>
-        {Object.entries(ROLE_LABEL).map(([role, label]) => (
-          <span key={role} className={styles.legendItem}>
-            <span className={styles.legendDot} style={{ background: ROLE_COLOR[role] }} />
-            {label}
-          </span>
-        ))}
-      </div>
-
-      {/* ── Selector de partido ── */}
-      <div className={styles.matchSelector}>
-        <label className={styles.matchLabel}>Partido:</label>
-        {matches.length === 0
-          ? <span className={styles.noMatches}>No hay partidos programados para tu equipo.</span>
-          : (
-            <select
-              className={styles.matchSelect}
-              value={selectedMatch?.id ?? selectedMatch?.matchScheduleId ?? ''}
-              onChange={(e) => {
-                const m = matches.find((mx) => (mx.id ?? mx.matchScheduleId) === e.target.value)
-                setSelectedMatch(m ?? null)
-                setAssigned({})
-                setExistingLineup(null)
-              }}
-            >
-              {matches.map((m) => {
-                const mid = m.id ?? m.matchScheduleId
-                return (
-                  <option key={mid} value={mid}>
-                    {m.homeTeamName ?? 'Local'} vs {m.awayTeamName ?? 'Visitante'} — {formatMatchDate(m.matchDate ?? m.scheduledDate)}
-                  </option>
-                )
-              })}
-            </select>
-          )
-        }
-        {existingLineup && <span className={styles.existingBadge}>✓ Guardada</span>}
       </div>
 
       {error && <p className={styles.errorMsg}>{error}</p>}

@@ -39,37 +39,57 @@
 .statLabel {
   display: block;
   font-size: 13px;
-  color: #888;
+  color: #000000;
   margin-top: 4px;
+  font-weight: 600;
 }
 
 .filterBar {
   display: flex;
   gap: 8px;
   margin-bottom: var(--space-xl);
-  border-bottom: 2px solid #e8f5e9;
-  padding-bottom: 0;
+  background: #ffffff;
+  padding: 10px 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.05);
 }
 
 .tab,
 .tabActive {
-  padding: 10px 20px;
+  padding: 8px 16px;
   border: none;
   background: none;
   font-family: var(--font-title);
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
-  color: #888;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  transition: color 0.15s, border-color 0.15s;
+  color: #000000;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
 }
 
-.tabActive { color: #1b7d4d; border-bottom-color: #1b7d4d; }
-.tab:hover { color: #2d9e63; }
+.tabActive { 
+  color: #1b7d4d; 
+  border-bottom-color: #1b7d4d;
+}
 
-.emptyMsg { color: #aaa; font-size: 14px; text-align: center; padding: var(--space-xl); }
+.tab:hover:not(.tabActive) {
+  background: #f5f5f5;
+  border-radius: var(--radius-md);
+}
+
+.emptyMsg { 
+  background: #ffffff;
+  color: #000000; 
+  font-size: 14px; 
+  text-align: center; 
+  padding: 40px; 
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.05);
+}
 
 .teamGrid {
   display: grid;

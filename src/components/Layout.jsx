@@ -246,7 +246,13 @@ export default function Layout() {
 
         {/* User Info Header */}
         <div className={styles.sidebarHeader}>
-          <div className={styles.avatarCircle}>{initial}</div>
+          <div className={styles.avatarCircle}>
+            {user?.profilePhoto ? (
+              <img src={user.profilePhoto} alt={user.name} className={styles.avatarImg} />
+            ) : (
+              initial
+            )}
+          </div>
           <div className={styles.userInfo}>
             <span className={styles.userName} title={user?.name ?? user?.email}>
               {user?.name ?? user?.email}

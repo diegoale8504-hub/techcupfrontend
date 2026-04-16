@@ -85,7 +85,11 @@ export default function ProfilePage() {
 
     setSaving(true)
     try {
-      await uploadProfileImage(user.id, formData)
+      const res = await uploadProfileImage(user.id, formData)
+      // Actualizar el contexto global para que el Sidebar refleje el cambio
+      if (res.data?.profilePhoto) {
+        updateUser({ profilePhoto: res.data.profilePhoto })
+      }
       setSaveSuccess(true)
       fetchProfile()
       setTimeout(() => setSaveSuccess(false), 3000)
