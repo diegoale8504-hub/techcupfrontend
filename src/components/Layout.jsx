@@ -137,13 +137,18 @@ export default function Layout() {
       .then((res) => {
         const profile = res.data
         const foundTeamId = profile.teamId || profile.team?.id
-        
+
         if (foundTeamId) {
           console.log('[Layout] Found teamId in profile:', foundTeamId)
           setMyTeamId(foundTeamId)
           if (user.teamId !== foundTeamId) {
             updateUser({ teamId: foundTeamId })
           }
+        } else {
+          // El perfil no tiene equipo — limpiar estado local si quedó sucio
+          console.log('[Layout] Profile has no teamId — clearing local team state')
+          setMyTeamId(null)
+          if (user.teamId) updateUser({ teamId: null })
         }
       })
       .catch((err) => {
@@ -157,7 +162,7 @@ export default function Layout() {
         if (myTeam?.id) {
           console.log('[Layout] Found team via /api/teams/my-team:', myTeam.id)
           setMyTeamId(myTeam.id)
-          
+
           // Auto-promote to CAPTAIN if backend says user is captain of this team
           const captainId = myTeam.captainId ?? myTeam.captain?.id
           if (captainId === user.id && user.role !== 'CAPTAIN') {
@@ -168,8 +173,14 @@ export default function Layout() {
         }
       })
       .catch((err) => {
-        // Silently fail if no team or forbidden
-        console.log('[Layout] My-team fetch failed or user has no team:', err.response?.status)
+        // 404 = usuario sin equipo → limpiar estado
+        if (err.response?.status === 404 || err.response?.status === 403) {
+          console.log('[Layout] No team found — clearing local team state')
+          setMyTeamId(null)
+          if (user.teamId) updateUser({ teamId: null })
+        } else {
+          console.log('[Layout] My-team fetch failed:', err.response?.status)
+        }
       })
   }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
