@@ -150,16 +150,28 @@ export default function LineupFormationPage() {
   useEffect(() => {
     if (!selectedMatch || !team) return
     const matchId = selectedMatch.id ?? selectedMatch.matchScheduleId
+    const localKey = `lineup_draft_${team.id}_${matchId}`
+
     const load = async () => {
       try {
-        const lineups = (await getMatchLineups(matchId)).data ?? []
-        const mine = lineups.find((l) => l.teamId === team.id)
-        if (mine) {
-          setExistingLineup(mine)
-          setFormation(mine.formation && FORMATIONS[mine.formation] ? mine.formation : DEFAULT_FORMATION)
-          const activeSlots = FORMATIONS[mine.formation && FORMATIONS[mine.formation] ? mine.formation : DEFAULT_FORMATION]
+        // 1. Intentar cargar del localStorage primero (prioridad front solicitado)
+        const localData = localStorage.getItem(localKey)
+        let savedLineup = null
+
+        if (localData) {
+          savedLineup = JSON.parse(localData)
+        } else {
+          // 2. Si no hay en local, intentar backend
+          const lineups = (await getMatchLineups(matchId)).data ?? []
+          savedLineup = lineups.find((l) => l.teamId === team.id)
+        }
+
+        if (savedLineup) {
+          setExistingLineup(savedLineup)
+          setFormation(savedLineup.formation && FORMATIONS[savedLineup.formation] ? savedLineup.formation : DEFAULT_FORMATION)
+          const activeSlots = FORMATIONS[savedLineup.formation && FORMATIONS[savedLineup.formation] ? savedLineup.formation : DEFAULT_FORMATION]
           const newAssigned = {}
-          mine.starters.forEach((s) => {
+          savedLineup.starters.forEach((s) => {
             const slot = activeSlots.find(
               (sl) => sl.position === s.position &&
                 Math.abs(sl.fieldX - s.fieldX) < 0.15 &&
@@ -183,7 +195,7 @@ export default function LineupFormationPage() {
   // ── Cambiar formación ─────────────────────────────────────────────
   const handleFormationChange = (newFormation) => {
     setFormation(newFormation)
-    setAssigned({})   // limpiar asignaciones al cambiar el esquema
+    setAssigned({})
     setExistingLineup(null)
     setSaved(false)
     setError(null)
@@ -232,41 +244,76 @@ export default function LineupFormationPage() {
 
   // ── Guardar ───────────────────────────────────────────────────────
   const handleSave = async () => {
-    if (!selectedMatch) { setError('Selecciona un partido primero.'); return }
     const starters = slots
       .filter((s) => assigned[s.id])
-      .map((s) => ({ playerId: assigned[s.id].id, position: s.position, fieldX: s.fieldX, fieldY: s.fieldY }))
+      .map((s) => ({ 
+        playerId: assigned[s.id].id, 
+        playerName: assigned[s.id].name,
+        position: s.position, 
+        fieldX: s.fieldX, 
+        fieldY: s.fieldY 
+      }))
 
-    if (starters.length === 0) { setError('Agrega al menos un jugador al campo.'); return }
-    if (!starters.some((s) => s.position === 'GOALKEEPER')) { setError('La alineación debe incluir un portero.'); return }
+    if (starters.length < slots.length) { 
+      setError(`Debes completar la alineación con los ${slots.length} jugadores.`); 
+      return; 
+    }
 
-    const matchId = selectedMatch.id ?? selectedMatch.matchScheduleId
+    const matchId = selectedMatch?.id ?? selectedMatch?.matchScheduleId
     const body = { formation, starters, reserveIds: [] }
+    // Si no hay matchId, usamos una clave general para el equipo
+    const localKey = matchId 
+      ? `lineup_draft_${team.id}_${matchId}` 
+      : `lineup_draft_${team.id}_general`
 
     setSaving(true); setError(null); setSaved(false)
     try {
-      if (existingLineup) {
-        await updateLineup(matchId, existingLineup.id, body)
-      } else {
-        const res = await createLineup(matchId, body)
-        setExistingLineup(res.data)
+      // Guardar en Front (localStorage)
+      localStorage.setItem(localKey, JSON.stringify(body))
+      
+      // Intentar guardar en Backend solo si hay un partido
+      if (matchId) {
+        try {
+          if (existingLineup?.id) {
+            await updateLineup(matchId, existingLineup.id, body)
+          } else {
+            const res = await createLineup(matchId, body)
+            setExistingLineup(res.data)
+          }
+        } catch (apiErr) {
+          console.warn('No se pudo sincronizar con el servidor, pero se guardó localmente.', apiErr)
+        }
       }
+
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     } catch (err) {
-      setError(err.userMessage ?? 'No se pudo guardar la alineación.')
+      setError('No se pudo guardar la alineación en el navegador.')
     } finally {
       setSaving(false)
     }
   }
 
-  const handleClear = () => { setAssigned({}); setExistingLineup(null); setSaved(false); setError(null) }
+  const handleClear = () => { 
+    setAssigned({}); 
+    setExistingLineup(null); 
+    setSaved(false); 
+    setError(null);
+    if (team) {
+      const matchId = selectedMatch?.id ?? selectedMatch?.matchScheduleId
+      const localKey = matchId 
+        ? `lineup_draft_${team.id}_${matchId}` 
+        : `lineup_draft_${team.id}_general`
+      localStorage.removeItem(localKey)
+    }
+  }
 
   // ── Derived ───────────────────────────────────────────────────────
+  const filledCount   = Object.values(assigned).filter(p => p && p.id).length
   const assignedIds   = new Set(Object.values(assigned).map((p) => p?.id).filter(Boolean))
-  const filledCount   = assignedIds.size
   const available     = players.filter((p) => !assignedIds.has(p.id))
   const inField       = players.filter((p) => assignedIds.has(p.id))
+  const canSave       = filledCount === slots.length && !saving
 
   // ── Render ────────────────────────────────────────────────────────
   if (loading) return <PageLayout><p className={styles.stateMsg}>Cargando alineación...</p></PageLayout>
@@ -431,7 +478,16 @@ export default function LineupFormationPage() {
           </div>
 
           <div className={styles.actions}>
-            <button className={styles.btnSave} onClick={handleSave} disabled={saving || !selectedMatch}>
+            {filledCount < slots.length && selectedMatch && (
+              <p className={styles.saveHint}>
+                Faltan {slots.length - filledCount} jugador{slots.length - filledCount !== 1 ? 'es' : ''} para completar la alineación
+              </p>
+            )}
+            <button
+              className={styles.btnSave}
+              onClick={handleSave}
+              disabled={saving || filledCount < slots.length}
+            >
               {saving ? 'Guardando...' : existingLineup ? 'Actualizar alineación' : 'Guardar alineación'}
             </button>
             <button className={styles.btnClear} onClick={handleClear}>Limpiar campo</button>
