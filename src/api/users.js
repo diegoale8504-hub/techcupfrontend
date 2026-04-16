@@ -13,3 +13,9 @@ export const uploadProfileImage = (userId, formData) =>
   axiosInstance.patch(`/api/users/${userId}/profile-image`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
+
+export const getAllUsers = () =>
+  axiosInstance.get('/api/users')
+
+export const getReferees = () =>
+  axiosInstance.get('/api/users/referees')

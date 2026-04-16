@@ -100,6 +100,18 @@ function buildMenu(role, teamId, userId, unreadCount) {
     ]
   }
 
+  else if (normalizedRole === 'ORGANIZER') {
+    return [
+      { to: '/dashboard',             icon: '🏠', label: 'Dashboard' },
+      { to: '/notifications',         icon: '🔔', label: 'Notificaciones', badge: unreadCount },
+      { to: '/organizer/users',       icon: '👥', label: 'Usuarios' },
+      { to: '/organizer/teams',       icon: '🛡️', label: 'Equipos' },
+      { to: '/organizer/tournaments', icon: '🏆', label: 'Torneos' },
+      { to: '/organizer/payments',    icon: '💰', label: 'Pagos' },
+      { to: '/organizer/referees',    icon: '🦺', label: 'Árbitros' },
+    ]
+  }
+
   else if (normalizedRole === 'ADMINISTRATIVE' || normalizedRole === 'ADMINISTRATOR') {
     return [
       ...common,

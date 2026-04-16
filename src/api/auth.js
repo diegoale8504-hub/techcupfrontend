@@ -8,3 +8,10 @@ export const forgotPasswordApi = ({ email }) =>
 
 export const resetPasswordApi = ({ token, newPassword }) =>
   axiosInstance.post('/api/auth/reset-password', { token, newPassword })
+
+export const changePasswordApi = (userId, { currentPassword, newPassword }) =>
+  axiosInstance.patch(`/api/auth/change-password/${userId}`, {
+    currentPassword,
+    newPassword,
+    confirmNewPassword: newPassword,
+  })

@@ -130,6 +130,11 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
+.role--organizer {
+  background: rgba(250, 204, 21, 0.2);
+  color: #FACC15;
+}
+
 .role--administrator,
 .role--administrative {
   background: rgba(255, 255, 255, 0.12);

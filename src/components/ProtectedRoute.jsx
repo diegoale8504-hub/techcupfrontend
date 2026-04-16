@@ -30,5 +30,9 @@ export default function ProtectedRoute({ allowedRoles }) {
     return <Navigate to="/dashboard" replace />
   }
 
+  if (user?.mustChangePassword && window.location.pathname !== '/change-password') {
+    return <Navigate to="/change-password" replace />
+  }
+
   return <Outlet />
 }

@@ -179,9 +179,9 @@ function QuickLinksCard({ role }) {
       { to: '/payments',    label: 'Estado del pago' },
     ],
     organizador: [
-      { to: '/standings', label: 'Tabla de posiciones' },
-      { to: '/calendar',  label: 'Calendario de partidos' },
-      { to: '/settings',  label: 'Configuración del torneo' },
+      { to: '/organizer/teams',       label: 'Gestionar equipos' },
+      { to: '/organizer/payments',    label: 'Revisar pagos' },
+      { to: '/organizer/tournaments', label: 'Administrar torneo' },
     ],
     árbitro: [
       { to: '/matches',   label: 'Mis partidos asignados' },
