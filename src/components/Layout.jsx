@@ -8,9 +8,10 @@ import styles from './Layout.module.css'
  * REUSABLE NAVIGATION ITEM
  * Classes: nav-item, nav-item--active, nav-item--highlight (mapped from styles)
  */
-const NavItem = ({ label, to, badge, highlight, onClick }) => (
+const NavItem = ({ label, to, badge, highlight, onClick, end }) => (
   <NavLink
     to={to}
+    end={end}
     className={({ isActive }) =>
       [
         styles.navItem,
@@ -55,7 +56,7 @@ function buildMenu(role, teamId, userId, unreadCount) {
 
     if (teamId) {
       menu.push(
-        { to: `${teamBase}`,         label: 'Mi Equipo' },
+        { to: `${teamBase}`,         label: 'Mi Equipo', end: true },
         { to: `${teamBase}/manage`,  label: 'Gestionar Equipo' },
         { to: `${teamBase}/payment`, label: 'Comprobante de Pago' },
         { to: `${teamBase}/lineups`, label: 'Alineaciones' }
@@ -73,7 +74,7 @@ function buildMenu(role, teamId, userId, unreadCount) {
   else if (normalizedRole === 'PLAYER') {
     const menu = [...common]
     if (teamId) {
-      menu.push({ to: `/teams/${teamId}`, label: 'Mi Equipo' })
+      menu.push({ to: `/teams/${teamId}`, label: 'Mi Equipo', end: true })
     }
     menu.push({ to: '/invitations', label: 'Mis Invitaciones' })
     menu.push(...tournament)
