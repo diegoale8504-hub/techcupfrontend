@@ -52,7 +52,6 @@ import LineupFormationPage   from './pages/Team/LineupFormationPage'
 const TournamentActivePage = () => <div style={{ padding: 32 }}><h2>Torneo Activo</h2></div>
 const StatisticsPage       = () => <div style={{ padding: 32 }}><h2>Estadísticas</h2></div>
 const TeamPaymentPage      = () => <div style={{ padding: 32 }}><h2>Comprobante de Pago</h2></div>
-const TeamViewPage         = () => <div style={{ padding: 32 }}><h2>Mi Equipo</h2></div>
 
 function RegistrationLayout() {
   return (
@@ -106,7 +105,8 @@ export default function App() {
           {/* PLAYER y CAPTAIN — crear equipo y ver equipo */}
           <Route element={<ProtectedRoute allowedRoles={['PLAYER', 'CAPTAIN']} />}>
             <Route path="/teams/create"  element={<CreateTeam />} />
-            <Route path="/teams/:id"     element={<TeamViewPage />} />
+            <Route path="/teams/:id"     element={<TeamPage />} />
+            <Route path="/team"          element={<TeamPage />} />
           </Route>
 
           {/* Solo CAPTAIN */}
