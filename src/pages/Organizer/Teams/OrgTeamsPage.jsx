@@ -21,27 +21,49 @@ export default function OrgTeamsPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  const isValidated = (t) => t.status === 'REGISTERED' || t.status === 'LOCKED'
+
   const filtered = useMemo(() => {
-    if (filter === 'Validados') return teams.filter((t) => t.status === 'VALIDATED' || t.status === 'ACTIVE')
-    if (filter === 'Pendientes') return teams.filter((t) => t.status !== 'VALIDATED' && t.status !== 'ACTIVE')
+    if (filter === 'Validados') return teams.filter(isValidated)
+    if (filter === 'Pendientes') return teams.filter((t) => !isValidated(t))
     return teams
   }, [teams, filter])
 
   const stats = useMemo(() => ({
     total:     teams.length,
-    validated: teams.filter((t) => t.status === 'VALIDATED' || t.status === 'ACTIVE').length,
-    pending:   teams.filter((t) => t.status !== 'VALIDATED' && t.status !== 'ACTIVE').length,
+    validated: teams.filter(isValidated).length,
+    pending:   teams.filter((t) => !isValidated(t)).length,
   }), [teams])
 
   const handleValidate = async (teamId) => {
+    // 1. Estado local de "validando"
     setValidating((p) => ({ ...p, [teamId]: true }))
     setValidateErrors((p) => ({ ...p, [teamId]: null }))
+
+    // Guardamos el estado anterior por si hay que hacer rollback
+    const previousTeams = [...teams]
+
     try {
-      await validateTeam(teamId)
+      // 2. Cambio OPTIMISTA: actualizamos la UI de inmediato
       setTeams((prev) =>
-        prev.map((t) => t.id === teamId ? { ...t, status: 'VALIDATED' } : t)
+        prev.map((t) => t.id === teamId ? { ...t, status: 'REGISTERED' } : t)
       )
+
+      // 3. Petición al servidor
+      await validateTeam(teamId)
+      
+      // 4. Sincronización final: Refrescar del servidor para confirmar datos reales
+      // Un pequeño delay ayuda a que el backend termine de procesar si hay asincronía
+      setTimeout(async () => {
+        try {
+          const res = await getAllTeams()
+          setTeams(res.data ?? [])
+        } catch (e) { console.warn('Sync error', e) }
+      }, 500)
+
     } catch (err) {
+      // 5. ROLLBACK si falla el servidor
+      setTeams(previousTeams)
       setValidateErrors((p) => ({
         ...p,
         [teamId]: err.userMessage ?? 'No se pudo validar el equipo.',
@@ -50,8 +72,6 @@ export default function OrgTeamsPage() {
       setValidating((p) => ({ ...p, [teamId]: false }))
     }
   }
-
-  const isValidated = (t) => t.status === 'VALIDATED' || t.status === 'ACTIVE'
 
   return (
     <PageLayout>

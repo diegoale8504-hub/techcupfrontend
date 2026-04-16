@@ -100,7 +100,7 @@ export default function App() {
           <Route path="/invitations"   element={<InvitationsPage />} />
           <Route path="/captain"       element={<CaptainPage />} />
 
-          <Route path="/tournaments/active"            element={<TournamentActivePage />} />
+          <Route path="/tournaments/active"            element={<TournamentPage />} />
           <Route path="/tournaments/active/statistics" element={<StatisticsPage />} />
 
           {/* PLAYER y CAPTAIN — crear equipo y ver equipo */}

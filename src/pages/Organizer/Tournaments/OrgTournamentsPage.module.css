@@ -135,6 +135,33 @@
   margin-bottom: var(--space-xl);
 }
 
+.createHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  border-bottom: 2px solid #e8f5e9;
+  padding-bottom: 12px;
+}
+
+.btnCancelCreate {
+  padding: 6px 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: var(--radius-md);
+  color: #666;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnCancelCreate:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+  color: #333;
+}
+
 .cardTitle {
   font-family: var(--font-title);
   font-weight: 700;

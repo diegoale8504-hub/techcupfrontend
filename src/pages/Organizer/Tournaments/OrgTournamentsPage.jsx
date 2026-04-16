@@ -200,8 +200,48 @@ export default function OrgTournamentsPage() {
 
       {!loading && (
         <>
-          {/* ── Tournament card ─── */}
-          {tournament ? (
+          {/* ── Create tournament form ─── */}
+          {showCreate ? (
+            <div className={styles.createCard}>
+              <div className={styles.createHeader}>
+                <h2 className={styles.cardTitle}>Crear nuevo torneo</h2>
+                {tournament && (
+                  <button className={styles.btnCancelCreate} onClick={() => setShowCreate(false)}>
+                    Cancelar
+                  </button>
+                )}
+              </div>
+              <form onSubmit={handleCreate} className={styles.createForm}>
+                <div className={styles.formGrid}>
+                  <label className={styles.formLabel}>
+                    Fecha de inicio
+                    <input type="date" className={styles.formInput} value={createForm.startDate}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, startDate: e.target.value }))} required />
+                  </label>
+                  <label className={styles.formLabel}>
+                    Fecha de fin
+                    <input type="date" className={styles.formInput} value={createForm.endDate}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, endDate: e.target.value }))} required />
+                  </label>
+                  <label className={styles.formLabel}>
+                    Máx. equipos
+                    <input type="number" min="2" className={styles.formInput} value={createForm.maxTeams}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, maxTeams: e.target.value }))} required />
+                  </label>
+                  <label className={styles.formLabel}>
+                    Costo por equipo (COP)
+                    <input type="number" min="0" className={styles.formInput} value={createForm.costPerTeam}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, costPerTeam: e.target.value }))} required />
+                  </label>
+                </div>
+                {createError && <p className={styles.formError}>{createError}</p>}
+                <button type="submit" className={styles.btnSubmit} disabled={creating}>
+                  {creating ? 'Creando...' : 'Crear torneo'}
+                </button>
+              </form>
+            </div>
+          ) : tournament && (
+            /* ── Tournament card ─── */
             <div className={styles.tournCard}>
               <div className={styles.tournTop}>
                 <div>
@@ -211,7 +251,10 @@ export default function OrgTournamentsPage() {
                   </span>
                 </div>
                 {tournament.status === 'FINISHED' && (
-                  <button className={styles.btnCreate} onClick={() => setShowCreate(true)}>+ Nuevo torneo</button>
+                  <button className={styles.btnCreate} onClick={() => {
+                    setCreateForm(EMPTY_CREATE);
+                    setShowCreate(true);
+                  }}>+ Nuevo torneo</button>
                 )}
               </div>
 
@@ -264,41 +307,9 @@ export default function OrgTournamentsPage() {
                 {actionError && <p className={styles.actionError}>{actionError}</p>}
               </div>
             </div>
-          ) : showCreate && (
-            <div className={styles.createCard}>
-              <h2 className={styles.cardTitle}>Crear torneo</h2>
-              <form onSubmit={handleCreate} className={styles.createForm}>
-                <div className={styles.formGrid}>
-                  <label className={styles.formLabel}>
-                    Fecha de inicio
-                    <input type="date" className={styles.formInput} value={createForm.startDate}
-                      onChange={(e) => setCreateForm((p) => ({ ...p, startDate: e.target.value }))} required />
-                  </label>
-                  <label className={styles.formLabel}>
-                    Fecha de fin
-                    <input type="date" className={styles.formInput} value={createForm.endDate}
-                      onChange={(e) => setCreateForm((p) => ({ ...p, endDate: e.target.value }))} required />
-                  </label>
-                  <label className={styles.formLabel}>
-                    Máx. equipos
-                    <input type="number" min="2" className={styles.formInput} value={createForm.maxTeams}
-                      onChange={(e) => setCreateForm((p) => ({ ...p, maxTeams: e.target.value }))} required />
-                  </label>
-                  <label className={styles.formLabel}>
-                    Costo por equipo (COP)
-                    <input type="number" min="0" className={styles.formInput} value={createForm.costPerTeam}
-                      onChange={(e) => setCreateForm((p) => ({ ...p, costPerTeam: e.target.value }))} required />
-                  </label>
-                </div>
-                {createError && <p className={styles.formError}>{createError}</p>}
-                <button type="submit" className={styles.btnSubmit} disabled={creating}>
-                  {creating ? 'Creando...' : 'Crear torneo'}
-                </button>
-              </form>
-            </div>
           )}
 
-          {tournament && (
+          {!showCreate && tournament && (
             <div className={styles.sectionsGrid}>
               {/* ── Árbitros ─── */}
               <div className={styles.sectionCard}>

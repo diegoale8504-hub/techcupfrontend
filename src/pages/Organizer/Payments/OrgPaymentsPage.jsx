@@ -49,9 +49,9 @@ export default function OrgPaymentsPage() {
     setUpdateErrors((p) => ({ ...p, [key]: null }))
     try {
       await updatePaymentStatus(proof.teamId, newStatus)
-      setProofs((prev) =>
-        prev.map((p) => (p.id === proof.id ? { ...p, status: newStatus } : p))
-      )
+      // Refrescar toda la lista para asegurar persistencia
+      const res = await getAllPaymentProofs()
+      setProofs(res.data ?? [])
     } catch (err) {
       setUpdateErrors((p) => ({
         ...p,

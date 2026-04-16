@@ -38,3 +38,6 @@ export const getRegulations = (tournamentId = TOURNAMENT_ID) =>
 
 export const getTournamentFields = (tournamentId = TOURNAMENT_ID) =>
   axiosInstance.get(`/api/tournaments/${tournamentId}/fields`)
+
+export const getTournamentReferees = (tournamentId = TOURNAMENT_ID) =>
+  axiosInstance.get(`/api/tournaments/${tournamentId}/referees`)

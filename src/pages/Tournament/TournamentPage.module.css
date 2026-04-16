@@ -21,19 +21,26 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+  align-items: start;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .grid { grid-template-columns: 1fr; }
+}
+
+.leftCol, .rightCol {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .card {
   background: rgba(255,255,255,0.97);
   border-radius: var(--radius-lg);
-  padding: var(--space-xl);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
 
 .cardTitle {
@@ -41,8 +48,8 @@
   font-weight: 700;
   font-size: 16px;
   color: #1b7d4d;
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-sm);
+  margin-bottom: 20px;
+  padding-bottom: 8px;
   border-bottom: 2px solid #e8f5e9;
 }
 
@@ -50,38 +57,36 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 20px;
 }
 
 .statusLabel {
   font-size: 13px;
-  color: #999;
+  color: #888;
   font-weight: 600;
 }
 
 .statusValue {
   font-weight: 800;
-  font-size: 14px;
+  font-size: 13px;
   padding: 4px 14px;
   border-radius: 20px;
+  text-transform: uppercase;
 }
 
-.status_IN_PROGRESS { background: #e8f5e9; color: #1b7d4d; }
-.status_ACTIVE      { background: #e3f2fd; color: #1565c0; }
-.status_FINISHED    { background: #f5f5f5; color: #555; }
-.status_DRAFT       { background: #fff8e1; color: #f57f17; }
-.status_UNKNOWN     { background: #f5f5f5; color: #999; }
+.status_IN_PROGRESS { background: #fff3e0; color: #e65100; }
+.status_ACTIVE      { background: #e8f5e9; color: #2e7d32; }
+.status_FINISHED    { background: #e3f2fd; color: #1565c0; }
+.status_DRAFT       { background: #f5f5f5; color: #777; }
 
 .infoList {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
 .infoRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 12px 0;
   border-bottom: 1px solid #f0f0f0;
   font-size: 14px;
@@ -89,31 +94,99 @@
 
 .infoRow:last-child { border-bottom: none; }
 
-.infoLabel {
-  color: #888;
-  font-weight: 600;
+.infoLabel { color: #888; font-weight: 600; }
+.infoValue { font-weight: 700; color: #333; }
+
+/* Regulation PDF */
+.pdfArea {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #f8fffe;
+  border: 1px solid #c8e6c9;
+  border-radius: 12px;
+  padding: 16px;
 }
 
-.infoValue {
+.pdfIcon { font-size: 32px; }
+
+.pdfDesc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pdfName {
+  font-size: 14px;
   font-weight: 700;
+  color: #333;
+}
+
+.pdfBtn {
+  font-size: 13px;
+  color: #1b7d4d;
+  text-decoration: none;
+  font-weight: 700;
+  background: #fff;
+  border: 1px solid #1b7d4d;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-block;
+  transition: all 0.2s;
+}
+
+.pdfBtn:hover {
+  background: #1b7d4d;
+  color: #fff;
+}
+
+/* Referees list */
+.refList {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.refItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.refAvatar {
+  width: 32px;
+  height: 32px;
+  background: #1b7d4d;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.refName {
+  font-size: 13px;
+  font-weight: 600;
   color: #333;
 }
 
 /* Scorers list */
 .scorerList {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
 }
 
 .scorerItem {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: 10px 0;
+  gap: 12px;
+  padding: 12px 0;
   border-bottom: 1px solid #f0f0f0;
-  font-size: 13px;
 }
 
 .scorerItem:last-child { border-bottom: none; }
@@ -121,43 +194,42 @@
 .scorerRank {
   font-family: var(--font-title);
   font-weight: 800;
-  font-size: 18px;
+  font-size: 20px;
   color: #1b7d4d;
-  width: 28px;
+  width: 30px;
   text-align: center;
-  flex-shrink: 0;
+}
+
+.scorerInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .scorerName {
-  flex: 1;
   font-weight: 700;
+  font-size: 14px;
   color: #333;
 }
 
 .scorerTeam {
   font-size: 11px;
-  color: #aaa;
-  flex-shrink: 0;
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #999;
 }
 
 .scorerGoals {
   font-family: var(--font-title);
   font-weight: 800;
   color: #1b7d4d;
-  font-size: 13px;
-  flex-shrink: 0;
-  margin-left: var(--space-sm);
+  font-size: 16px;
 }
 
 .emptyMsg {
   color: #aaa;
   font-size: 14px;
-  padding: var(--space-md) 0;
+  font-style: italic;
+  text-align: center;
 }
 
-.loading { color: rgba(255,255,255,0.8); font-size: 15px; }
-.error   { color: #ffaaaa; font-size: 14px; }
+.loading { color: rgba(255,255,255,0.8); font-size: 15px; text-align: center; padding: 40px; }
+.error   { color: #ffaaaa; font-size: 14px; text-align: center; padding: 20px; background: rgba(255,0,0,0.1); border-radius: 8px; }

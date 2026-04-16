@@ -3,13 +3,80 @@ import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout/PageLayout'
 import { useAuth } from '../../hooks/useAuth'
 import { getEffectiveRole } from '../../utils/roles'
-import { getTournament, getTopScorers, getMatchHistory } from '../../api/tournament'
+import { getTournament, getTopScorers, getMatchHistory, getMatchSchedules } from '../../api/tournament'
 import { getRefereeMatches } from '../../api/referee'
 import styles from './DashboardPage.module.css'
 
 import { getMyInvitations } from '../../api/teams'
 
-// ... (después de STATUS_LABELS)
+const STATUS_LABELS = {
+  DRAFT: 'Borrador',
+  ACTIVE: 'Activo',
+  IN_PROGRESS: 'En progreso',
+  FINISHED: 'Finalizado',
+}
+
+/* ── Cards reutilizables ────────────────────────────────────────── */
+
+function MatchKeys({ schedules }) {
+  if (!schedules || schedules.length === 0) {
+    return (
+      <div className={styles.bracketsWrapper}>
+        <h2 className={styles.bracketsTitle}>Llaves del Torneo</h2>
+        <div className={styles.emptyMatches}>Aún no hay partidos programados para las llaves.</div>
+      </div>
+    )
+  }
+
+  // Agrupar por fase/ronda
+  const rounds = schedules.reduce((acc, m) => {
+    const r = m.phase || m.round || 'Eliminatorias'
+    if (!acc[r]) acc[r] = []
+    acc[r].push(m)
+    return acc
+  }, {})
+
+  // Orden sugerido de rondas
+  const order = ['OCTAVOS', 'CUARTOS', 'SEMIFINAL', 'FINAL']
+  const sortedRounds = Object.keys(rounds).sort((a, b) => {
+    const idxA = order.indexOf(a.toUpperCase())
+    const idxB = order.indexOf(b.toUpperCase())
+    if (idxA === -1) return 1
+    if (idxB === -1) return -1
+    return idxA - idxB
+  })
+
+  return (
+    <div className={styles.bracketsWrapper}>
+      <h2 className={styles.bracketsTitle}>Llaves del Torneo</h2>
+      <div className={styles.bracketsContainer}>
+        <div className={styles.bracketsGrid}>
+          {sortedRounds.map((roundName) => (
+            <div key={roundName} className={styles.bracketRound}>
+              <h3 className={styles.roundTitle}>{roundName}</h3>
+              {rounds[roundName].map((m) => (
+                <div key={m.id || m.matchScheduleId} className={styles.matchCard}>
+                  <div className={`${styles.bracketTeam} ${m.homeScore > m.awayScore ? styles.winner : ''}`}>
+                    <span className={styles.teamName}>{m.homeTeamName || m.homeTeam?.name || 'TBD'}</span>
+                    <span className={styles.teamScore}>{m.homeScore ?? '-'}</span>
+                  </div>
+                  <div className={`${styles.bracketTeam} ${m.awayScore > m.homeScore ? styles.winner : ''}`}>
+                    <span className={styles.teamName}>{m.awayTeamName || m.awayTeam?.name || 'TBD'}</span>
+                    <span className={styles.teamScore}>{m.awayScore ?? '-'}</span>
+                  </div>
+                  <div className={styles.matchInfo}>
+                    <span>{m.matchDate ? new Date(m.matchDate).toLocaleDateString('es-CO', { day: '2-digit', month: 'short' }) : 'TBD'}</span>
+                    <span>{m.matchTime || ''}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function PendingInvitesCard({ count }) {
   if (count === 0) return null
@@ -47,7 +114,7 @@ function TournamentStatusCard({ tournament }) {
     <div className={`${styles.card} ${styles.card1}`}>
       <h2 className={styles.cardTitle}>Estado del torneo</h2>
       <div className={styles.tournamentInfo}>
-        <div className={styles.statusBadge}>
+        <div className={`${styles.statusBadge} ${styles[`status_${tournament.status}`]}`}>
           {STATUS_LABELS[tournament.status] ?? tournament.status}
         </div>
         <div className={styles.infoRow}>
@@ -221,6 +288,7 @@ export default function DashboardPage() {
   const [scorers, setScorers]             = useState([])
   const [matchHistory, setMatchHistory]   = useState([])
   const [refereeMatches, setRefereeMatches] = useState([])
+  const [matchSchedules, setMatchSchedules] = useState([])
   const [pendingInvites, setPendingInvites] = useState(0)
   const [loading, setLoading]             = useState(true)
 
@@ -236,16 +304,22 @@ export default function DashboardPage() {
         }).catch(() => {})
       }
       
-      // Envolvemos todo en un gran try/catch para que un 500 no detenga la carga de la página
       try {
-        const [tRes, sRes] = await Promise.allSettled([getTournament(), getTopScorers()])
-        
-        if (tRes.status === 'fulfilled') {
-          setTournament(tRes.value.data)
-        }
-        
-        if (sRes.status === 'fulfilled') {
-          setScorers(sRes.value.data ?? [])
+        const listRes = await getAllTournaments()
+        const tournaments = listRes.data ?? []
+        const active = tournaments.find((t) => t.status !== 'FINISHED') ?? tournaments[0] ?? null
+
+        if (active) {
+          const tid = active.id
+          const [tRes, sRes, schRes] = await Promise.allSettled([
+            getTournament(tid), 
+            getTopScorers(tid),
+            getMatchSchedules(tid)
+          ])
+          
+          if (tRes.status === 'fulfilled') setTournament(tRes.value.data)
+          if (sRes.status === 'fulfilled') setScorers(sRes.value.data ?? [])
+          if (schRes.status === 'fulfilled') setMatchSchedules(schRes.value.data ?? [])
         }
       } catch (err) {
         console.log('[Dashboard] Note: Tournament data not available yet.')
@@ -286,41 +360,46 @@ export default function DashboardPage() {
       {loading && <p className={styles.loading}>Cargando...</p>}
 
       {!loading && (
-        <div className={styles.grid}>
-          {/* Alertas críticas en el tope del grid */}
-          {pendingInvites > 0 && (
-            <div className={styles.fullWidth}>
-              <PendingInvitesCard count={pendingInvites} />
-            </div>
-          )}
+        <>
+          <div className={styles.grid}>
+            {/* Alertas críticas en el tope del grid */}
+            {pendingInvites > 0 && (
+              <div className={styles.fullWidth}>
+                <PendingInvitesCard count={pendingInvites} />
+              </div>
+            )}
 
-          {/* ── ÁRBITRO ── */}
-          {role === 'árbitro' && (
-            <>
-              <NovedadesCard matches={matchHistory} />
-              <ProximoPartidoCard matches={refereeMatches} />
-              <QuickLinksCard role={role} />
-            </>
-          )}
+            {/* ── ÁRBITRO ── */}
+            {role === 'árbitro' && (
+              <>
+                <NovedadesCard matches={matchHistory} />
+                <ProximoPartidoCard matches={refereeMatches} />
+                <QuickLinksCard role={role} />
+              </>
+            )}
 
-          {/* ── ESTUDIANTE (sin equipo) / PADRE / GRADUADO ── */}
-          {(role === 'estudiante' || role === 'padre' || role === 'graduado') && (
-            <>
-              <TournamentStatusCard tournament={tournament} />
-              <BestPlayerCard scorers={scorers} />
-              <QuickLinksCard role={role} />
-            </>
-          )}
+            {/* ── ESTUDIANTE (sin equipo) / PADRE / GRADUADO ── */}
+            {(role === 'estudiante' || role === 'padre' || role === 'graduado') && (
+              <>
+                <TournamentStatusCard tournament={tournament} />
+                <BestPlayerCard scorers={scorers} />
+                <QuickLinksCard role={role} />
+              </>
+            )}
 
-          {/* ── JUGADOR / CAPITÁN / ORGANIZADOR ── */}
-          {(role === 'jugador' || role === 'capitán' || role === 'organizador') && (
-            <>
-              <NovedadesCard matches={matchHistory} />
-              <BestPlayerCard scorers={scorers} />
-              <TournamentStatusCard tournament={tournament} />
-            </>
-          )}
-        </div>
+            {/* ── JUGADOR / CAPITÁN / ORGANIZADOR ── */}
+            {(role === 'jugador' || role === 'capitán' || role === 'organizador') && (
+              <>
+                <NovedadesCard matches={matchHistory} />
+                <BestPlayerCard scorers={scorers} />
+                <TournamentStatusCard tournament={tournament} />
+              </>
+            )}
+          </div>
+
+          {/* ── LLAVES DEL TORNEO ── */}
+          <MatchKeys schedules={matchSchedules} />
+        </>
       )}
     </PageLayout>
   )

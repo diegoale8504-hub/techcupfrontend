@@ -11,6 +11,8 @@ const STATUS_CONFIG = {
   UNDER_REVIEW:  { label: 'En revisión',     className: 'pending' },
   APPROVED:      { label: 'Aprobado',        className: 'approved' },
   REJECTED:      { label: 'Rechazado',       className: 'rejected' },
+  VALIDATED:     { label: 'Validado',        className: 'approved' },
+  ACTIVE:        { label: 'Activo',          className: 'approved' },
 }
 
 export default function Badge({ status }) {
