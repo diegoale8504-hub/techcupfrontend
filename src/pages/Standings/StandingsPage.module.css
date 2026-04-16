@@ -15,6 +15,42 @@
   font-size: 14px;
 }
 
+/* ── States ── */
+.loadingMsg { color: rgba(255,255,255,0.8); font-size: 15px; }
+.errorMsg   { color: #c0392b; font-size: 14px; background: #fff5f5; border-radius: var(--radius-md); padding: var(--space-md); }
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.emptyIcon { font-size: 48px; }
+.emptyText { color: rgba(255,255,255,0.75); font-size: 15px; max-width: 400px; }
+
+/* ── Group block ── */
+.groupBlock {
+  margin-bottom: var(--space-xl);
+}
+
+.groupTitle {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--color-white);
+  margin-bottom: var(--space-md);
+}
+
+.groupEmpty {
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  padding: var(--space-md);
+}
+
+/* ── Table ── */
 .tableWrapper {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
@@ -37,6 +73,8 @@
   text-align: center;
 }
 
+.thPos { width: 44px; }
+
 .tableHead .teamCol {
   text-align: left;
   padding-left: var(--space-md);
@@ -53,6 +91,19 @@
   padding-left: var(--space-md) !important;
   font-weight: 700;
   font-family: var(--font-title);
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+}
+
+.teamLogo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #e0e0e0;
+  background: #f5f5f5;
 }
 
 .pos {
@@ -82,6 +133,7 @@
   background: var(--color-row-alt);
 }
 
+/* ── Legend ── */
 .legend {
   margin-top: var(--space-md);
   color: rgba(255,255,255,0.7);

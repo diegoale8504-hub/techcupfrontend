@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import PageLayout from '../../../components/layout/PageLayout/PageLayout'
 import {
   createTournament, startTournament, finishTournament,
   assignReferee, removeRefereeFromTournament, getTournamentReferees,
-  createRegulation, deleteRegulation,
-  createKeyDate, deleteKeyDate,
-  createField, deleteField,
+  uploadRegulationPdf,
 } from '../../../api/organizer'
-import { getTournament, getRegulations, getKeyDates, getTournamentFields, TOURNAMENT_ID } from '../../../api/tournament'
+import { getAllTournaments } from '../../../api/tournament'
 import { getReferees } from '../../../api/users'
 import styles from './OrgTournamentsPage.module.css'
 
@@ -23,10 +21,12 @@ function formatDate(d) {
   return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
+function formatCOP(value) {
+  if (value == null) return '—'
+  return `COP ${Number(value).toLocaleString('es-CO')}`
+}
+
 const EMPTY_CREATE = { startDate: '', endDate: '', maxTeams: '', costPerTeam: '' }
-const EMPTY_REG    = { title: '', content: '' }
-const EMPTY_DATE   = { title: '', date: '', description: '' }
-const EMPTY_FIELD  = { name: '', location: '', capacity: '' }
 
 export default function OrgTournamentsPage() {
   const [tournament,   setTournament]   = useState(null)
@@ -40,11 +40,6 @@ export default function OrgTournamentsPage() {
   const [assigningRef,   setAssigningRef]  = useState(false)
   const [refError,       setRefError]      = useState(null)
 
-  // Sub-resources
-  const [regulations, setRegulations] = useState([])
-  const [keyDates,    setKeyDates]    = useState([])
-  const [fields,      setFields]      = useState([])
-
   // Create tournament form
   const [creating,    setCreating]   = useState(false)
   const [createForm,  setCreateForm] = useState(EMPTY_CREATE)
@@ -56,33 +51,36 @@ export default function OrgTournamentsPage() {
   const [actionLoading, setActionLoading] = useState(false)
   const [actionError,   setActionError]   = useState(null)
 
-  // Sub-resource forms
-  const [regForm,   setRegForm]   = useState(EMPTY_REG)
-  const [dateForm,  setDateForm]  = useState(EMPTY_DATE)
-  const [fieldForm, setFieldForm] = useState(EMPTY_FIELD)
-  const [subLoading, setSubLoading] = useState({})
-  const [subError,   setSubError]   = useState({})
+  // Regulation PDF
+  const [pdfUploading,  setPdfUploading]  = useState(false)
+  const [pdfError,      setPdfError]      = useState(null)
+  const [pdfSuccess,    setPdfSuccess]    = useState(null)
+  const pdfInputRef = useRef(null)
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [tRes, refRes, allRefRes, regRes, kdRes, fRes] = await Promise.allSettled([
-          getTournament(),
-          getTournamentReferees(TOURNAMENT_ID),
+        const listRes = await getAllTournaments()
+        const tournaments = listRes.data ?? []
+        const active = tournaments.find((t) => t.status !== 'FINISHED') ?? tournaments[0] ?? null
+
+        if (!active) {
+          setShowCreate(true)
+          setLoading(false)
+          return
+        }
+
+        setTournament(active)
+        const tid = active.id
+
+        const [refRes, allRefRes] = await Promise.allSettled([
+          getTournamentReferees(tid),
           getReferees(),
-          getRegulations(),
-          getKeyDates(),
-          getTournamentFields(),
         ])
-        if (tRes.status === 'fulfilled')      setTournament(tRes.value.data)
         if (refRes.status === 'fulfilled')    setTournReferees(refRes.value.data ?? [])
         if (allRefRes.status === 'fulfilled') setAllReferees(allRefRes.value.data ?? [])
-        if (regRes.status === 'fulfilled')    setRegulations(regRes.value.data ?? [])
-        if (kdRes.status === 'fulfilled')     setKeyDates(kdRes.value.data ?? [])
-        if (fRes.status === 'fulfilled')      setFields(fRes.value.data ?? [])
-        if (tRes.status === 'rejected')       setShowCreate(true)
       } catch {
-        setError('Error cargando la información del torneo.')
+        setShowCreate(true)
       } finally {
         setLoading(false)
       }
@@ -118,7 +116,7 @@ export default function OrgTournamentsPage() {
       const res = await createTournament({
         startDate:   createForm.startDate,
         endDate:     createForm.endDate,
-        maxTeams:    Number(createForm.maxTeams),
+        teamCount:   Number(createForm.maxTeams),
         costPerTeam: Number(createForm.costPerTeam),
       })
       setTournament(res.data)
@@ -138,7 +136,7 @@ export default function OrgTournamentsPage() {
     setAssigningRef(true)
     setRefError(null)
     try {
-      await assignReferee(tournament.id, { refereeId: selectedRefId })
+      await assignReferee(tournament.id, [selectedRefId])
       const added = allReferees.find((r) => r.id === selectedRefId)
       if (added) setTournReferees((prev) => [...prev, added])
       setSelectedRefId('')
@@ -158,60 +156,31 @@ export default function OrgTournamentsPage() {
     }
   }
 
-  // ── Generic sub-resource helpers ──────────────────────────────────────────
+  // ── Regulation PDF ────────────────────────────────────────────────────────
 
-  const withSubLoad = async (key, fn) => {
-    setSubLoading((p) => ({ ...p, [key]: true }))
-    setSubError((p) => ({ ...p, [key]: null }))
-    try { await fn() }
-    catch (err) { setSubError((p) => ({ ...p, [key]: err.userMessage ?? 'Error al guardar.' })) }
-    finally { setSubLoading((p) => ({ ...p, [key]: false })) }
+  const handlePdfUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.type !== 'application/pdf') {
+      setPdfError('Solo se permiten archivos PDF.')
+      return
+    }
+    setPdfUploading(true)
+    setPdfError(null)
+    setPdfSuccess(null)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      await uploadRegulationPdf(tournament.id, formData)
+      setTournament((prev) => ({ ...prev, hasRegulationPdf: true, regulationPdfName: file.name }))
+      setPdfSuccess(`"${file.name}" cargado correctamente.`)
+    } catch (err) {
+      setPdfError(err.userMessage ?? 'No se pudo subir el reglamento.')
+    } finally {
+      setPdfUploading(false)
+      if (pdfInputRef.current) pdfInputRef.current.value = ''
+    }
   }
-
-  const handleAddReg = (e) => {
-    e.preventDefault()
-    withSubLoad('reg', async () => {
-      const res = await createRegulation(tournament.id, regForm)
-      setRegulations((p) => [...p, res.data])
-      setRegForm(EMPTY_REG)
-    })
-  }
-
-  const handleDeleteReg = (id) =>
-    withSubLoad(`regDel_${id}`, async () => {
-      await deleteRegulation(tournament.id, id)
-      setRegulations((p) => p.filter((r) => r.id !== id))
-    })
-
-  const handleAddDate = (e) => {
-    e.preventDefault()
-    withSubLoad('date', async () => {
-      const res = await createKeyDate(tournament.id, dateForm)
-      setKeyDates((p) => [...p, res.data])
-      setDateForm(EMPTY_DATE)
-    })
-  }
-
-  const handleDeleteDate = (id) =>
-    withSubLoad(`dateDel_${id}`, async () => {
-      await deleteKeyDate(tournament.id, id)
-      setKeyDates((p) => p.filter((d) => d.id !== id))
-    })
-
-  const handleAddField = (e) => {
-    e.preventDefault()
-    withSubLoad('field', async () => {
-      const res = await createField(tournament.id, fieldForm)
-      setFields((p) => [...p, res.data])
-      setFieldForm(EMPTY_FIELD)
-    })
-  }
-
-  const handleDeleteField = (id) =>
-    withSubLoad(`fieldDel_${id}`, async () => {
-      await deleteField(tournament.id, id)
-      setFields((p) => p.filter((f) => f.id !== id))
-    })
 
   // ── Render helpers ────────────────────────────────────────────────────────
 
@@ -248,10 +217,10 @@ export default function OrgTournamentsPage() {
 
               <div className={styles.tournInfo}>
                 {[
-                  { label: 'Inicio',   value: formatDate(tournament.startDate) },
-                  { label: 'Fin',      value: formatDate(tournament.endDate) },
-                  { label: 'Equipos',  value: `${tournament.teamCount ?? tournament.teamsCount ?? 0}` },
-                  { label: 'Costo',    value: tournament.costPerTeam ? `$${Number(tournament.costPerTeam).toLocaleString('es-CO')}` : '—' },
+                  { label: 'Inicio',  value: formatDate(tournament.startDate) },
+                  { label: 'Fin',     value: formatDate(tournament.endDate) },
+                  { label: 'Equipos', value: `${tournament.teamCount ?? 0}` },
+                  { label: 'Costo',   value: formatCOP(tournament.costPerTeam) },
                 ].map(({ label, value }) => (
                   <div key={label} className={styles.infoItem}>
                     <span className={styles.infoLabel}>{label}</span>
@@ -316,7 +285,7 @@ export default function OrgTournamentsPage() {
                       onChange={(e) => setCreateForm((p) => ({ ...p, maxTeams: e.target.value }))} required />
                   </label>
                   <label className={styles.formLabel}>
-                    Costo por equipo ($)
+                    Costo por equipo (COP)
                     <input type="number" min="0" className={styles.formInput} value={createForm.costPerTeam}
                       onChange={(e) => setCreateForm((p) => ({ ...p, costPerTeam: e.target.value }))} required />
                   </label>
@@ -331,7 +300,7 @@ export default function OrgTournamentsPage() {
 
           {tournament && (
             <div className={styles.sectionsGrid}>
-              {/* ── Referees ─── */}
+              {/* ── Árbitros ─── */}
               <div className={styles.sectionCard}>
                 <h3 className={styles.cardTitle}>Árbitros asignados ({tournReferees.length})</h3>
                 {tournReferees.length === 0 ? (
@@ -362,94 +331,43 @@ export default function OrgTournamentsPage() {
                 {refError && <p className={styles.subErr}>{refError}</p>}
               </div>
 
-              {/* ── Regulations ─── */}
+              {/* ── Reglamento PDF ─── */}
               <div className={styles.sectionCard}>
-                <h3 className={styles.cardTitle}>Reglamento ({regulations.length})</h3>
-                <ul className={styles.subList}>
-                  {regulations.map((r) => (
-                    <li key={r.id} className={styles.subItem}>
-                      <span className={styles.subName}>{r.title}</span>
-                      <button className={styles.btnRemove}
-                        disabled={subLoading[`regDel_${r.id}`]}
-                        onClick={() => handleDeleteReg(r.id)}>
-                        {subLoading[`regDel_${r.id}`] ? '...' : 'Eliminar'}
-                      </button>
-                    </li>
-                  ))}
-                  {regulations.length === 0 && <p className={styles.emptyMsg}>Sin regulaciones.</p>}
-                </ul>
-                <form onSubmit={handleAddReg} className={styles.subForm}>
-                  <input placeholder="Título" className={styles.subInput} value={regForm.title}
-                    onChange={(e) => setRegForm((p) => ({ ...p, title: e.target.value }))} required />
-                  <textarea placeholder="Contenido" className={styles.subTextarea} value={regForm.content}
-                    onChange={(e) => setRegForm((p) => ({ ...p, content: e.target.value }))} />
-                  <button type="submit" className={styles.btnAdd} disabled={subLoading.reg}>
-                    {subLoading.reg ? '...' : '+ Agregar'}
-                  </button>
-                </form>
-                {subError.reg && <p className={styles.subErr}>{subError.reg}</p>}
-              </div>
-
-              {/* ── Key Dates ─── */}
-              <div className={styles.sectionCard}>
-                <h3 className={styles.cardTitle}>Fechas clave ({keyDates.length})</h3>
-                <ul className={styles.subList}>
-                  {keyDates.map((d) => (
-                    <li key={d.id} className={styles.subItem}>
-                      <div>
-                        <span className={styles.subName}>{d.title ?? d.name}</span>
-                        <span className={styles.subMeta}>{formatDate(d.date)}</span>
-                      </div>
-                      <button className={styles.btnRemove}
-                        disabled={subLoading[`dateDel_${d.id}`]}
-                        onClick={() => handleDeleteDate(d.id)}>
-                        {subLoading[`dateDel_${d.id}`] ? '...' : 'Eliminar'}
-                      </button>
-                    </li>
-                  ))}
-                  {keyDates.length === 0 && <p className={styles.emptyMsg}>Sin fechas clave.</p>}
-                </ul>
-                <form onSubmit={handleAddDate} className={styles.subForm}>
-                  <input placeholder="Título" className={styles.subInput} value={dateForm.title}
-                    onChange={(e) => setDateForm((p) => ({ ...p, title: e.target.value }))} required />
-                  <input type="date" className={styles.subInput} value={dateForm.date}
-                    onChange={(e) => setDateForm((p) => ({ ...p, date: e.target.value }))} required />
-                  <button type="submit" className={styles.btnAdd} disabled={subLoading.date}>
-                    {subLoading.date ? '...' : '+ Agregar'}
-                  </button>
-                </form>
-                {subError.date && <p className={styles.subErr}>{subError.date}</p>}
-              </div>
-
-              {/* ── Fields ─── */}
-              <div className={styles.sectionCard}>
-                <h3 className={styles.cardTitle}>Canchas ({fields.length})</h3>
-                <ul className={styles.subList}>
-                  {fields.map((f) => (
-                    <li key={f.id} className={styles.subItem}>
-                      <div>
-                        <span className={styles.subName}>{f.name}</span>
-                        {f.location && <span className={styles.subMeta}>{f.location}</span>}
-                      </div>
-                      <button className={styles.btnRemove}
-                        disabled={subLoading[`fieldDel_${f.id}`]}
-                        onClick={() => handleDeleteField(f.id)}>
-                        {subLoading[`fieldDel_${f.id}`] ? '...' : 'Eliminar'}
-                      </button>
-                    </li>
-                  ))}
-                  {fields.length === 0 && <p className={styles.emptyMsg}>Sin canchas registradas.</p>}
-                </ul>
-                <form onSubmit={handleAddField} className={styles.subForm}>
-                  <input placeholder="Nombre de la cancha" className={styles.subInput} value={fieldForm.name}
-                    onChange={(e) => setFieldForm((p) => ({ ...p, name: e.target.value }))} required />
-                  <input placeholder="Ubicación" className={styles.subInput} value={fieldForm.location}
-                    onChange={(e) => setFieldForm((p) => ({ ...p, location: e.target.value }))} />
-                  <button type="submit" className={styles.btnAdd} disabled={subLoading.field}>
-                    {subLoading.field ? '...' : '+ Agregar'}
-                  </button>
-                </form>
-                {subError.field && <p className={styles.subErr}>{subError.field}</p>}
+                <h3 className={styles.cardTitle}>Reglamento</h3>
+                {tournament.hasRegulationPdf ? (
+                  <div className={styles.pdfInfo}>
+                    <span className={styles.pdfIcon}>PDF</span>
+                    <div className={styles.pdfDetails}>
+                      <span className={styles.pdfName}>{tournament.regulationPdfName ?? 'reglamento.pdf'}</span>
+                      <a
+                        href={`/api/tournaments/${tournament.id}/regulation-pdf`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.pdfLink}
+                      >
+                        Ver / Descargar
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <p className={styles.emptyMsg}>No hay reglamento cargado.</p>
+                )}
+                <div className={styles.pdfUploadArea}>
+                  <input
+                    ref={pdfInputRef}
+                    type="file"
+                    accept="application/pdf"
+                    className={styles.pdfInput}
+                    id="regulationPdf"
+                    onChange={handlePdfUpload}
+                    disabled={pdfUploading}
+                  />
+                  <label htmlFor="regulationPdf" className={`${styles.btnAdd} ${pdfUploading ? styles.btnDisabled : ''}`}>
+                    {pdfUploading ? 'Subiendo...' : tournament.hasRegulationPdf ? 'Reemplazar PDF' : 'Subir PDF'}
+                  </label>
+                </div>
+                {pdfSuccess && <p className={styles.pdfSuccess}>{pdfSuccess}</p>}
+                {pdfError   && <p className={styles.subErr}>{pdfError}</p>}
               </div>
             </div>
           )}

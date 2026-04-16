@@ -13,7 +13,7 @@ export default function RefereeWaitingPage() {
     <div className={styles.root}>
       <div className={styles.card}>
         <div className={styles.iconWrapper}>
-          <span className={styles.icon}>🟢</span>
+          <span className={styles.icon}></span>
         </div>
 
         <h1 className={styles.title}>Acceso de Árbitro</h1>
@@ -29,7 +29,7 @@ export default function RefereeWaitingPage() {
           </span>
           {user?.role !== 'REFEREE' && (
             <p className={styles.roleWarning}>
-              ⚠️ Se esperaba <strong>REFEREE</strong> pero se recibió <strong>{user?.role}</strong>.
+              Se esperaba <strong>REFEREE</strong> pero se recibió <strong>{user?.role}</strong>.
               Verifica la configuración del backend.
             </p>
           )}

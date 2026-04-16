@@ -36,6 +36,13 @@ export const updatePaymentStatus = (teamId, status) =>
 export const inviteReferee = (data) =>
   axiosInstance.post('/api/admin/arbitros/invitar', data)
 
+// ── Regulation PDF ─────────────────────────────────────────────────────────────
+
+export const uploadRegulationPdf = (tournamentId, formData) =>
+  axiosInstance.post(`/api/tournaments/${tournamentId}/regulation-pdf`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+
 // ── Tournament sub-resources (write operations) ───────────────────────────────
 
 // Regulations

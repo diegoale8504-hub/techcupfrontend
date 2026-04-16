@@ -44,13 +44,13 @@ import OrgPaymentsPage     from './pages/Organizer/Payments/OrgPaymentsPage'
 import OrgRefereesPage     from './pages/Organizer/Referees/OrgRefereesPage'
 
 // Protected pages — Teams
-import CreateTeam from './pages/teams/CreateTeam'
-import ManageTeam from './pages/teams/ManageTeam'
+import CreateTeam            from './pages/teams/CreateTeam'
+import ManageTeam            from './pages/teams/ManageTeam'
+import LineupFormationPage   from './pages/Team/LineupFormationPage'
 
 // Placeholders — páginas pendientes de implementar
 const TournamentActivePage = () => <div style={{ padding: 32 }}><h2>Torneo Activo</h2></div>
 const StatisticsPage       = () => <div style={{ padding: 32 }}><h2>Estadísticas</h2></div>
-const LineupsPage          = () => <div style={{ padding: 32 }}><h2>Alineaciones</h2></div>
 const TeamPaymentPage      = () => <div style={{ padding: 32 }}><h2>Comprobante de Pago</h2></div>
 const TeamViewPage         = () => <div style={{ padding: 32 }}><h2>Mi Equipo</h2></div>
 
@@ -113,7 +113,7 @@ export default function App() {
           <Route element={<ProtectedRoute allowedRoles={['CAPTAIN']} />}>
             <Route path="/teams/:id/manage"  element={<ManageTeam />} />
             <Route path="/teams/:id/payment" element={<TeamPaymentPage />} />
-            <Route path="/teams/:id/lineups" element={<LineupsPage />} />
+            <Route path="/teams/:id/lineups" element={<LineupFormationPage />} />
             <Route path="/team"              element={<TeamPage />} />
             <Route path="/payments"          element={<PaymentPage />} />
             <Route path="/payment"           element={<PaymentPage />} />

@@ -71,7 +71,7 @@ export default function InvitationsPage() {
           {invitations.map((inv) => (
             <div key={inv.id} className={styles.inviteCard}>
               <div className={styles.cardHeader}>
-                <div className={styles.teamLogo}>⚽</div>
+                <div className={styles.teamLogo}></div>
                 <div className={styles.teamInfo}>
                   <h3>{inv.teamName || 'Equipo Universitario'}</h3>
                   <p>Propuesta de vinculación</p>

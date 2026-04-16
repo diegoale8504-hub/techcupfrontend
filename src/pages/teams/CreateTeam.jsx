@@ -106,7 +106,7 @@ export default function CreateTeam() {
         <div className={styles.card}>
           {/* Cabecera */}
           <div className={styles.header}>
-            <div className={styles.iconBadge}>⚽</div>
+            <div className={styles.iconBadge}></div>
             <h1 className={styles.title}>Crear Equipo</h1>
             <p className={styles.subtitle}>
               Como capitán podrás gestionar jugadores, alineaciones y pagos.

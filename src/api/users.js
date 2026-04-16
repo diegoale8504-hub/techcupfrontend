@@ -10,7 +10,7 @@ export const updateProfile = (id, data) =>
   axiosInstance.put(`/api/users/${id}`, data)
 
 export const uploadProfileImage = (userId, formData) =>
-  axiosInstance.patch(`/api/users/${userId}/profile-image`, formData, {
+  axiosInstance.patch(`/api/users/${userId}/photo`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
 

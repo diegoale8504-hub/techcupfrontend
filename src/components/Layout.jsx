@@ -8,7 +8,7 @@ import styles from './Layout.module.css'
  * REUSABLE NAVIGATION ITEM
  * Classes: nav-item, nav-item--active, nav-item--highlight (mapped from styles)
  */
-const NavItem = ({ icon, label, to, badge, highlight, onClick }) => (
+const NavItem = ({ label, to, badge, highlight, onClick }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
@@ -22,7 +22,6 @@ const NavItem = ({ icon, label, to, badge, highlight, onClick }) => (
     }
     onClick={onClick}
   >
-    <span className={styles.navIcon}>{icon}</span>
     <span className={styles.navLabel}>{label}</span>
     {badge > 0 && (
       <span className={styles.navItemBadge}>{badge}</span>
@@ -36,14 +35,14 @@ const NavItem = ({ icon, label, to, badge, highlight, onClick }) => (
  */
 function buildMenu(role, teamId, userId, unreadCount) {
   const common = [
-    { to: '/dashboard',         icon: '🏠', label: 'Dashboard' },
-    { to: `/profile/${userId}`, icon: '👤', label: 'Mi Perfil' },
-    { to: '/notifications',     icon: '🔔', label: 'Notificaciones', badge: unreadCount },
+    { to: '/dashboard',         label: 'Dashboard' },
+    { to: `/profile/${userId}`, label: 'Mi Perfil' },
+    { to: '/notifications',     label: 'Notificaciones', badge: unreadCount },
   ]
 
   const tournament = [
-    { to: '/tournaments/active',            icon: '🏆', label: 'Torneo Activo' },
-    { to: '/tournaments/active/statistics', icon: '📊', label: 'Estadísticas' },
+    { to: '/tournaments/active',            label: 'Torneo Activo' },
+    { to: '/tournaments/active/statistics', label: 'Estadísticas' },
   ]
 
   const normalizedRole = role?.toUpperCase()
@@ -51,24 +50,19 @@ function buildMenu(role, teamId, userId, unreadCount) {
   // --- CAPTAIN MENU ---
   if (normalizedRole === 'CAPTAIN') {
     const menu = [...common]
-    
-    // Use the teamId if we have it, otherwise use 'my' as a placeholder 
-    // or let the ManageTeam page handle the resolution.
     const effectiveId = teamId || 'null'
     const teamBase = `/teams/${effectiveId}`
 
     if (teamId) {
       menu.push(
-        { to: `${teamBase}`,               icon: '👥', label: 'Mi Equipo' },
-        { to: `${teamBase}/manage`,        icon: '⚙️', label: 'Gestionar Equipo' },
-        { to: `${teamBase}/payment`,       icon: '💳', label: 'Comprobante de Pago' },
-        { to: `${teamBase}/lineups`,       icon: '📋', label: 'Alineaciones' }
+        { to: `${teamBase}`,         label: 'Mi Equipo' },
+        { to: `${teamBase}/manage`,  label: 'Gestionar Equipo' },
+        { to: `${teamBase}/payment`, label: 'Comprobante de Pago' },
+        { to: `${teamBase}/lineups`, label: 'Alineaciones' }
       )
     } else {
-      // CAPTAIN role but no ID yet - Show a way to get to the team page
-      menu.push({ to: '/teams/create', icon: '➕', label: 'Crear/Vincular Equipo', highlight: true })
-      // Even without ID, show the manage link - the page itself has fallback logic
-      menu.push({ to: '/teams/null/manage', icon: '⚙️', label: 'Gestionar Equipo (Pendiente)' })
+      menu.push({ to: '/teams/create',      label: 'Crear/Vincular Equipo', highlight: true })
+      menu.push({ to: '/teams/null/manage', label: 'Gestionar Equipo (Pendiente)' })
     }
 
     menu.push(...tournament)
@@ -78,15 +72,13 @@ function buildMenu(role, teamId, userId, unreadCount) {
   // --- PLAYER MENU ---
   else if (normalizedRole === 'PLAYER') {
     const menu = [...common]
-    // Only show team link if teamId exists
     if (teamId) {
-      menu.push({ to: `/teams/${teamId}`, icon: '👥', label: 'Mi Equipo' })
+      menu.push({ to: `/teams/${teamId}`, label: 'Mi Equipo' })
     }
-    menu.push({ to: '/invitations', icon: '📩', label: 'Mis Invitaciones' })
+    menu.push({ to: '/invitations', label: 'Mis Invitaciones' })
     menu.push(...tournament)
-    // Only show create if NO teamId
     if (!teamId) {
-      menu.push({ to: '/teams/create', icon: '➕', label: 'Crear Equipo', highlight: true })
+      menu.push({ to: '/teams/create', label: 'Crear Equipo', highlight: true })
     }
     return menu
   }
@@ -95,20 +87,20 @@ function buildMenu(role, teamId, userId, unreadCount) {
   else if (normalizedRole === 'REFEREE') {
     return [
       ...common,
-      { to: '/matches', icon: '🎯', label: 'Mis Partidos' },
+      { to: '/matches', label: 'Mis Partidos' },
       ...tournament
     ]
   }
 
   else if (normalizedRole === 'ORGANIZER') {
     return [
-      { to: '/dashboard',             icon: '🏠', label: 'Dashboard' },
-      { to: '/notifications',         icon: '🔔', label: 'Notificaciones', badge: unreadCount },
-      { to: '/organizer/users',       icon: '👥', label: 'Usuarios' },
-      { to: '/organizer/teams',       icon: '🛡️', label: 'Equipos' },
-      { to: '/organizer/tournaments', icon: '🏆', label: 'Torneos' },
-      { to: '/organizer/payments',    icon: '💰', label: 'Pagos' },
-      { to: '/organizer/referees',    icon: '🦺', label: 'Árbitros' },
+      { to: '/dashboard',             label: 'Dashboard' },
+      { to: '/notifications',         label: 'Notificaciones', badge: unreadCount },
+      { to: '/organizer/users',       label: 'Usuarios' },
+      { to: '/organizer/teams',       label: 'Equipos' },
+      { to: '/organizer/tournaments', label: 'Torneos' },
+      { to: '/organizer/payments',    label: 'Pagos' },
+      { to: '/organizer/referees',    label: 'Árbitros' },
     ]
   }
 
@@ -116,7 +108,7 @@ function buildMenu(role, teamId, userId, unreadCount) {
     return [
       ...common,
       ...tournament,
-      { to: '/settings', icon: '🛠️', label: 'Configuración' },
+      { to: '/settings', label: 'Configuración' },
     ]
   }
 
@@ -225,7 +217,7 @@ export default function Layout() {
         onClick={() => setSidebarOpen(v => !v)}
         aria-label="Abrir menú"
       >
-        ☰
+        Menu
       </button>
 
       {/* Mobile Overlay */}

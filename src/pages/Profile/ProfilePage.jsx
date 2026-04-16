@@ -81,7 +81,7 @@ export default function ProfilePage() {
     if (!file) return
 
     const formData = new FormData()
-    formData.append('image', file)
+    formData.append('file', file)
 
     setSaving(true)
     try {
@@ -90,7 +90,7 @@ export default function ProfilePage() {
       fetchProfile()
       setTimeout(() => setSaveSuccess(false), 3000)
     } catch (err) {
-      setApiError('Error al subir la imagen de perfil.')
+      setApiError(err.userMessage ?? 'Error al subir la foto de perfil. Solo se permiten imágenes (JPEG, PNG, GIF, WEBP) de máx. 5 MB.')
     } finally {
       setSaving(false)
     }
@@ -136,22 +136,22 @@ export default function ProfilePage() {
             {/* Banner con Blur similar a Gestionar Equipo */}
             <div className={styles.profileBanner}>
               <div className={styles.avatarWrapper}>
-                {profile.profileImage ? (
-                  <img src={profile.profileImage} alt={profile.name} className={styles.avatarImg} />
+                {profile.profilePhoto ? (
+                  <img src={profile.profilePhoto} alt={profile.name} className={styles.avatarImg} />
                 ) : (
                   <div className={styles.avatarPlaceholder}>
                     {profile.name?.charAt(0).toUpperCase() ?? '?'}
                   </div>
                 )}
                 <label className={styles.uploadOverlay} title="Cambiar foto de perfil">
-                  📷
+                  Cambiar foto
                   <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
                 </label>
               </div>
               
               <div className={styles.info}>
                 <h2>{profile.name}</h2>
-                {team && <p className={styles.teamName}>⚽ {team.name}</p>}
+                {team && <p className={styles.teamName}>{team.name}</p>}
                 <p className={styles.email}>{profile.email}</p>
                 <span className={styles.role}>{profile.userType}</span>
               </div>

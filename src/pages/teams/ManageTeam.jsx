@@ -133,13 +133,13 @@ export default function ManageTeam() {
     const file = e.target.files?.[0]
     if (!file) return
     const formData = new FormData()
-    formData.append('logo', file)
+    formData.append('file', file)
     try {
       await uploadTeamLogo(team.id, formData)
       notify('Logo actualizado con éxito.')
       fetchData()
     } catch (err) {
-      notify('Error al subir el logo.', true)
+      notify(err.userMessage ?? 'Error al subir el logo. Solo se permiten imágenes (JPEG, PNG, GIF, WEBP) de máx. 5 MB.', true)
     }
   }
 
@@ -155,13 +155,13 @@ export default function ManageTeam() {
         {/* Banners de Notificación */}
         {successMsg && (
           <div className={`${styles.banner} ${styles.bannerSuccess}`}>
-            <span>✅ {successMsg}</span>
+            <span>{successMsg}</span>
             <button onClick={() => setSuccessMsg(null)}>×</button>
           </div>
         )}
         {error && (
           <div className={`${styles.banner} ${styles.bannerError}`}>
-            <span>⚠️ {error}</span>
+            <span>{error}</span>
             <button onClick={() => setError(null)}>×</button>
           </div>
         )}
@@ -172,11 +172,11 @@ export default function ManageTeam() {
             {team?.logo ? (
               <img src={team.logo} alt="Logo" className={styles.logoImg} />
             ) : (
-              <div className={styles.logoPlaceholder}>⚽</div>
+              <div className={styles.logoPlaceholder}></div>
             )}
             {!isLocked && (
               <label className={styles.uploadBtn} title="Cambiar logo">
-                📷
+                Cambiar logo
                 <input type="file" hidden accept="image/*" onChange={handleLogoUpload} />
               </label>
             )}
@@ -192,7 +192,7 @@ export default function ManageTeam() {
         <div className={styles.grid}>
           {/* SECTION: Members List */}
           <section className={styles.card}>
-            <h3>👥 Miembros del Equipo ({members.length})</h3>
+            <h3>Miembros del Equipo ({members.length})</h3>
             <div className={styles.memberList}>
               {members.map(member => {
                 const isCaptain = member.id === team.captainId
@@ -229,7 +229,7 @@ export default function ManageTeam() {
           {/* SECTION: Invitations & Actions */}
           <div className={styles.inviteSection}>
             <section className={styles.card}>
-              <h3>📩 Invitar Jugadores</h3>
+              <h3>Invitar Jugadores</h3>
               <p className={styles.modalText}>Busca nuevos talentos para tu equipo.</p>
               <Button 
                 variant="primary" 
@@ -237,7 +237,7 @@ export default function ManageTeam() {
                 onClick={() => navigate('/players')}
                 className={styles.btnSearchInvite}
               >
-                🔍 Ir al Mercado de Jugadores
+                Ir al Mercado de Jugadores
               </Button>
               
               <h4 style={{marginTop: 20, marginBottom: 10, fontSize: 14}}>Invitaciones Pendientes</h4>
@@ -264,7 +264,7 @@ export default function ManageTeam() {
             </section>
 
             <section className={styles.card}>
-              <h3>⚙️ Acciones de Control</h3>
+              <h3>Acciones de Control</h3>
               <div style={{display: 'flex', flexDirection: 'column', gap: 10}}>
                 <Button variant="accent" fullWidth onClick={handleValidate} disabled={isLocked}>
                   Validar y Cerrar Nómina
@@ -288,7 +288,7 @@ export default function ManageTeam() {
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
             <div className={styles.modalIcon}>
-              {confirm.type === 'dissolve' ? '🧨' : confirm.type === 'cancelInv' ? '✉️' : '👤'}
+              {confirm.type === 'dissolve' ? '!' : confirm.type === 'cancelInv' ? 'INV' : 'JUG'}
             </div>
             <h3 className={styles.modalTitle}>
               {confirm.type === 'dissolve' ? '¿Disolver equipo?' : 

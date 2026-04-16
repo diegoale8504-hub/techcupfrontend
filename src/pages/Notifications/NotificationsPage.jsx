@@ -5,12 +5,12 @@ import api from '../../api/axiosInstance'
 import styles from './NotificationsPage.module.css'
 
 const ICON_MAP = {
-  INVITATION_RECEIVED: '📩',
-  INVITATION_ACCEPTED: '✅',
-  INVITATION_REJECTED: '❌',
-  PLAYER_REMOVED: '🚫',
-  TEAM_DISSOLVED: '🧨',
-  SYSTEM: '📢'
+  INVITATION_RECEIVED: 'INV',
+  INVITATION_ACCEPTED: 'OK',
+  INVITATION_REJECTED: 'NO',
+  PLAYER_REMOVED: 'REM',
+  TEAM_DISSOLVED: 'DIS',
+  SYSTEM: 'SIS'
 }
 
 export default function NotificationsPage() {
@@ -65,7 +65,7 @@ export default function NotificationsPage() {
         <div className={styles.list}>
           {notifications.length === 0 && (
             <div className={styles.empty}>
-              <span className={styles.emptyIcon}>📭</span>
+              <span className={styles.emptyIcon}></span>
               <p>No tienes notificaciones por ahora.</p>
             </div>
           )}
@@ -76,7 +76,7 @@ export default function NotificationsPage() {
               className={`${styles.item} ${!n.read ? styles.unread : ''}`}
               onClick={() => !n.read && markAsRead(n.id)}
             >
-              <div className={styles.icon}>{ICON_MAP[n.type] || '🔔'}</div>
+              <div className={styles.icon}>{ICON_MAP[n.type] || '—'}</div>
               <div className={styles.content}>
                 <p className={styles.message}>{n.message}</p>
                 <span className={styles.date}>

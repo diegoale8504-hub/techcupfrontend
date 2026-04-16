@@ -1,7 +1,11 @@
 import axiosInstance from './axiosInstance'
 
-// Default tournament ID — change this when the backend creates a different one
+// Legacy constant kept for backward compatibility with non-organizer views.
+// OrgTournamentsPage uses getAllTournaments() to get the real UUID dynamically.
 export const TOURNAMENT_ID = 1
+
+export const getAllTournaments = () =>
+  axiosInstance.get('/api/tournaments')
 
 export const getTournament = (id = TOURNAMENT_ID) =>
   axiosInstance.get(`/api/tournaments/${id}`)

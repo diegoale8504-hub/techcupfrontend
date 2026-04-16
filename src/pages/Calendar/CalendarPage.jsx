@@ -115,7 +115,7 @@ export default function CalendarPage() {
       })}
 
       <div className={styles.bracketHint}>
-        <span className={styles.bracketIcon}>🏆</span>
+        <span className={styles.bracketIcon}></span>
         <span>Fase de llaves — Round Robin</span>
         <a href="/standings" className={styles.bracketLink}>Ver tabla de posiciones</a>
       </div>

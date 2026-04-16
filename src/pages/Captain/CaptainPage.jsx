@@ -30,37 +30,25 @@ export default function CaptainPage() {
     setLoading(true)
     setApiError(null)
     try {
-      console.log('[CaptainPage] calling createTeam...')
       const res = await createTeam({ name: name.trim(), primaryColor: '#16A34A', secondaryColor: '#ffffff' })
-      console.log('[CaptainPage] createTeam response:', res.data)
       const teamId = res.data?.id
       if (teamId) {
-        console.log('[CaptainPage] calling updateUser with teamId:', teamId)
         updateUser({ teamId, role: 'CAPTAIN' })
-      } else {
-        console.warn('[CaptainPage] teamId missing in response — cannot update role')
       }
       // Navigation is intentionally delegated to the useEffect below.
     } catch (err) {
-      console.error('[CaptainPage] createTeam error:', err.response?.status, err.response?.data, err.message)
-      // 409 or 422 = user is already a captain; recover their existing team via profile
       if (err.response?.status === 422 || err.response?.status === 409) {
         try {
-          console.log('[CaptainPage] recovering team from user profile...')
           const res = await api.get(`/api/users/${user?.id}`)
           const profile = res.data
           const teamId = profile.teamId || profile.team?.id
-          
           if (teamId) {
-            console.log('[CaptainPage] found teamId in profile:', teamId)
             updateUser({ teamId, role: 'CAPTAIN' })
             return
           }
-        } catch (recoveryErr) {
-          console.error('[CaptainPage] profile recovery failed:', recoveryErr)
-        }
+        } catch { /* ignorar error de recuperación */ }
       }
-      setApiError(err.userMessage ?? err.response?.data?.message ?? 'No se pudo crear el equipo. Intenta de nuevo.')
+      setApiError(err.userMessage ?? 'No se pudo crear el equipo. Inténtalo de nuevo.')
     } finally {
       setLoading(false)
     }
@@ -75,7 +63,6 @@ export default function CaptainPage() {
 
       <div className={styles.card}>
         <div className={styles.iconRow}>
-          <span className={styles.shieldIcon}>🛡️</span>
         </div>
         <h2 className={styles.cardTitle}>Nuevo equipo</h2>
         <p className={styles.cardDesc}>

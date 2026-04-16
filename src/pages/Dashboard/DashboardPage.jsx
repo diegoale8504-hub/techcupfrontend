@@ -16,7 +16,7 @@ function PendingInvitesCard({ count }) {
   return (
     <div className={`${styles.card} ${styles.inviteAlert}`}>
       <div className={styles.inviteContent}>
-        <span className={styles.inviteIcon}>📩</span>
+        <span className={styles.inviteIcon}></span>
         <div>
           <h3 className={styles.inviteTitle}>¡Tienes {count} {count === 1 ? 'invitación pendiente' : 'invitaciones pendientes'}!</h3>
           <p className={styles.inviteText}>Un equipo quiere que formes parte de su nómina.</p>
