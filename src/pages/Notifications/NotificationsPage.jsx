@@ -49,47 +49,51 @@ export default function NotificationsPage() {
 
   return (
     <PageLayout>
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Centro de Actividad</h1>
-          <p className={styles.sub}>Historial de movimientos, invitaciones y cambios en tu equipo.</p>
+      <div className={styles.container}>
+        <div className={styles.topCard}>
+          <div className={styles.header}>
+            <div>
+              <h1 className={styles.title}>Centro de Actividad</h1>
+              <p className={styles.sub}>Historial de movimientos, invitaciones y cambios en tu equipo.</p>
+            </div>
+            {notifications.some(n => !n.read) && (
+              <Button variant="ghost" onClick={markAllRead}>Marcar todas como leídas</Button>
+            )}
+          </div>
         </div>
-        {notifications.some(n => !n.read) && (
-          <Button variant="ghost" onClick={markAllRead}>Marcar todas como leídas</Button>
+
+        {loading ? (
+          <p className={styles.loading}>Cargando historial...</p>
+        ) : (
+          <div className={styles.list}>
+            {notifications.length === 0 && (
+              <div className={styles.empty}>
+                <span className={styles.emptyIcon}>🔔</span>
+                <p>No tienes notificaciones por ahora.</p>
+              </div>
+            )}
+            
+            {notifications.map((n) => (
+              <div 
+                key={n.id} 
+                className={`${styles.item} ${!n.read ? styles.unread : ''}`}
+                onClick={() => !n.read && markAsRead(n.id)}
+              >
+                <div className={styles.icon}>{ICON_MAP[n.type] || '—'}</div>
+                <div className={styles.content}>
+                  <p className={styles.message}>{n.message}</p>
+                  <span className={styles.date}>
+                    {new Date(n.createdAt).toLocaleString('es-CO', { 
+                      day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' 
+                    })}
+                  </span>
+                </div>
+                {!n.read && <div className={styles.dot} title="Nueva" />}
+              </div>
+            ))}
+          </div>
         )}
       </div>
-
-      {loading ? (
-        <p className={styles.loading}>Cargando historial...</p>
-      ) : (
-        <div className={styles.list}>
-          {notifications.length === 0 && (
-            <div className={styles.empty}>
-              <span className={styles.emptyIcon}></span>
-              <p>No tienes notificaciones por ahora.</p>
-            </div>
-          )}
-          
-          {notifications.map((n) => (
-            <div 
-              key={n.id} 
-              className={`${styles.item} ${!n.read ? styles.unread : ''}`}
-              onClick={() => !n.read && markAsRead(n.id)}
-            >
-              <div className={styles.icon}>{ICON_MAP[n.type] || '—'}</div>
-              <div className={styles.content}>
-                <p className={styles.message}>{n.message}</p>
-                <span className={styles.date}>
-                  {new Date(n.createdAt).toLocaleString('es-CO', { 
-                    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' 
-                  })}
-                </span>
-              </div>
-              {!n.read && <div className={styles.dot} title="Nueva" />}
-            </div>
-          ))}
-        </div>
-      )}
     </PageLayout>
   )
 }

@@ -133,21 +133,34 @@
 
 .cardActions { display: flex; flex-direction: column; gap: 6px; }
 
-.btnValidate {
+.btnValidate,
+.btnUnlock {
   padding: 8px 16px;
-  background: var(--color-primary);
-  color: #fff;
   border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-title);
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.15s;
+}
+
+.btnValidate {
+  background: var(--color-primary);
+  color: #fff;
 }
 
 .btnValidate:hover:not(:disabled) { background: #155d3a; }
-.btnValidate:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btnUnlock {
+  background: #fbbf24;
+  color: #000;
+}
+
+.btnUnlock:hover:not(:disabled) { background: #f59e0b; }
+
+.btnValidate:disabled,
+.btnUnlock:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .cardError {
   font-size: 12px;
