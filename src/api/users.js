@@ -8,3 +8,8 @@ export const searchUsers = (params) =>
 
 export const updateProfile = (id, data) =>
   axiosInstance.put(`/api/users/${id}`, data)
+
+export const uploadProfileImage = (userId, formData) =>
+  axiosInstance.patch(`/api/users/${userId}/profile-image`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
