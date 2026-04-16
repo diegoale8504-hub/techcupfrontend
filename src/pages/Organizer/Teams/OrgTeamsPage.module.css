@@ -1,0 +1,143 @@
+.header {
+  background: linear-gradient(135deg, #1b7d4d 0%, #2d9e63 100%);
+  border-radius: var(--radius-lg);
+  padding: 30px 36px;
+  margin-bottom: var(--space-xl);
+  box-shadow: 0 4px 24px rgba(27,125,77,0.25);
+}
+
+.heading { font-family: var(--font-title); font-weight: 800; font-size: 28px; color: #fff; margin-bottom: 4px; }
+.sub     { font-size: 14px; color: rgba(255,255,255,0.75); }
+.loading { color: rgba(255,255,255,0.8); font-size: 15px; }
+.error   { color: #c0392b; font-size: 14px; background: #fff5f5; border-radius: var(--radius-md); padding: var(--space-md); }
+
+.statsRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.statBox {
+  flex: 1;
+  min-width: 100px;
+  background: rgba(255,255,255,0.97);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.statValue {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 32px;
+  font-weight: 800;
+  color: #1b7d4d;
+}
+
+.statLabel {
+  display: block;
+  font-size: 13px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.filterBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: var(--space-xl);
+  border-bottom: 2px solid #e8f5e9;
+  padding-bottom: 0;
+}
+
+.tab,
+.tabActive {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  color: #888;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tabActive { color: #1b7d4d; border-bottom-color: #1b7d4d; }
+.tab:hover { color: #2d9e63; }
+
+.emptyMsg { color: #aaa; font-size: 14px; text-align: center; padding: var(--space-xl); }
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 760px) { .teamGrid { grid-template-columns: 1fr; } }
+
+.teamCard {
+  background: rgba(255,255,255,0.97);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.teamName {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 16px;
+  color: #1b7d4d;
+}
+
+.teamMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #666;
+}
+
+.cardActions { display: flex; flex-direction: column; gap: 6px; }
+
+.btnValidate {
+  padding: 8px 16px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btnValidate:hover:not(:disabled) { background: #155d3a; }
+.btnValidate:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.cardError {
+  font-size: 12px;
+  color: var(--color-error);
+}
+
+.validatedMsg {
+  font-size: 13px;
+  color: #2e7d32;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 0;
+}

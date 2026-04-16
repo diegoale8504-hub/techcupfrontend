@@ -7,7 +7,7 @@ export function getEffectiveRole(user) {
   const role = user.role ?? ''
 
   if (role === 'CAPTAIN')                                   return 'capitán'
-  if (role === 'ADMINISTRATIVE' || role === 'ADMINISTRATOR') return 'organizador'
+  if (role === 'ADMINISTRATIVE' || role === 'ADMINISTRATOR' || role === 'ORGANIZER') return 'organizador'
   if (role === 'REFEREE')                                   return 'árbitro'
   if (role === 'FAMILY_MEMBER')                             return 'padre'
   if (role === 'GRADUATE' || role === 'PROFESSOR')          return 'graduado'
