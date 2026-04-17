@@ -28,8 +28,8 @@ export const getAllPaymentProofs = () =>
 export const getPaymentProofsByStatus = (status) =>
   axiosInstance.get(`/api/payments/proofs/status/${status}`)
 
-export const updatePaymentStatus = (teamId, status) =>
-  axiosInstance.patch(`/api/payments/${teamId}/proof/status`, { status })
+export const updatePaymentStatus = (teamId, status, comments = '') =>
+  axiosInstance.patch(`/api/payments/${teamId}/proof/status`, { status, ...(comments && { comments }) })
 
 // ── Referees (invite) ─────────────────────────────────────────────────────────
 
@@ -42,6 +42,14 @@ export const uploadRegulationPdf = (tournamentId, formData) =>
   axiosInstance.post(`/api/tournaments/${tournamentId}/regulation-pdf`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
+
+// ── Match Schedules ───────────────────────────────────────────────────────────
+
+export const createMatchSchedule = (tournamentId, data) =>
+  axiosInstance.post(`/api/tournaments/${tournamentId}/match-schedules`, data)
+
+export const deleteMatchSchedule = (tournamentId, matchId) =>
+  axiosInstance.delete(`/api/tournaments/${tournamentId}/match-schedules/${matchId}`)
 
 // ── Tournament sub-resources (write operations) ───────────────────────────────
 

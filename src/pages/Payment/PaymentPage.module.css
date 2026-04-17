@@ -57,6 +57,10 @@
   color: var(--color-text);
 }
 
+.fileInput {
+  display: none;
+}
+
 .dropArea {
   display: flex;
   flex-direction: column;
@@ -68,6 +72,8 @@
   padding: var(--space-xl);
   cursor: pointer;
   transition: background 0.15s ease;
+  min-height: 120px;
+  justify-content: center;
 }
 
 .dropArea:hover {
@@ -90,6 +96,27 @@
 .dropHint {
   font-size: 12px;
   color: var(--color-gray);
+}
+
+.previewImg {
+  max-width: 100%;
+  max-height: 260px;
+  border-radius: var(--radius-md);
+  object-fit: contain;
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  color: var(--color-gray);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.clearBtn:hover {
+  color: var(--color-error);
 }
 
 .error {
@@ -126,6 +153,34 @@
   background: #f9f9f9;
   color: var(--color-text);
   border: 1px solid var(--color-gray-light);
+}
+
+.rejectedMsg {
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  background: #fff0f0;
+  color: #c62828;
+  border: 1px solid #f5c6c6;
+  margin-bottom: var(--space-md);
+}
+
+.proofLink {
+  display: block;
+  margin-top: var(--space-sm);
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.proofLink:hover {
+  text-decoration: underline;
+}
+
+.uploadHint {
+  font-size: 13px;
+  color: var(--color-gray);
 }
 
 .noTeam .heading {

@@ -129,14 +129,18 @@
 
 .statusBadge {
   display: inline-block;
-  background: rgba(22, 163, 74, 0.1);
-  color: var(--color-primary);
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 700;
   margin-bottom: 16px;
+  text-transform: uppercase;
 }
+
+.status_DRAFT       { background: #f5f5f5; color: #777; }
+.status_ACTIVE      { background: #e8f5e9; color: #2e7d32; }
+.status_IN_PROGRESS { background: #fff3e0; color: #e65100; }
+.status_FINISHED    { background: #e3f2fd; color: #1565c0; }
 
 .infoRow {
   display: flex;
@@ -229,3 +233,127 @@
 
 .loading { color: var(--color-white); text-align: center; padding: 40px; }
 .emptyMsg { color: var(--color-gray); font-size: 14px; }
+
+/* ── Match Keys / Brackets ── */
+.bracketsWrapper {
+  grid-column: 1 / -1;
+  margin-top: var(--space-xl);
+}
+
+.bracketsContainer {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  overflow-x: auto;
+}
+
+.bracketsTitle {
+  font-family: var(--font-title);
+  font-size: 24px;
+  color: var(--color-primary);
+  margin-bottom: var(--space-lg);
+  border-bottom: 2px solid var(--color-gray-light);
+  padding-bottom: 8px;
+}
+
+.bracketsGrid {
+  display: flex;
+  gap: 40px;
+  min-width: 800px;
+  padding-bottom: 20px;
+}
+
+.bracketRound {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.roundTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 10px;
+  background: var(--color-row-alt);
+  padding: 6px;
+  border-radius: 4px;
+}
+
+.matchCard {
+  background: #fff;
+  border: 1px solid var(--color-gray-light);
+  border-radius: 8px;
+  padding: 12px;
+  width: 220px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.matchCard:hover {
+  border-color: var(--color-primary);
+}
+
+.bracketTeam {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.bracketTeam:first-child {
+  border-bottom: 1px solid var(--color-gray-light);
+}
+
+.teamName {
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.teamScore {
+  background: var(--color-row-alt);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 800;
+  min-width: 28px;
+  text-align: center;
+  color: var(--color-primary);
+}
+
+.winner .teamName {
+  color: var(--color-primary);
+}
+
+.winner .teamScore {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.matchInfo {
+  font-size: 11px;
+  color: var(--color-gray);
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px dashed var(--color-gray-light);
+  padding-top: 6px;
+}
+
+.emptyMatches {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-gray);
+  font-style: italic;
+  background: var(--color-row-alt);
+  border-radius: var(--radius-md);
+}

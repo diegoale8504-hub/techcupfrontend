@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import PageLayout from '../../../components/layout/PageLayout/PageLayout'
 import Badge from '../../../components/ui/Badge/Badge'
-import { getAllTeams, validateTeam } from '../../../api/teams'
+import { getAllTeams, validateTeam, unlockTeam } from '../../../api/teams'
+import { getAllTournaments } from '../../../api/tournament'
 import styles from './OrgTeamsPage.module.css'
 
 const FILTERS = ['Todos', 'Validados', 'Pendientes']
@@ -11,47 +12,91 @@ export default function OrgTeamsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState(null)
   const [filter, setFilter]   = useState('Todos')
-  const [validating, setValidating] = useState({}) // { [teamId]: true }
-  const [validateErrors, setValidateErrors] = useState({})
+  const [processing, setProcessing] = useState({}) 
+  const [actionErrors, setActionErrors] = useState({})
+  const [activeTournament, setActiveTournament] = useState(null)
 
   useEffect(() => {
-    getAllTeams()
-      .then((res) => setTeams(res.data ?? []))
-      .catch(() => setError('No se pudo cargar la lista de equipos.'))
-      .finally(() => setLoading(false))
+    const loadData = async () => {
+      try {
+        const [teamsRes, tourRes] = await Promise.all([
+          getAllTeams(),
+          getAllTournaments()
+        ])
+        setTeams(teamsRes.data ?? [])
+        
+        const tournaments = tourRes.data ?? []
+        const active = tournaments.find((t) => t.status !== 'FINISHED') ?? null
+        setActiveTournament(active)
+      } catch (err) {
+        setError('No se pudo cargar la información.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
   }, [])
 
+  const isValidated = (t) => t.status === 'REGISTERED' || t.status === 'LOCKED'
+  
+  // Un equipo solo se considera "Cerrado/Bloqueado" si hay un torneo activo
+  const isCurrentlyLocked = (t) => activeTournament !== null && isValidated(t)
+
   const filtered = useMemo(() => {
-    if (filter === 'Validados') return teams.filter((t) => t.status === 'VALIDATED' || t.status === 'ACTIVE')
-    if (filter === 'Pendientes') return teams.filter((t) => t.status !== 'VALIDATED' && t.status !== 'ACTIVE')
+    if (filter === 'Validados') return teams.filter(isValidated)
+    if (filter === 'Pendientes') return teams.filter((t) => !isValidated(t))
     return teams
   }, [teams, filter])
 
   const stats = useMemo(() => ({
     total:     teams.length,
-    validated: teams.filter((t) => t.status === 'VALIDATED' || t.status === 'ACTIVE').length,
-    pending:   teams.filter((t) => t.status !== 'VALIDATED' && t.status !== 'ACTIVE').length,
+    validated: teams.filter(isValidated).length,
+    pending:   teams.filter((t) => !isValidated(t)).length,
   }), [teams])
 
   const handleValidate = async (teamId) => {
-    setValidating((p) => ({ ...p, [teamId]: true }))
-    setValidateErrors((p) => ({ ...p, [teamId]: null }))
+    setProcessing((p) => ({ ...p, [teamId]: true }))
+    setActionErrors((p) => ({ ...p, [teamId]: null }))
+    const previousTeams = [...teams]
+
     try {
-      await validateTeam(teamId)
       setTeams((prev) =>
-        prev.map((t) => t.id === teamId ? { ...t, status: 'VALIDATED' } : t)
+        prev.map((t) => t.id === teamId ? { ...t, status: 'REGISTERED' } : t)
       )
+      await validateTeam(teamId)
+      setTimeout(async () => {
+        const res = await getAllTeams()
+        setTeams(res.data ?? [])
+      }, 500)
     } catch (err) {
-      setValidateErrors((p) => ({
-        ...p,
-        [teamId]: err.userMessage ?? 'No se pudo validar el equipo.',
-      }))
+      setTeams(previousTeams)
+      setActionErrors((p) => ({ ...p, [teamId]: err.userMessage ?? 'No se pudo validar.' }))
     } finally {
-      setValidating((p) => ({ ...p, [teamId]: false }))
+      setProcessing((p) => ({ ...p, [teamId]: false }))
     }
   }
 
-  const isValidated = (t) => t.status === 'VALIDATED' || t.status === 'ACTIVE'
+  const handleUnlock = async (teamId) => {
+    setProcessing((p) => ({ ...p, [teamId]: true }))
+    setActionErrors((p) => ({ ...p, [teamId]: null }))
+    const previousTeams = [...teams]
+
+    try {
+      setTeams((prev) =>
+        prev.map((t) => t.id === teamId ? { ...t, status: 'DRAFT' } : t)
+      )
+      await unlockTeam(teamId)
+      setTimeout(async () => {
+        const res = await getAllTeams()
+        setTeams(res.data ?? [])
+      }, 500)
+    } catch (err) {
+      setTeams(previousTeams)
+      setActionErrors((p) => ({ ...p, [teamId]: err.userMessage ?? 'No se pudo desbloquear.' }))
+    } finally {
+      setProcessing((p) => ({ ...p, [teamId]: false }))
+    }
+  }
 
   return (
     <PageLayout>
@@ -104,22 +149,35 @@ export default function OrgTeamsPage() {
                     <span>Miembros: <strong>{team.memberCount ?? '—'}</strong></span>
                     {team.captainId && <span>Cap. ID: <strong>{team.captainId}</strong></span>}
                   </div>
-                  {!isValidated(team) && (
-                    <div className={styles.cardActions}>
+                  
+                  <div className={styles.cardActions}>
+                    {!isValidated(team) ? (
                       <button
                         className={styles.btnValidate}
-                        disabled={validating[team.id]}
+                        disabled={processing[team.id]}
                         onClick={() => handleValidate(team.id)}
                       >
-                        {validating[team.id] ? 'Validando...' : 'Validar equipo'}
+                        {processing[team.id] ? 'Procesando...' : 'Validar equipo'}
                       </button>
-                      {validateErrors[team.id] && (
-                        <p className={styles.cardError}>{validateErrors[team.id]}</p>
-                      )}
-                    </div>
-                  )}
-                  {isValidated(team) && (
-                    <p className={styles.validatedMsg}>Equipo validado</p>
+                    ) : (
+                      <button
+                        className={styles.btnUnlock}
+                        disabled={processing[team.id]}
+                        onClick={() => handleUnlock(team.id)}
+                      >
+                        {processing[team.id] ? 'Procesando...' : 'Desbloquear / Abrir Nómina'}
+                      </button>
+                    )}
+                    
+                    {actionErrors[team.id] && (
+                      <p className={styles.cardError}>{actionErrors[team.id]}</p>
+                    )}
+                  </div>
+
+                  {isValidated(team) && !processing[team.id] && (
+                    <p className={styles.validatedMsg}>
+                      {isCurrentlyLocked(team) ? 'Equipo cerrado' : 'Equipo validado'}
+                    </p>
                   )}
                 </div>
               ))}
@@ -130,3 +188,4 @@ export default function OrgTeamsPage() {
     </PageLayout>
   )
 }
+

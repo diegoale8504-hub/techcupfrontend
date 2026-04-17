@@ -21,6 +21,9 @@ export const dissolveTeam = (teamId) =>
 export const validateTeam = (teamId) =>
   axiosInstance.post(`/api/teams/${teamId}/validate`)
 
+export const unlockTeam = (teamId) =>
+  axiosInstance.post(`/api/teams/${teamId}/unlock`)
+
 // Logo
 export const uploadTeamLogo = (teamId, formData) =>
   axiosInstance.patch(`/api/teams/${teamId}/logo`, formData, {

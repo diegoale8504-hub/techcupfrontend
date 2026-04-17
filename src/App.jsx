@@ -49,9 +49,7 @@ import ManageTeam            from './pages/teams/ManageTeam'
 import LineupFormationPage   from './pages/Team/LineupFormationPage'
 
 // Placeholders — páginas pendientes de implementar
-const TournamentActivePage = () => <div style={{ padding: 32 }}><h2>Torneo Activo</h2></div>
 const StatisticsPage       = () => <div style={{ padding: 32 }}><h2>Estadísticas</h2></div>
-const TeamPaymentPage      = () => <div style={{ padding: 32 }}><h2>Comprobante de Pago</h2></div>
 
 function RegistrationLayout() {
   return (
@@ -99,7 +97,7 @@ export default function App() {
           <Route path="/invitations"   element={<InvitationsPage />} />
           <Route path="/captain"       element={<CaptainPage />} />
 
-          <Route path="/tournaments/active"            element={<TournamentActivePage />} />
+          <Route path="/tournaments/active"            element={<TournamentPage />} />
           <Route path="/tournaments/active/statistics" element={<StatisticsPage />} />
 
           {/* PLAYER y CAPTAIN — crear equipo y ver equipo */}
@@ -112,7 +110,7 @@ export default function App() {
           {/* Solo CAPTAIN */}
           <Route element={<ProtectedRoute allowedRoles={['CAPTAIN']} />}>
             <Route path="/teams/:id/manage"  element={<ManageTeam />} />
-            <Route path="/teams/:id/payment" element={<TeamPaymentPage />} />
+            <Route path="/teams/:id/payment" element={<PaymentPage />} />
             <Route path="/teams/:id/lineups" element={<LineupFormationPage />} />
             <Route path="/payments"          element={<PaymentPage />} />
             <Route path="/payment"           element={<PaymentPage />} />

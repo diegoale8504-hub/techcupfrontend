@@ -7,6 +7,7 @@ import {
   validateTeam, dissolveTeam, uploadTeamLogo, cancelInvitation,
 } from '../../api/teams'
 import { getUserById } from '../../api/users'
+import { getAllTournaments } from '../../api/tournament'
 import PageLayout from '../../components/layout/PageLayout/PageLayout'
 import Button from '../../components/ui/Button/Button'
 import styles from './ManageTeam.module.css'
@@ -46,11 +47,19 @@ export default function ManageTeam() {
     )
   }, [])
 
+  const [activeTournament, setActiveTournament] = useState(null)
+
   // ── Main data load ────────────────────────────────────────────────
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
+      // 0. Cargar torneos para ver si hay uno activo
+      const tourRes = await getAllTournaments()
+      const tournaments = tourRes.data ?? []
+      const active = tournaments.find((t) => t.status !== 'FINISHED') ?? null
+      setActiveTournament(active)
+
       let teamData = null
       if (id && id !== 'null' && id !== 'undefined') {
         try { const res = await getTeam(id); teamData = res.data } catch (e) { /* fallback */ }
@@ -145,7 +154,8 @@ export default function ManageTeam() {
 
   if (loading) return <PageLayout><div className={styles.loading}>Cargando...</div></PageLayout>
 
-  const isLocked = team?.status === 'LOCKED'
+  // Un equipo solo se bloquea si hay un torneo activo Y su estado es LOCKED o REGISTERED
+  const isLocked = activeTournament !== null && (team?.status === 'LOCKED' || team?.status === 'REGISTERED')
 
   return (
     <PageLayout>
