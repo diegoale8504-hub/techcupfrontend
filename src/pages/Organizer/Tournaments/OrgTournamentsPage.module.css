@@ -400,3 +400,102 @@
 }
 
 .btnDisabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+
+/* ── Match schedules section ── */
+.matchesSection {
+  background: rgba(255,255,255,0.97);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  margin-bottom: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.matchesSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e8f5e9;
+}
+
+.matchFormGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 600px) { .matchFormGrid { grid-template-columns: 1fr; } }
+
+.matchForm {
+  background: #f8fffe;
+  border: 1px solid #c8e6c9;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.matchList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.matchRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #f9fafb;
+  border-radius: var(--radius-md);
+  border: 1px solid #eee;
+  flex-wrap: wrap;
+}
+
+.matchRowPhase {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: #1b7d4d;
+  border-radius: 8px;
+  padding: 2px 8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.matchRowTeams {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.matchRowTeamName {
+  font-weight: 700;
+  font-size: 14px;
+  color: #222;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.matchRowVs {
+  font-size: 12px;
+  color: #888;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.matchRowDate {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  flex-shrink: 0;
+}

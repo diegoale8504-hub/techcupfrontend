@@ -3,10 +3,11 @@ import PageLayout from '../../../components/layout/PageLayout/PageLayout'
 import {
   createTournament, startTournament, finishTournament,
   assignReferee, removeRefereeFromTournament, getTournamentReferees,
-  uploadRegulationPdf,
+  uploadRegulationPdf, createMatchSchedule, deleteMatchSchedule,
 } from '../../../api/organizer'
-import { getAllTournaments } from '../../../api/tournament'
+import { getAllTournaments, getMatchSchedules } from '../../../api/tournament'
 import { getReferees } from '../../../api/users'
+import { getAllTeams } from '../../../api/teams'
 import styles from './OrgTournamentsPage.module.css'
 
 const STATUS_LABELS = {
@@ -57,6 +58,16 @@ export default function OrgTournamentsPage() {
   const [pdfSuccess,    setPdfSuccess]    = useState(null)
   const pdfInputRef = useRef(null)
 
+  // Match schedules
+  const [matches,         setMatches]         = useState([])
+  const [allTeams,        setAllTeams]        = useState([])
+  const [showMatchForm,   setShowMatchForm]   = useState(false)
+  const [matchCreating,   setMatchCreating]   = useState(false)
+  const [matchError,      setMatchError]      = useState(null)
+  const [matchForm,       setMatchForm]       = useState({
+    homeTeamId: '', awayTeamId: '', scheduledAt: '', matchName: '', phase: 'ELIMINATORIAS', notes: '',
+  })
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -73,12 +84,16 @@ export default function OrgTournamentsPage() {
         setTournament(active)
         const tid = active.id
 
-        const [refRes, allRefRes] = await Promise.allSettled([
+        const [refRes, allRefRes, matchRes, teamsRes] = await Promise.allSettled([
           getTournamentReferees(tid),
           getReferees(),
+          getMatchSchedules(tid),
+          getAllTeams(),
         ])
         if (refRes.status === 'fulfilled')    setTournReferees(refRes.value.data ?? [])
         if (allRefRes.status === 'fulfilled') setAllReferees(allRefRes.value.data ?? [])
+        if (matchRes.status === 'fulfilled')  setMatches(matchRes.value.data ?? [])
+        if (teamsRes.status === 'fulfilled')  setAllTeams(teamsRes.value.data ?? [])
       } catch {
         setShowCreate(true)
       } finally {
@@ -179,6 +194,44 @@ export default function OrgTournamentsPage() {
     } finally {
       setPdfUploading(false)
       if (pdfInputRef.current) pdfInputRef.current.value = ''
+    }
+  }
+
+  // ── Match schedule handlers ───────────────────────────────────────────────
+
+  const handleCreateMatch = async (e) => {
+    e.preventDefault()
+    if (matchForm.homeTeamId === matchForm.awayTeamId) {
+      setMatchError('Los dos equipos deben ser diferentes.')
+      return
+    }
+    setMatchCreating(true)
+    setMatchError(null)
+    try {
+      const res = await createMatchSchedule(tournament.id, {
+        homeTeamId:  matchForm.homeTeamId,
+        awayTeamId:  matchForm.awayTeamId,
+        scheduledAt: matchForm.scheduledAt,
+        matchName:   matchForm.matchName || undefined,
+        phase:       matchForm.phase || undefined,
+        notes:       matchForm.notes || undefined,
+      })
+      setMatches((prev) => [...prev, res.data])
+      setShowMatchForm(false)
+      setMatchForm({ homeTeamId: '', awayTeamId: '', scheduledAt: '', matchName: '', phase: 'ELIMINATORIAS', notes: '' })
+    } catch (err) {
+      setMatchError(err.userMessage ?? 'No se pudo programar el partido.')
+    } finally {
+      setMatchCreating(false)
+    }
+  }
+
+  const handleDeleteMatch = async (matchId) => {
+    try {
+      await deleteMatchSchedule(tournament.id, matchId)
+      setMatches((prev) => prev.filter((m) => m.id !== matchId))
+    } catch {
+      // silent
     }
   }
 
@@ -305,6 +358,106 @@ export default function OrgTournamentsPage() {
                   )
                 )}
                 {actionError && <p className={styles.actionError}>{actionError}</p>}
+              </div>
+            </div>
+          )}
+
+          {/* ── Partidos programados (llaves) ─── */}
+          {!showCreate && tournament && (
+            <div className={styles.matchesSection}>
+              <div className={styles.matchesSectionHeader}>
+                <h3 className={styles.cardTitle} style={{ borderBottom: 'none', marginBottom: 0, paddingBottom: 0 }}>
+                  Partidos programados ({matches.length})
+                </h3>
+                <button className={styles.btnAdd} onClick={() => { setShowMatchForm((v) => !v); setMatchError(null) }}>
+                  {showMatchForm ? 'Cancelar' : '+ Programar partido'}
+                </button>
+              </div>
+
+              {/* Form for creating a new match */}
+              {showMatchForm && (
+                <form className={styles.matchForm} onSubmit={handleCreateMatch}>
+                  <div className={styles.matchFormGrid}>
+                    <label className={styles.formLabel}>
+                      Equipo local
+                      <select className={styles.formInput} value={matchForm.homeTeamId}
+                        onChange={(e) => setMatchForm((p) => ({ ...p, homeTeamId: e.target.value }))} required>
+                        <option value="">Seleccionar equipo...</option>
+                        {allTeams.map((t) => (
+                          <option key={t.id} value={t.id}>{t.name}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className={styles.formLabel}>
+                      Equipo visitante
+                      <select className={styles.formInput} value={matchForm.awayTeamId}
+                        onChange={(e) => setMatchForm((p) => ({ ...p, awayTeamId: e.target.value }))} required>
+                        <option value="">Seleccionar equipo...</option>
+                        {allTeams.map((t) => (
+                          <option key={t.id} value={t.id}>{t.name}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className={styles.formLabel}>
+                      Fecha y hora
+                      <input type="datetime-local" className={styles.formInput} value={matchForm.scheduledAt}
+                        onChange={(e) => setMatchForm((p) => ({ ...p, scheduledAt: e.target.value }))} required />
+                    </label>
+                    <label className={styles.formLabel}>
+                      Fase / Ronda
+                      <select className={styles.formInput} value={matchForm.phase}
+                        onChange={(e) => setMatchForm((p) => ({ ...p, phase: e.target.value }))}>
+                        <option value="ELIMINATORIAS">Eliminatorias</option>
+                        <option value="OCTAVOS">Octavos de final</option>
+                        <option value="CUARTOS">Cuartos de final</option>
+                        <option value="SEMIFINAL">Semifinal</option>
+                        <option value="FINAL">Final</option>
+                      </select>
+                    </label>
+                    <label className={styles.formLabel}>
+                      Nombre del partido (opcional)
+                      <input type="text" className={styles.formInput} placeholder="Ej: Partido 1 - Grupo A"
+                        value={matchForm.matchName}
+                        onChange={(e) => setMatchForm((p) => ({ ...p, matchName: e.target.value }))} />
+                    </label>
+                    <label className={styles.formLabel}>
+                      Notas (opcional)
+                      <input type="text" className={styles.formInput} placeholder="Cancha, árbitro, etc."
+                        value={matchForm.notes}
+                        onChange={(e) => setMatchForm((p) => ({ ...p, notes: e.target.value }))} />
+                    </label>
+                  </div>
+                  {matchError && <p className={styles.formError}>{matchError}</p>}
+                  <button type="submit" className={styles.btnSubmit} disabled={matchCreating}>
+                    {matchCreating ? 'Guardando...' : 'Crear partido'}
+                  </button>
+                </form>
+              )}
+
+              {/* Match list */}
+              {matches.length === 0 && !showMatchForm && (
+                <p className={styles.emptyMsg}>No hay partidos programados. Crea el primero.</p>
+              )}
+              <div className={styles.matchList}>
+                {matches.map((m) => {
+                  const home = m.homeTeamName || allTeams.find((t) => t.id === m.homeTeamId)?.name || 'TBD'
+                  const away = m.awayTeamName || allTeams.find((t) => t.id === m.awayTeamId)?.name || 'TBD'
+                  const dt   = m.scheduledAt ? new Date(m.scheduledAt) : null
+                  return (
+                    <div key={m.id} className={styles.matchRow}>
+                      <div className={styles.matchRowPhase}>{m.phase || '—'}</div>
+                      <div className={styles.matchRowTeams}>
+                        <span className={styles.matchRowTeamName}>{home}</span>
+                        <span className={styles.matchRowVs}>vs</span>
+                        <span className={styles.matchRowTeamName}>{away}</span>
+                      </div>
+                      <div className={styles.matchRowDate}>
+                        {dt ? dt.toLocaleString('es-CO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'}
+                      </div>
+                      <button className={styles.btnRemove} onClick={() => handleDeleteMatch(m.id)}>Eliminar</button>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}

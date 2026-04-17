@@ -8,9 +8,10 @@ import styles from './Layout.module.css'
  * REUSABLE NAVIGATION ITEM
  * Classes: nav-item, nav-item--active, nav-item--highlight (mapped from styles)
  */
-const NavItem = ({ label, to, badge, highlight, onClick }) => (
+const NavItem = ({ label, to, badge, highlight, onClick, end }) => (
   <NavLink
     to={to}
+    end={end}
     className={({ isActive }) =>
       [
         styles.navItem,
@@ -55,7 +56,7 @@ function buildMenu(role, teamId, userId, unreadCount) {
 
     if (teamId) {
       menu.push(
-        { to: `${teamBase}`,         label: 'Mi Equipo' },
+        { to: `${teamBase}`,         label: 'Mi Equipo', end: true },
         { to: `${teamBase}/manage`,  label: 'Gestionar Equipo' },
         { to: `${teamBase}/payment`, label: 'Comprobante de Pago' },
         { to: `${teamBase}/lineups`, label: 'Alineaciones' }
@@ -73,7 +74,7 @@ function buildMenu(role, teamId, userId, unreadCount) {
   else if (normalizedRole === 'PLAYER') {
     const menu = [...common]
     if (teamId) {
-      menu.push({ to: `/teams/${teamId}`, label: 'Mi Equipo' })
+      menu.push({ to: `/teams/${teamId}`, label: 'Mi Equipo', end: true })
     }
     menu.push({ to: '/invitations', label: 'Mis Invitaciones' })
     menu.push(...tournament)
@@ -141,13 +142,18 @@ export default function Layout() {
       .then((res) => {
         const profile = res.data
         const foundTeamId = profile.teamId || profile.team?.id
-        
+
         if (foundTeamId) {
           console.log('[Layout] Found teamId in profile:', foundTeamId)
           setMyTeamId(foundTeamId)
           if (user.teamId !== foundTeamId) {
             updateUser({ teamId: foundTeamId })
           }
+        } else {
+          // El perfil no tiene equipo — limpiar estado local si quedó sucio
+          console.log('[Layout] Profile has no teamId — clearing local team state')
+          setMyTeamId(null)
+          if (user.teamId) updateUser({ teamId: null })
         }
       })
       .catch((err) => {
@@ -161,7 +167,7 @@ export default function Layout() {
         if (myTeam?.id) {
           console.log('[Layout] Found team via /api/teams/my-team:', myTeam.id)
           setMyTeamId(myTeam.id)
-          
+
           // Auto-promote to CAPTAIN if backend says user is captain of this team
           const captainId = myTeam.captainId ?? myTeam.captain?.id
           if (captainId === user.id && user.role !== 'CAPTAIN') {
@@ -172,8 +178,14 @@ export default function Layout() {
         }
       })
       .catch((err) => {
-        // Silently fail if no team or forbidden
-        console.log('[Layout] My-team fetch failed or user has no team:', err.response?.status)
+        // 404 = usuario sin equipo → limpiar estado
+        if (err.response?.status === 404 || err.response?.status === 403) {
+          console.log('[Layout] No team found — clearing local team state')
+          setMyTeamId(null)
+          if (user.teamId) updateUser({ teamId: null })
+        } else {
+          console.log('[Layout] My-team fetch failed:', err.response?.status)
+        }
       })
   }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -234,7 +246,13 @@ export default function Layout() {
 
         {/* User Info Header */}
         <div className={styles.sidebarHeader}>
-          <div className={styles.avatarCircle}>{initial}</div>
+          <div className={styles.avatarCircle}>
+            {user?.profilePhoto ? (
+              <img src={user.profilePhoto} alt={user.name} className={styles.avatarImg} />
+            ) : (
+              initial
+            )}
+          </div>
           <div className={styles.userInfo}>
             <span className={styles.userName} title={user?.name ?? user?.email}>
               {user?.name ?? user?.email}
