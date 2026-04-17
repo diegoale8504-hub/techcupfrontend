@@ -28,8 +28,8 @@ export const getAllPaymentProofs = () =>
 export const getPaymentProofsByStatus = (status) =>
   axiosInstance.get(`/api/payments/proofs/status/${status}`)
 
-export const updatePaymentStatus = (teamId, status) =>
-  axiosInstance.patch(`/api/payments/${teamId}/proof/status`, { status })
+export const updatePaymentStatus = (teamId, status, comments = '') =>
+  axiosInstance.patch(`/api/payments/${teamId}/proof/status`, { status, ...(comments && { comments }) })
 
 // ── Referees (invite) ─────────────────────────────────────────────────────────
 
