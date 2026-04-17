@@ -1,19 +1,26 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout/PageLayout'
 import Button from '../../components/ui/Button/Button'
 import api from '../../api/axiosInstance'
 import styles from './NotificationsPage.module.css'
 
 const ICON_MAP = {
-  INVITATION_RECEIVED: 'INV',
-  INVITATION_ACCEPTED: 'OK',
-  INVITATION_REJECTED: 'NO',
-  PLAYER_REMOVED: 'REM',
-  TEAM_DISSOLVED: 'DIS',
-  SYSTEM: 'SIS'
+  INVITATION_RECEIVED: '✉️',
+  INVITATION_ACCEPTED: '✅',
+  INVITATION_REJECTED: '❌',
+  PLAYER_REMOVED: '🚫',
+  TEAM_DISSOLVED: '💥',
+  SYSTEM: '⚙️',
+  TOURNAMENT_STARTED: '🏆',
+  TEAM_APPROVED: '👍',
+  MATCH_SCHEDULED: '⚽',
+  PAYMENT_APPROVED: '💰',
+  PAYMENT_REJECTED: '⚠️'
 }
 
 export default function NotificationsPage() {
+  const navigate = useNavigate()
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -31,13 +38,39 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     fetchNotifications()
+    const interval = setInterval(fetchNotifications, 10000) // Poll every 10s
+    return () => clearInterval(interval)
   }, [])
 
-  const markAsRead = async (id) => {
-    try {
-      await api.patch(`/api/notifications/${id}/read`)
-      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
-    } catch (e) { /* silent */ }
+  const handleNotificationClick = async (n) => {
+    // 1. Mark as read if it's unread
+    if (!n.read) {
+      try {
+        await api.patch(`/api/notifications/${n.id}/read`)
+        setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, read: true } : item))
+      } catch (e) { /* silent */ }
+    }
+
+    // 2. Navigate based on type
+    switch (n.type) {
+      case 'INVITATION_RECEIVED':
+        navigate('/invitations')
+        break
+      case 'INVITATION_ACCEPTED':
+      case 'INVITATION_REJECTED':
+      case 'TEAM_APPROVED':
+      case 'PAYMENT_APPROVED':
+      case 'PAYMENT_REJECTED':
+        navigate('/dashboard')
+        break
+      case 'MATCH_SCHEDULED':
+      case 'TOURNAMENT_STARTED':
+        navigate('/tournaments/active')
+        break
+      default:
+        // Stay here or go to dashboard
+        break
+    }
   }
 
   const markAllRead = async () => {
@@ -77,7 +110,7 @@ export default function NotificationsPage() {
               <div 
                 key={n.id} 
                 className={`${styles.item} ${!n.read ? styles.unread : ''}`}
-                onClick={() => !n.read && markAsRead(n.id)}
+                onClick={() => handleNotificationClick(n)}
               >
                 <div className={styles.icon}>{ICON_MAP[n.type] || '—'}</div>
                 <div className={styles.content}>

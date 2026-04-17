@@ -96,12 +96,16 @@ export default function PlayerSearchPage() {
     return () => clearTimeout(timer)
   }, [fetchPlayers])
 
+  const [successMsg, setSuccessMsg] = useState(null)
+
   const handleInvite = async (playerId) => {
     if (!user?.teamId) return
     setInviting((p) => ({ ...p, [playerId]: 'loading' }))
     try {
       await invitePlayer(user.teamId, playerId)
       setInviting((p) => ({ ...p, [playerId]: 'done' }))
+      setSuccessMsg('Invitación enviada correctamente.')
+      setTimeout(() => setSuccessMsg(null), 3000)
       fetchSentInvitations()
     } catch (err) {
       alert(err.userMessage || 'Error al invitar.')

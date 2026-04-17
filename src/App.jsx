@@ -113,8 +113,10 @@ export default function App() {
           <Route element={<ProtectedRoute allowedRoles={['CAPTAIN']} />}>
             <Route path="/teams/:id/manage"  element={<ManageTeam />} />
             <Route path="/teams/:id/payment" element={<TeamPaymentPage />} />
+
             <Route path="/teams/:id/lineups" element={<LineupFormationPage />} />
             <Route path="/team"              element={<TeamPage />} />
+
             <Route path="/payments"          element={<PaymentPage />} />
             <Route path="/payment"           element={<PaymentPage />} />
           </Route>

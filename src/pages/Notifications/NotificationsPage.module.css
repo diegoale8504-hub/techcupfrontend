@@ -47,31 +47,37 @@
   align-items: center;
   gap: 15px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
   position: relative;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
   border: 1px solid rgba(0,0,0,0.05);
 }
 
 .item:hover {
-  transform: translateX(5px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
 .unread {
-  border-left: 4px solid var(--color-primary);
+  border-left: 5px solid #16a34a;
   background: #f0fdf4;
 }
 
 .icon {
-  font-size: 20px;
-  background: #f3f4f6;
-  width: 40px;
-  height: 40px;
+  font-size: 22px;
+  background: #f9fafb;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.03);
+  flex-shrink: 0;
+}
+
+.unread .icon {
+  background: #ffffff;
 }
 
 .content {
