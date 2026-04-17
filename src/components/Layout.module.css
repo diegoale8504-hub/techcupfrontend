@@ -27,10 +27,40 @@
   display: flex;
   flex-direction: column;
   z-index: 100;
-  transition: transform 0.28s ease;
+  transition: width 0.26s ease, transform 0.28s ease;
   overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 2px 0 16px rgba(0, 0, 0, 0.18);
   animation: fadeInSidebar 0.4s ease both;
+}
+
+/* ── Sidebar colapsado ─────────────────────────────────────────── */
+.sidebarCollapsed {
+  width: 64px;
+}
+
+/* ── Botón colapsar (desktop) ──────────────────────────────────── */
+.collapseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  align-self: center;
+  margin: -6px 0 10px;
+  flex-shrink: 0;
+  transition: background 0.18s ease;
+  z-index: 1;
+}
+
+.collapseBtn:hover {
+  background: rgba(255, 255, 255, 0.22);
 }
 
 /* ── Logo de la app ────────────────────────────────────────────── */
@@ -177,6 +207,7 @@
   transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
   animation: slideInLeft 0.35s ease both;
   white-space: nowrap;
+  position: relative;
 }
 
 .navItem:hover {
@@ -210,10 +241,17 @@
 }
 
 .navIcon {
-  font-size: 14px;
-  width: 20px;
+  font-size: 16px;
+  width: 22px;
   text-align: center;
   flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Nav item cuando sidebar está colapsado */
+.navItemCollapsed {
+  justify-content: center;
+  padding: 12px 0;
 }
 
 .navLabel {
@@ -235,11 +273,26 @@
   flex-shrink: 0;
 }
 
+/* Punto rojo pequeño cuando está colapsado */
+.navItemBadgeDot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 1.5px solid #09431E;
+}
+
 /* ── Footer del sidebar ────────────────────────────────────────── */
 .sidebarFooter {
   padding: 12px 10px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .logoutBtn {
@@ -261,6 +314,19 @@
   color: #fff;
 }
 
+.logoutBtnCollapsed {
+  font-size: 18px;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ── Contenido principal ───────────────────────────────────────── */
 .layoutMain {
   flex: 1;
@@ -271,6 +337,11 @@
   background-position: center top;
   background-attachment: fixed;
   overflow-y: auto;
+  transition: margin-left 0.26s ease;
+}
+
+.layoutMainCollapsed {
+  margin-left: 64px;
 }
 
 /* ── Hamburguesa (móvil) ───────────────────────────────────────── */
@@ -302,18 +373,34 @@
 
 /* ── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  /* Por defecto en móvil: sidebar oculto fuera de pantalla */
   .sidebar {
     transform: translateX(-100%);
+    width: 260px;
   }
 
+  /* Sidebar expandido via hamburger */
   .sidebarOpen {
     transform: translateX(0);
   }
 
+  /* Colapsado en móvil → rail de iconos siempre visible */
+  .sidebarCollapsed {
+    transform: translateX(0) !important;
+    width: 64px !important;
+  }
+
+  /* El main sin colapsar no tiene margen izquierdo */
   .layoutMain {
     margin-left: 0;
   }
 
+  /* El main con sidebar colapsado sí tiene margen de 64px */
+  .layoutMainCollapsed {
+    margin-left: 64px;
+  }
+
+  /* Hamburger visible solo cuando el sidebar NO está colapsado */
   .hamburger {
     display: flex;
     align-items: center;
@@ -322,5 +409,39 @@
 
   .overlay {
     display: block;
+    cursor: pointer;
+  }
+
+  /* collapseBtn visible en móvil también */
+  .collapseBtn {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 240px;
+  }
+
+  .hamburger {
+    top: 10px;
+    left: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .logoImg {
+    width: 56px;
+    height: 56px;
+  }
+
+  .logoText {
+    font-size: 11px;
+  }
+
+  .navItem {
+    padding: 10px 10px;
+    font-size: 13px;
   }
 }

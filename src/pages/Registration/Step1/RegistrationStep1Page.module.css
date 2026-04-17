@@ -90,3 +90,18 @@
 .backLink:hover {
   color: var(--color-primary);
 }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .root { padding: var(--space-md); }
+  .card { padding: var(--space-lg); }
+  .title { font-size: 22px; }
+  .row { grid-template-columns: 1fr; }
+  .stepTitle { font-size: 16px; }
+}
+
+@media (max-width: 400px) {
+  .card { padding: var(--space-md); }
+  .title { font-size: 18px; }
+  .logoImg { width: 56px; height: 56px; }
+}

@@ -8,24 +8,30 @@ import styles from './Layout.module.css'
  * REUSABLE NAVIGATION ITEM
  * Classes: nav-item, nav-item--active, nav-item--highlight (mapped from styles)
  */
-const NavItem = ({ label, to, badge, highlight, onClick, end }) => (
+const NavItem = ({ label, icon, to, badge, highlight, onClick, end, collapsed }) => (
   <NavLink
     to={to}
     end={end}
+    title={collapsed ? label : undefined}
     className={({ isActive }) =>
       [
         styles.navItem,
         isActive ? styles.navItemActive : '',
         highlight ? styles.navItemHighlight : '',
+        collapsed ? styles.navItemCollapsed : '',
       ]
         .filter(Boolean)
         .join(' ')
     }
     onClick={onClick}
   >
-    <span className={styles.navLabel}>{label}</span>
-    {badge > 0 && (
+    <span className={styles.navIcon}>{icon}</span>
+    {!collapsed && <span className={styles.navLabel}>{label}</span>}
+    {!collapsed && badge > 0 && (
       <span className={styles.navItemBadge}>{badge}</span>
+    )}
+    {collapsed && badge > 0 && (
+      <span className={styles.navItemBadgeDot} />
     )}
   </NavLink>
 )
@@ -36,14 +42,14 @@ const NavItem = ({ label, to, badge, highlight, onClick, end }) => (
  */
 function buildMenu(role, teamId, userId, unreadCount) {
   const common = [
-    { to: '/dashboard',         label: 'Dashboard' },
-    { to: `/profile/${userId}`, label: 'Mi Perfil' },
-    { to: '/notifications',     label: 'Notificaciones', badge: unreadCount },
+    { to: '/dashboard',         label: 'Dashboard',       icon: '🏠' },
+    { to: `/profile/${userId}`, label: 'Mi Perfil',       icon: '👤' },
+    { to: '/notifications',     label: 'Notificaciones',  icon: '🔔', badge: unreadCount },
   ]
 
   const tournament = [
-    { to: '/tournaments/active',            label: 'Torneo Activo' },
-    { to: '/tournaments/active/statistics', label: 'Estadísticas' },
+    { to: '/tournaments/active',            label: 'Torneo Activo', icon: '🏆' },
+    { to: '/tournaments/active/statistics', label: 'Estadísticas',  icon: '📊' },
   ]
 
   const normalizedRole = role?.toUpperCase()
@@ -56,14 +62,14 @@ function buildMenu(role, teamId, userId, unreadCount) {
 
     if (teamId) {
       menu.push(
-        { to: `${teamBase}`,         label: 'Mi Equipo', end: true },
-        { to: `${teamBase}/manage`,  label: 'Gestionar Equipo' },
-        { to: `${teamBase}/payment`, label: 'Comprobante de Pago' },
-        { to: `${teamBase}/lineups`, label: 'Alineaciones' }
+        { to: `${teamBase}`,         label: 'Mi Equipo',           icon: '⚽', end: true },
+        { to: `${teamBase}/manage`,  label: 'Gestionar Equipo',    icon: '⚙️' },
+        { to: `${teamBase}/payment`, label: 'Comprobante de Pago', icon: '💳' },
+        { to: `${teamBase}/lineups`, label: 'Alineaciones',        icon: '📋' }
       )
     } else {
-      menu.push({ to: '/teams/create',      label: 'Crear/Vincular Equipo', highlight: true })
-      menu.push({ to: '/teams/null/manage', label: 'Gestionar Equipo (Pendiente)' })
+      menu.push({ to: '/teams/create',      label: 'Crear/Vincular Equipo',       icon: '➕', highlight: true })
+      menu.push({ to: '/teams/null/manage', label: 'Gestionar Equipo (Pendiente)', icon: '⚙️' })
     }
 
     menu.push(...tournament)
@@ -74,12 +80,12 @@ function buildMenu(role, teamId, userId, unreadCount) {
   else if (normalizedRole === 'PLAYER') {
     const menu = [...common]
     if (teamId) {
-      menu.push({ to: `/teams/${teamId}`, label: 'Mi Equipo', end: true })
+      menu.push({ to: `/teams/${teamId}`, label: 'Mi Equipo',       icon: '⚽', end: true })
     }
-    menu.push({ to: '/invitations', label: 'Mis Invitaciones' })
+    menu.push({ to: '/invitations', label: 'Mis Invitaciones', icon: '✉️' })
     menu.push(...tournament)
     if (!teamId) {
-      menu.push({ to: '/teams/create', label: 'Crear Equipo', highlight: true })
+      menu.push({ to: '/teams/create', label: 'Crear Equipo', icon: '➕', highlight: true })
     }
     return menu
   }
@@ -88,20 +94,20 @@ function buildMenu(role, teamId, userId, unreadCount) {
   else if (normalizedRole === 'REFEREE') {
     return [
       ...common,
-      { to: '/matches', label: 'Mis Partidos' },
+      { to: '/matches', label: 'Mis Partidos', icon: '🎮' },
       ...tournament
     ]
   }
 
   else if (normalizedRole === 'ORGANIZER') {
     return [
-      { to: '/dashboard',             label: 'Dashboard' },
-      { to: '/notifications',         label: 'Notificaciones', badge: unreadCount },
-      { to: '/organizer/users',       label: 'Usuarios' },
-      { to: '/organizer/teams',       label: 'Equipos' },
-      { to: '/organizer/tournaments', label: 'Torneos' },
-      { to: '/organizer/payments',    label: 'Pagos' },
-      { to: '/organizer/referees',    label: 'Árbitros' },
+      { to: '/dashboard',             label: 'Dashboard',    icon: '🏠' },
+      { to: '/notifications',         label: 'Notificaciones', icon: '🔔', badge: unreadCount },
+      { to: '/organizer/users',       label: 'Usuarios',     icon: '👥' },
+      { to: '/organizer/teams',       label: 'Equipos',      icon: '⚽' },
+      { to: '/organizer/tournaments', label: 'Torneos',      icon: '🏆' },
+      { to: '/organizer/payments',    label: 'Pagos',        icon: '💰' },
+      { to: '/organizer/referees',    label: 'Árbitros',     icon: '🟡' },
     ]
   }
 
@@ -109,7 +115,7 @@ function buildMenu(role, teamId, userId, unreadCount) {
     return [
       ...common,
       ...tournament,
-      { to: '/settings', label: 'Configuración' },
+      { to: '/settings', label: 'Configuración', icon: '⚙️' },
     ]
   }
 
@@ -123,7 +129,17 @@ export default function Layout() {
   const [myTeamId, setMyTeamId] = useState(null)
   const [unreadCount, setUnreadCount] = useState(0)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(
+    () => localStorage.getItem('sidebar_collapsed') === 'true'
+  )
   const pollRef = useRef(null)
+
+  const toggleCollapsed = () => {
+    setCollapsed(prev => {
+      localStorage.setItem('sidebar_collapsed', String(!prev))
+      return !prev
+    })
+  }
 
   // Debugging
   useEffect(() => {
@@ -238,11 +254,26 @@ export default function Layout() {
       )}
 
       {/* Sidebar renders immediately */}
-      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
+      <aside className={[
+        styles.sidebar,
+        sidebarOpen  ? styles.sidebarOpen : '',
+        collapsed    ? styles.sidebarCollapsed : '',
+      ].filter(Boolean).join(' ')}>
+
+        {/* Logo + toggle button */}
         <div className={styles.logoSection}>
           <img src="/images/logoFinalFinal.png" alt="TechCupFútbol" className={styles.logoImg} />
-          <span className={styles.logoText}>TechCupFútbol</span>
+          {!collapsed && <span className={styles.logoText}>TechCupFútbol</span>}
         </div>
+
+        {/* Desktop collapse toggle */}
+        <button
+          className={styles.collapseBtn}
+          onClick={toggleCollapsed}
+          title={collapsed ? 'Expandir menú' : 'Contraer menú'}
+        >
+          {collapsed ? '▶' : '◀'}
+        </button>
 
         {/* User Info Header */}
         <div className={styles.sidebarHeader}>
@@ -253,35 +284,42 @@ export default function Layout() {
               initial
             )}
           </div>
-          <div className={styles.userInfo}>
-            <span className={styles.userName} title={user?.name ?? user?.email}>
-              {user?.name ?? user?.email}
-            </span>
-            <span className={`${styles.roleBadge} ${styles[`role--${roleKey}`]}`}>
-              {user?.role ?? '—'}
-            </span>
-          </div>
+          {!collapsed && (
+            <div className={styles.userInfo}>
+              <span className={styles.userName} title={user?.name ?? user?.email}>
+                {user?.name ?? user?.email}
+              </span>
+              <span className={`${styles.roleBadge} ${styles[`role--${roleKey}`]}`}>
+                {user?.role ?? '—'}
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Navigation - Always renders items based on current data */}
+        {/* Navigation */}
         <nav className={styles.nav}>
           {menu.map((item) => (
             <NavItem
               key={item.to}
               {...item}
+              collapsed={collapsed}
               onClick={() => setSidebarOpen(false)}
             />
           ))}
         </nav>
 
         <div className={styles.sidebarFooter}>
-          <button className={styles.logoutBtn} onClick={logout}>
-            Cerrar sesión
+          <button
+            className={`${styles.logoutBtn} ${collapsed ? styles.logoutBtnCollapsed : ''}`}
+            onClick={logout}
+            title={collapsed ? 'Cerrar sesión' : undefined}
+          >
+            {collapsed ? '🚪' : 'Cerrar sesión'}
           </button>
         </div>
       </aside>
 
-      <main className={styles.layoutMain}>
+      <main className={`${styles.layoutMain} ${collapsed ? styles.layoutMainCollapsed : ''}`}>
         <Outlet />
       </main>
     </div>

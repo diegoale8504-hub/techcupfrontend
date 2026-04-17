@@ -499,3 +499,23 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
+
+/* ── Responsive additions ── */
+@media (max-width: 768px) {
+  .heading { font-size: 22px; }
+  .header  { padding: 20px 20px; }
+  .tournCard, .createCard { padding: var(--space-lg); }
+  .matchesSection { padding: var(--space-lg); }
+  .matchRow { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .matchRowTeams { width: 100%; }
+  .matchFormGrid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .heading { font-size: 18px; }
+  .header  { padding: 16px; }
+  .tournCard, .createCard { padding: var(--space-md); }
+  .matchesSection { padding: var(--space-md); }
+  .formGrid { grid-template-columns: 1fr; }
+  .btnStart, .btnFinish, .btnCreate { font-size: 13px; padding: 8px 14px; }
+}

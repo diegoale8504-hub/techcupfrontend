@@ -35,7 +35,13 @@ body{
   background:#04231c;
   padding:30px;
   border-radius:14px;
-  width:350px;
+  width:100%;
+  max-width:350px;
+}
+
+@media (max-width:400px){
+  .card{ padding:20px; }
+  .title h1{ font-size:40px; }
 }
 
 .tabs{
