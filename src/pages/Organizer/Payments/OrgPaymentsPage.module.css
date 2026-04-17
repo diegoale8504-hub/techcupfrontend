@@ -144,4 +144,41 @@
 .btnReview:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .cardError    { font-size: 12px; color: var(--color-error); }
-.cardUpdating { font-size: 12px; color: #888; font-style: italic; }
+
+.rejectForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fff5f5;
+  border: 1px solid #f5c6c6;
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.rejectLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #c62828;
+}
+
+.rejectTextarea {
+  width: 100%;
+  border: 1px solid #f5c6c6;
+  border-radius: var(--radius-md);
+  padding: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.rejectTextarea:focus {
+  outline: none;
+  border-color: #c62828;
+}
+
+.rejectActions {
+  display: flex;
+  gap: 8px;
+}
