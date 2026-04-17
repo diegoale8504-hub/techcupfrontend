@@ -43,6 +43,14 @@ export const uploadRegulationPdf = (tournamentId, formData) =>
     headers: { 'Content-Type': 'multipart/form-data' },
   })
 
+// ── Match Schedules ───────────────────────────────────────────────────────────
+
+export const createMatchSchedule = (tournamentId, data) =>
+  axiosInstance.post(`/api/tournaments/${tournamentId}/match-schedules`, data)
+
+export const deleteMatchSchedule = (tournamentId, matchId) =>
+  axiosInstance.delete(`/api/tournaments/${tournamentId}/match-schedules/${matchId}`)
+
 // ── Tournament sub-resources (write operations) ───────────────────────────────
 
 // Regulations

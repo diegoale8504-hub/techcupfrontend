@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout/PageLayout'
 import { useAuth } from '../../hooks/useAuth'
 import { getEffectiveRole } from '../../utils/roles'
-import { getTournament, getTopScorers, getMatchHistory, getMatchSchedules } from '../../api/tournament'
+import { getAllTournaments, getTournament, getTopScorers, getMatchHistory, getMatchSchedules } from '../../api/tournament'
 import { getRefereeMatches } from '../../api/referee'
 import styles from './DashboardPage.module.css'
 
@@ -30,7 +30,7 @@ function MatchKeys({ schedules }) {
 
   // Agrupar por fase/ronda
   const rounds = schedules.reduce((acc, m) => {
-    const r = m.phase || m.round || 'Eliminatorias'
+    const r = m.phase || 'Eliminatorias'
     if (!acc[r]) acc[r] = []
     acc[r].push(m)
     return acc
@@ -54,22 +54,29 @@ function MatchKeys({ schedules }) {
           {sortedRounds.map((roundName) => (
             <div key={roundName} className={styles.bracketRound}>
               <h3 className={styles.roundTitle}>{roundName}</h3>
-              {rounds[roundName].map((m) => (
-                <div key={m.id || m.matchScheduleId} className={styles.matchCard}>
-                  <div className={`${styles.bracketTeam} ${m.homeScore > m.awayScore ? styles.winner : ''}`}>
-                    <span className={styles.teamName}>{m.homeTeamName || m.homeTeam?.name || 'TBD'}</span>
-                    <span className={styles.teamScore}>{m.homeScore ?? '-'}</span>
+              {rounds[roundName].map((m) => {
+                const dt = m.scheduledAt ? new Date(m.scheduledAt) : null
+                return (
+                  <div key={m.id} className={styles.matchCard}>
+                    <div className={`${styles.bracketTeam} ${m.homeScore > m.awayScore ? styles.winner : ''}`}>
+                      <span className={styles.teamName}>{m.homeTeamName || 'TBD'}</span>
+                      <span className={styles.teamScore}>{m.homeScore ?? '-'}</span>
+                    </div>
+                    <div className={`${styles.bracketTeam} ${m.awayScore > m.homeScore ? styles.winner : ''}`}>
+                      <span className={styles.teamName}>{m.awayTeamName || 'TBD'}</span>
+                      <span className={styles.teamScore}>{m.awayScore ?? '-'}</span>
+                    </div>
+                    <div className={styles.matchInfo}>
+                      {dt ? (
+                        <>
+                          <span>{dt.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' })}</span>
+                          <span>{dt.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</span>
+                        </>
+                      ) : <span>Fecha TBD</span>}
+                    </div>
                   </div>
-                  <div className={`${styles.bracketTeam} ${m.awayScore > m.homeScore ? styles.winner : ''}`}>
-                    <span className={styles.teamName}>{m.awayTeamName || m.awayTeam?.name || 'TBD'}</span>
-                    <span className={styles.teamScore}>{m.awayScore ?? '-'}</span>
-                  </div>
-                  <div className={styles.matchInfo}>
-                    <span>{m.matchDate ? new Date(m.matchDate).toLocaleDateString('es-CO', { day: '2-digit', month: 'short' }) : 'TBD'}</span>
-                    <span>{m.matchTime || ''}</span>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           ))}
         </div>
