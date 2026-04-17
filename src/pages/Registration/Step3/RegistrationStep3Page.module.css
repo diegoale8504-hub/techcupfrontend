@@ -92,6 +92,19 @@
   height: 16px;
 }
 
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .root { padding: var(--space-md); }
+  .card { padding: var(--space-lg); }
+  .title { font-size: 22px; }
+  .stepTitle { font-size: 16px; }
+}
+
+@media (max-width: 400px) {
+  .card { padding: var(--space-md); }
+  .title { font-size: 18px; }
+}
+
 .availableRow {
   display: flex;
   align-items: center;

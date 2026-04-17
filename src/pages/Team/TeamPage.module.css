@@ -438,12 +438,15 @@
   .hero {
     flex-direction: column;
     text-align: center;
-    padding: 32px 24px;
+    padding: 28px 20px;
+    gap: 20px;
   }
-  
+
   .heroBadges {
     justify-content: center;
   }
+
+  .heroName { font-size: 26px; }
 
   .statsGrid {
     grid-template-columns: 1fr 1fr;
@@ -452,8 +455,19 @@
   .rosterGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .skeletonGrid {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 20px 16px;
+    gap: 16px;
+    border-radius: 16px;
+  }
+  .heroLogo  { width: 80px; height: 80px; border-radius: 16px; }
+  .heroName  { font-size: 20px; }
+  .statsGrid { grid-template-columns: 1fr 1fr; gap: 10px; }
 }

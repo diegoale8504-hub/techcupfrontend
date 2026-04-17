@@ -86,8 +86,9 @@
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  overflow: hidden;
+  overflow-x: auto;
   margin-bottom: var(--space-md);
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {
@@ -208,4 +209,23 @@
 
 .infoItem span {
   font-weight: 700;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .heading { font-size: 22px; }
+  .advancedFilters { flex-direction: column; align-items: stretch; }
+  .select, .miniInput { width: 100%; max-width: 100%; }
+  .availableFilter { margin-left: 0; }
+}
+
+@media (max-width: 600px) {
+  .modal { padding: 20px; }
+  .infoGrid { grid-template-columns: 1fr; gap: 12px; }
+  .tableHead th, .row td { padding: 10px 8px; font-size: 13px; }
+}
+
+@media (max-width: 480px) {
+  .heading { font-size: 18px; }
+  .modal { width: 95%; padding: 16px; }
 }
